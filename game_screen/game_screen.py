@@ -26,20 +26,21 @@ width_land = WIDTH*sqrt(2)/80
 for i in range(40):
     for j in range(i):
         #quarter by quarter 
-        if(i <= 20):
+        if(i < 20):
             WIN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH/2-WIDTH/12)-width_land*j, HEIGH/6+i*heigh_land))
             WIN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH/2-WIDTH/12)+width_land*j, HEIGH/6+i*heigh_land))
 
             WIN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH/2-WIDTH/12)-width_land/2-width_land*j, HEIGH/6+i*heigh_land+heigh_land/2))
             WIN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH/2-WIDTH/12)+width_land/2+width_land*j, HEIGH/6+i*heigh_land+heigh_land/2))
-        if(i > 20 and j>20):
+        if(i >= 20 and j >= 20):
             WIN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH/2-WIDTH/12)-width_land*(j-20), (5*HEIGH/6-(i-19)*heigh_land)))
             WIN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH/2-WIDTH/12)+width_land*(j-20), 5*HEIGH/6-(i-19)*heigh_land))
 
             WIN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH/2-WIDTH/12)-width_land/2-width_land*(j-20), 5*HEIGH/6-(i-19)*heigh_land-heigh_land/2))
             WIN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH/2-WIDTH/12)+width_land/2+width_land*(j-20), 5*HEIGH/6-(i-19)*heigh_land- heigh_land/2))
 
-
+#WIN.blit(pygame.transform.scale(land_blue_panel, (width_land, heigh_land)), ((WIDTH/2-WIDTH/12)+width_land*10, HEIGH/6+11*heigh_land))
+#WIN.blit(pygame.transform.scale(land_red_panel, (width_land, heigh_land)), ((WIDTH/2-WIDTH/12)-width_land*(j-20), (5*HEIGH/6-*heigh_land)))
 
 #THIS PART IS FOR THE LEFT PANEL 
 
