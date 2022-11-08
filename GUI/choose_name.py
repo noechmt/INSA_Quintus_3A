@@ -1,4 +1,3 @@
-from unicodedata import name
 import pygame
 
 from Class.Button import Button

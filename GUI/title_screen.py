@@ -1,5 +1,3 @@
-from turtle import title
-from numpy import choose
 import pygame
 
 from Class.Button import Button
