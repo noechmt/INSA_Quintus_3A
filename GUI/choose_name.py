@@ -1,15 +1,15 @@
 from unicodedata import name
 import pygame
 
-from GUI.Button import Button
-from GUI.Input_box import InputBox
-from GUI.Text import Text
-from GUI.Input_box import InputBox
+from Class.Button import Button
+from Class.Input_box import InputBox
+from Class.Text import Text
 
 
 def choose_name():
 
     pygame.init()
+
     # Create screen variable and set the size of the screen
     SCREEN = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
@@ -19,7 +19,7 @@ def choose_name():
     SCREEN.fill((0, 0, 0))
 
     # Set the caption of the window as Caesar III²
-    pygame.display.set_caption('Caesar III')
+    pygame.display.set_caption('Quintus III')
 
     # Load the picture and scale it to the full size
     background_image = pygame.image.load(

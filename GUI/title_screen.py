@@ -2,7 +2,7 @@ from turtle import title
 from numpy import choose
 import pygame
 
-from GUI.Button import Button
+from Class.Button import Button
 from GUI.choose_name import choose_name
 
 
@@ -17,7 +17,7 @@ def title_screen():
     WIDTH_SCREEN, HEIGHT_SCREEN = SCREEN.get_size()
 
     # Set the caption of the window as Caesar III
-    pygame.display.set_caption('Caesar III')
+    pygame.display.set_caption('Quintus III')
 
     # Load the picture and scale it to the full size
     background_image = pygame.image.load(

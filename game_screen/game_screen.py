@@ -8,11 +8,16 @@ def draw_rect_alpha(surface, color, rect):
     surface.blit(shape_surf, rect)
 
 def game_screen():
+
+    pygame.init()
+
     SCREEN = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
     FPS = 60
 
+    # Re-initialize the window
+    SCREEN.fill((0, 0, 0))
 
-    pygame.display.set_caption("Quintus Caesar 3")
+    pygame.display.set_caption("Quintus III")
 
     WIDTH_SCREEN, HEIGH_SCREEN = SCREEN.get_size()
 
