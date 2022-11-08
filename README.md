@@ -1,4 +1,4 @@
-# quintus
+# Quintus
 
 
 
@@ -15,14 +15,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin https://gitlab.insa-cvl.fr/projetpython/quintus.git
+git remote add origin https://gitlab.com/thomas2mars/quintus.git
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](https://gitlab.insa-cvl.fr/projetpython/quintus/-/settings/integrations)
+- [ ] [Set up project integrations](https://gitlab.com/thomas2mars/quintus/-/settings/integrations)
 
 ## Collaborate with your team
 
