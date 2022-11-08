@@ -11,10 +11,10 @@ def title_screen():
     pygame.init()
 
     # Create screen variable and set the size of the screen
-    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    SCREEN = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
     # Get the size of the user's screen
-    width_screen, height_screen = screen.get_size()
+    WIDTH_SCREEN, HEIGHT_SCREEN = SCREEN.get_size()
 
     # Set the caption of the window as Caesar III
     pygame.display.set_caption('Caesar III')
@@ -22,25 +22,25 @@ def title_screen():
     # Load the picture and scale it to the full size
     background_image = pygame.image.load(
         "GUI/Images/Title screen/Background.png")
-    screen.blit(pygame.transform.scale(
-        background_image, (width_screen, height_screen)), (0, 0))
+    SCREEN.blit(pygame.transform.scale(
+        background_image, (WIDTH_SCREEN, HEIGHT_SCREEN)), (0, 0))
 
     # Create the rectangle for the menu
-    (width_menu, height_menu) = (width_screen / 5, height_screen / 3)
-    (left_menu, top_menu) = (2 * width_screen / 5, height_screen / 3)
+    (width_menu, height_menu) = (WIDTH_SCREEN / 5, HEIGHT_SCREEN / 3)
+    (left_menu, top_menu) = (2 * WIDTH_SCREEN / 5, HEIGHT_SCREEN / 3)
     menu_background = pygame.image.load(
         "GUI/Images/Title screen/Menu_background.jpg")
-    screen.blit(pygame.transform.scale(
+    SCREEN.blit(pygame.transform.scale(
         menu_background, (width_menu, height_menu)), (left_menu, top_menu))
 
     # We want to keep the ration of the logo so height is width/3 as in the original size
-    width_logo = width_menu - 2 * width_screen / 60
+    width_logo = width_menu - 2 * WIDTH_SCREEN / 60
     height_logo = width_logo / 3
     (left_logo, top_logo) = (left_menu +
-                             width_screen / 60, top_menu + height_screen / 60)
+                             WIDTH_SCREEN / 60, top_menu + HEIGHT_SCREEN / 60)
     logo_menu = pygame.image.load(
         "GUI/Images/Title screen/Logo_menu.png")
-    screen.blit(pygame.transform.scale(
+    SCREEN.blit(pygame.transform.scale(
         logo_menu, (width_logo, height_logo)), (left_logo, top_logo))
 
     logo_background = pygame.image.load(
@@ -50,15 +50,15 @@ def title_screen():
     height_buttons = height_logo // 2
     left_buttons = left_logo
 
-    top_start_button = top_logo + height_logo + height_screen / 30
+    top_start_button = top_logo + height_logo + HEIGHT_SCREEN / 30
     start_game_button = Button(left_buttons, top_start_button, width_buttons,
                                height_buttons, image=logo_background, text="Commencez la partie")
-    start_game_button.draw(screen)
+    start_game_button.draw(SCREEN)
 
     top_leave_button = top_logo + 2 * height_logo
     leave_game_button = Button(left_buttons, top_leave_button, width_buttons,
                                height_buttons, image=logo_background, text="Quittez le jeu")
-    leave_game_button.draw(screen)
+    leave_game_button.draw(SCREEN)
 
     # Display the window
     pygame.display.flip()
@@ -82,8 +82,8 @@ def title_screen():
                     window_name = True
                     running = False
             if event.type == pygame.MOUSEMOTION:
-                start_game_button.handle_hover_button(pos, screen)
-                leave_game_button.handle_hover_button(pos, screen)
+                start_game_button.handle_hover_button(pos, SCREEN)
+                leave_game_button.handle_hover_button(pos, SCREEN)
 
         # Set the FPS at 60
         clock.tick(60)

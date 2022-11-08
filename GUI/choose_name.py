@@ -11,12 +11,12 @@ def choose_name():
 
     pygame.init()
     # Create screen variable and set the size of the screen
-    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    SCREEN = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
     # Get the size of the user's screen
-    width_screen, height_screen = screen.get_size()
+    WIDTH_SCREEN, HEIGHT_SCREEN = SCREEN.get_size()
 
-    screen.fill((0, 0, 0))
+    SCREEN.fill((0, 0, 0))
 
     # Set the caption of the window as Caesar III²
     pygame.display.set_caption('Caesar III')
@@ -24,15 +24,15 @@ def choose_name():
     # Load the picture and scale it to the full size
     background_image = pygame.image.load(
         "GUI/Images/Choose Name/Background.png")
-    screen.blit(pygame.transform.scale(
-        background_image, (width_screen, height_screen)), (0, 0))
+    SCREEN.blit(pygame.transform.scale(
+        background_image, (WIDTH_SCREEN, HEIGHT_SCREEN)), (0, 0))
 
     # Create the rectangle for the menu
-    (width_menu, height_menu) = (width_screen / 3, height_screen / 5)
-    (left_menu, top_menu) = (width_screen / 3, 2 * height_screen / 5)
+    (width_menu, height_menu) = (WIDTH_SCREEN / 3, HEIGHT_SCREEN / 5)
+    (left_menu, top_menu) = (WIDTH_SCREEN / 3, 2 * HEIGHT_SCREEN / 5)
     menu_background = pygame.image.load(
         "GUI/Images/Choose Name/Menu_background.jpg")
-    screen.blit(pygame.transform.scale(
+    SCREEN.blit(pygame.transform.scale(
         menu_background, (width_menu, height_menu)), (left_menu, top_menu))
 
     # Text choose a name
@@ -42,7 +42,7 @@ def choose_name():
         "GUI/Fonts/Title Screen/Berry Rotunda.ttf", 30)
     text_name = Text(left_text_name, top_text_name,
                      width_text_name, height_text_name, "Please enter your name", text_name_font)
-    text_name.draw(screen)
+    text_name.draw(SCREEN)
 
     # Input box for the username
     (width_input_name, height_input_name) = (
@@ -53,7 +53,7 @@ def choose_name():
         "GUI/Fonts/Title Screen/Berry Rotunda.ttf", 25)
     input_name = InputBox(left_input_name, top_input_name, width_input_name,
                           height_input_name, input_name_font, "Governor")
-    input_name.draw(screen)
+    input_name.draw(SCREEN)
 
     # Continue button/text
     (width_text_continue, height_text_continue) = (
@@ -64,7 +64,7 @@ def choose_name():
         "GUI/Fonts/Title Screen/Berry Rotunda.ttf", 20)
     text_continue = Text(left_text_continue, top_text_continue, width_text_continue,
                          height_text_continue, "Continue", text_continue_font)
-    text_continue.draw(screen)
+    text_continue.draw(SCREEN)
 
     # Back button/text
     (width_text_back, height_text_back) = (width_menu / 3, height_menu / 3)
@@ -74,7 +74,7 @@ def choose_name():
         "GUI/Fonts/Title Screen/Berry Rotunda.ttf", 20)
     text_back = Text(left_text_back, top_text_back,
                      width_text_back, height_text_back, "Back", text_back_font)
-    text_back.draw(screen)
+    text_back.draw(SCREEN)
 
     # Display the window
     pygame.display.flip()
@@ -91,8 +91,8 @@ def choose_name():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEMOTION:
-                text_back.handle_hover_text(pos, screen)
-                text_continue.handle_hover_text(pos, screen)
+                text_back.handle_hover_text(pos, SCREEN)
+                text_continue.handle_hover_text(pos, SCREEN)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if text_back.is_hovered(pos):
                     return False
@@ -102,13 +102,13 @@ def choose_name():
                         file.write(input_name.get_text())
                         file.close()
                         return True
-            if (input_name.handle_event(event, screen)):
-                screen.blit(pygame.transform.scale(
+            if (input_name.handle_event(event, SCREEN)):
+                SCREEN.blit(pygame.transform.scale(
                     menu_background, (width_menu, height_menu)), (left_menu, top_menu))
-                text_name.draw(screen)
-                input_name.draw(screen)
-                text_back.draw(screen)
-                text_continue.draw(screen)
+                text_name.draw(SCREEN)
+                input_name.draw(SCREEN)
+                text_back.draw(SCREEN)
+                text_continue.draw(SCREEN)
         # Set the FPS at 60
         clock.tick(60)
 
