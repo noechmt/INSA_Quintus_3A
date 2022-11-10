@@ -32,8 +32,17 @@ class Cell: #Une case de la map
     def inMap(self):
         return (0 <= self.x & self.x <= self.current_map.size-1 & 0 <= self.y & self.y <= self.current_map.size-1)
 
-    
-
+    def build(self, type):
+        if self.type_of_cell == 0 & self.current_map.array[self.x][self.y].type_of_void == "dirt":
+            match type:
+                case "house":
+                    self.current_map.array[self.x][self.y] = House(self.x, self.y, self.current_map)
+                case "fountain":
+                    self.current_map.array[self.x][self.y] = Fountain(self.x, self.y, self.current_map)
+                case "prefecture":
+                    self.current_map.array[self.x][self.y] = Prefecture(self.x, self.y, self.current_map)
+                case "engineer post":
+                    self.current_map.array[self.x][self.y] = EngineerPost(self.x, self.y, self.current_map)
             
 class Building(Cell) : #un fils de cellule (pas encore sûr de l'utilité)
     def __init__(self, x,y, my_current_map, my_type_of_building, my_state):
@@ -45,11 +54,14 @@ class Building(Cell) : #un fils de cellule (pas encore sûr de l'utilité)
 
 
 class Void(Cell):
-    def __init__(self, x, y, my_current_map, my_type_of_void=0):
+    def __init__(self, x, y, my_current_map, my_type_of_void="void nature"):
         super().__init__(x, y, my_current_map, 0)
-        self.type_of_void = my_type_of_void #0 for "void nature", 1 for "tree filled", 2 for "water filled"
+        self.type_of_void = my_type_of_void #"void nature", "tree filled", "water filled"
 
-        
+    def clear(self):
+        if self.type_of_void == "tree filled":
+            self.type_of_void = "void nature"
+            
 class Path(Cell):
     def __init__(self, x, y, my_current_map, my_path_level=0):
         super().__init__(x, y, my_current_map, 1)
@@ -96,7 +108,11 @@ class Prefecture(Building) :
         self.prefect = Prefect(self.x, self.y, self.current_map.array[self.x][self.y], self)
 
 
-
+class EngineerPost(Building):
+    def __init__(self, x, y, my_current_map):
+        super().__init__(x, y, my_current_map, "engineer post", True)
+        self.labor_advisor = LaborAdvisor(self.x, self.y, self.current_map.array[self.x][self.y])
+        self.employees = 0
 
 
 class Walker() : 
@@ -153,7 +169,7 @@ class Prefect(Walker) :
                         break
 
 
-    def prefect_move(self) :
+    # def prefect_move(self) :
         
 
 
@@ -174,7 +190,8 @@ class LaborAdvisor(Walker) :
 myMap = Map(20)
 myMap.init_path()
 myMap.display()
-myMap.array[1][1] = House(1, 1, myMap)
+# myMap.array[1][1] = House(1, 1, myMap)
+myMap.array[1][1].build("house")
 myMap.display()
 #myMap.array[2][2] = Fountain(2, 2, myMap)
 myMap.display()
