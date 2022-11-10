@@ -1,5 +1,6 @@
 import numpy as np
 import math as m
+import threading as th
 
         
 
@@ -8,6 +9,7 @@ class Map:#Un ensemble de cellule
     def __init__(self, size):
         self.size = size #La taille de la map est size*size : int
         self.array = [[Void(i,j, self) for i in range (size)] for j in range(size)] #tableau de cellule (voir classe cellule) : list
+        self.walker_list = []
 
     def init_path(self) : #Permet d'initialiser le chemin de terre sur la map. 
         for i in range(self.size) :
@@ -50,7 +52,19 @@ class Building(Cell) : #un fils de cellule (pas encore sûr de l'utilité)
         self.type_of_cell = 2
         self.type_of_building = my_type_of_building  #le type de batiments (house, fountain, ...) : ? 
         self.state = my_state #état (détruit ou pas) 
-        self.timer = 0.00 #timer pour le feu : float
+        self.Firetimer = TimerEvent(my_type_of_building) #timer pour le feu : TimeEvent
+        self.CollapseTimer = TimerEvent(my_type_of_building) #timer pour les effondrement = : TimeEvent
+        self.employees = 0
+        match my_type_of_building :
+            case "prefecture" :
+                self.required_employees = 6
+            case "engineer post" : 
+                self.required_employees = 5
+            case _: 
+                self.required_employees = None
+    
+    def destroy(self) : 
+        self.state = "destroyed"
 
 
 class Void(Cell):
@@ -74,8 +88,8 @@ class House(Building) : #la maison fils de building (?)
         self.level = level #niveau de la maison : int
         self.nb_occupants = nb_occupants #nombre d'occupants: int
         self.max_occupants = 5 #nombre max d'occupant (dépend du niveau de la maison) : int
-        
-
+        self.Firetimer.start()
+    
     def check_fountain(self):
         for i in range(-2, 3):
             for j in range(-2, 3):
@@ -90,6 +104,7 @@ class Fountain(Building) :
     def __init__(self, x, y, my_current_map) : 
         super().__init__(x, y, my_current_map, "fountain", True)
         self.check_house()
+        self.CollapseTimer.start()
     
     def check_house(self) : 
         for i in range(-2, 3):
@@ -106,6 +121,7 @@ class Prefecture(Building) :
         self.labor_advisor = LaborAdvisor(self.x, self.y, self.current_map.array[self.x][self.y])
         self.employees = 0
         self.prefect = Prefect(self.x, self.y, self.current_map.array[self.x][self.y], self)
+        self.CollapseTimer.start()
 
 
 class EngineerPost(Building):
@@ -116,12 +132,16 @@ class EngineerPost(Building):
 
 
 class Walker() : 
-    def __init__(self, job, position_x, position_y, starting_Cell) :
-        self.job = job #le métier (migrant, worker, etc) : int (?)
+    def __init__(self, job, position_x, position_y, starting_Cell, building) :
+        self.job = job #le métier (migrant, worker, etc) : string
         self.position_x = position_x #position sur la map : int
         self.position_y = position_y #position sur la map : int
         self.current_Cell = starting_Cell #La cellule de départ de l'entity : Cell
         self.previous_cell = None
+        self.current_Cell.current_map.walker_list.append(self)
+        self.Walkers_building = building #string (prefecture, engineer post, house)
+        
+        
 
     def move_up(self) : #bouger d'une case vers le haut
         assert (0 <= self.position_x < 40 and 0 <= self.position_y < 40)
@@ -151,16 +171,8 @@ class Walker() :
                 if (abs(i) != abs(j) & self.current_prefecture.current_map.array[self.current_prefecture.x + i][self.current_prefecture.y + j].type_of_cell  == "path") : 
                     self.cell_assignement(self.current_prefecture.current_map.array[self.current_prefecture.x + i][self.current_prefecture.y + j])
 
-
-
-class Prefect(Walker) : 
-    def __init__(self, position_x, position_y, starting_Cell, current_prefecture):
-        super().__init__("prefect" , position_x, position_y, starting_Cell)
-        self.prefect_in_building = True
-        self.current_prefecture = current_prefecture
-
-    def leave_prefecture(self) : 
-        if (self.current_prefecture.employees == 6) :
+    def leave_building(self) :
+        if (self.Walkers_building.employees == self.Walkers_building.required_employees) :
             for i in range(-1, 1) :
                 for j in range(-1, 1) : 
                     if (abs(i) != abs(j) & self.current_prefecture.current_map.array[self.current_prefecture.x + i][self.current_prefecture.y + j].type_of_cell  == "path") : 
@@ -168,15 +180,27 @@ class Prefect(Walker) :
                         self.prefect_in_building = False 
                         break
 
+class Prefect(Walker) : 
+    def __init__(self, position_x, position_y, starting_Cell, current_prefecture):
+        super().__init__("prefect" , position_x, position_y, starting_Cell, "prefecture")
+        self.prefect_in_building = True
+        self.current_building = current_prefecture
 
     # def prefect_move(self) :
         
-
-
-
 class LaborAdvisor(Walker) : 
     def __init__(self, position_x, position_y, starting_Cell):
         super().__init__("labor advisor", position_x, position_y, starting_Cell)
+
+
+class TimerEvent :
+    def __init__(self, building, type_of_event) :
+        self.building = building
+        match type_of_event :
+            case "fire" :
+                self.timer = th.Timer(120, self.building.destroy())
+            case "Damage" : 
+                self.timer = th.Timer(240, self.building.destroy()) # pas les vrais valeur
         
 
 
