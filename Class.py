@@ -1,6 +1,7 @@
 import numpy as np
 import math as m
 import threading as th
+import random
 
         
 
@@ -8,7 +9,7 @@ import threading as th
 class Map:#Un ensemble de cellule
     def __init__(self, size):
         self.size = size #La taille de la map est size*size : int
-        self.array = [[Void(i,j, self) for i in range (size)] for j in range(size)] #tableau de cellule (voir classe cellule) : list
+        self.array = [[Void(j,i, self) for i in range (size)] for j in range(size)] #tableau de cellule (voir classe cellule) : list
         self.walker_list = []
 
     def init_path(self) : #Permet d'initialiser le chemin de terre sur la map. 
@@ -17,7 +18,7 @@ class Map:#Un ensemble de cellule
             #Pour aucune raison, le chemin est initialisé à 1/4 sur l'axe des y(vers le haut) de la map en partant de la gauche 
 
     def display(self):
-        print(np.array([[self.array[i][j].type_of_cell for i in range(self.size)] for j in range(self.size)]))
+        print(np.array([[(self.array[i][j].type_of_cell) for i in range(self.size)] for j in range(self.size)]))
 
 
 
@@ -32,11 +33,16 @@ class Cell: #Une case de la map
 
 
     def inMap(self):
-        return (0 <= self.x & self.x <= self.current_map.size-1 & 0 <= self.y & self.y <= self.current_map.size-1)
+        return (0 <= self.x and self.x <= self.current_map.size-1 and 0 <= self.y and self.y <= self.current_map.size-1)
+
+    def inMap(self, x,y):
+        return (0 <= x and x <= self.current_map.size-1 and 0 <= y and y <= self.current_map.size-1)
 
     def build(self, type):
-        if self.type_of_cell == 0 & self.current_map.array[self.x][self.y].type_of_void == "dirt":
+        if self.type_of_cell == 0 and self.current_map.array[self.x][self.y].type_of_void == "dirt":
             match type:
+                case "path":
+                    self.current_map.array[self.x][self.y] = Path(self.x, self.y, self.current_map)
                 case "house":
                     self.current_map.array[self.x][self.y] = House(self.x, self.y, self.current_map)
                 case "fountain":
@@ -52,8 +58,8 @@ class Building(Cell) : #un fils de cellule (pas encore sûr de l'utilité)
         self.type_of_cell = 2
         self.type_of_building = my_type_of_building  #le type de batiments (house, fountain, ...) : ? 
         self.state = my_state #état (détruit ou pas) 
-        self.Firetimer = TimerEvent(my_type_of_building) #timer pour le feu : TimeEvent
-        self.CollapseTimer = TimerEvent(my_type_of_building) #timer pour les effondrement = : TimeEvent
+        self.Firetimer = TimerEvent(self, "fire") #timer pour le feu : TimeEvent
+        self.CollapseTimer = TimerEvent(self, "damage") #timer pour les effondrement = : TimeEvent
         self.employees = 0
         match my_type_of_building :
             case "prefecture" :
@@ -68,13 +74,13 @@ class Building(Cell) : #un fils de cellule (pas encore sûr de l'utilité)
 
 
 class Void(Cell):
-    def __init__(self, x, y, my_current_map, my_type_of_void="void nature"):
+    def __init__(self, x, y, my_current_map, my_type_of_void="dirt"):
         super().__init__(x, y, my_current_map, 0)
-        self.type_of_void = my_type_of_void #"void nature", "tree filled", "water filled"
+        self.type_of_void = my_type_of_void #"dirt", "tree filled", "water filled"
 
     def clear(self):
         if self.type_of_void == "tree filled":
-            self.type_of_void = "void nature"
+            self.type_of_void = "dirt"
             
 class Path(Cell):
     def __init__(self, x, y, my_current_map, my_path_level=0):
@@ -118,7 +124,7 @@ class Fountain(Building) :
 class Prefecture(Building) :
     def __init__(self, x, y, my_current_map):
         super().__init__(x, y, my_current_map, "prefecture", True)
-        self.labor_advisor = LaborAdvisor(self.x, self.y, self.current_map.array[self.x][self.y])
+        self.labor_advisor = LaborAdvisor(self.x, self.y, self.current_map.array[self.x][self.y], self)
         self.employees = 0
         self.prefect = Prefect(self.x, self.y, self.current_map.array[self.x][self.y], self)
         self.CollapseTimer.start()
@@ -127,7 +133,7 @@ class Prefecture(Building) :
 class EngineerPost(Building):
     def __init__(self, x, y, my_current_map):
         super().__init__(x, y, my_current_map, "engineer post", True)
-        self.labor_advisor = LaborAdvisor(self.x, self.y, self.current_map.array[self.x][self.y])
+        self.labor_advisor = LaborAdvisor(self.x, self.y, self.current_map.array[self.x][self.y], self)
         self.employees = 0
 
 
@@ -160,25 +166,31 @@ class Walker() :
         self.position_x += 1
     
     def cell_assignement(self, new_cell) : #si la position est différente des coordonnées de la cellule, on change current_Cell
-        if (self.position_x != self.current_Cell.x or self.position_y != self.current_Cell.y ) :
-            self.current_Cell.value = self.current_Cell.type #On change la valeur de l'ancienne cellule (?) 
+        #if (self.position_x != self.current_Cell.x or self.position_y != self.current_Cell.y ) :
+            self.previous_cell = self.current_Cell
             self.current_Cell = new_cell
-            #self.current_Cell.value = ?
 
     def check_path(self) :
-        for i in range(-1, 1) :
-            for j in range(-1, 1) : 
-                if (abs(i) != abs(j) & self.current_prefecture.current_map.array[self.current_prefecture.x + i][self.current_prefecture.y + j].type_of_cell  == "path") : 
-                    self.cell_assignement(self.current_prefecture.current_map.array[self.current_prefecture.x + i][self.current_prefecture.y + j])
+        path = []
+        for i in range(-1, 2) :
+            for j in range(-1, 2) : 
+                if abs(i) != abs(j) and self.current_Cell.inMap(self.current_Cell.x + i, self.current_Cell.y + j):
+                    if self.current_Cell.current_map.array[self.current_Cell.x + i][self.current_Cell.y + j].type_of_cell  == 1:
+                        path.append(self.current_Cell.current_map.array[self.current_Cell.x + i][self.current_Cell.y + j])
+        return path
 
     def leave_building(self) :
-        if (self.Walkers_building.employees == self.Walkers_building.required_employees) :
-            for i in range(-1, 1) :
-                for j in range(-1, 1) : 
-                    if (abs(i) != abs(j) & self.current_prefecture.current_map.array[self.current_prefecture.x + i][self.current_prefecture.y + j].type_of_cell  == "path") : 
-                        self.cell_assignement(self.current_prefecture.current_map.array[self.current_prefecture.x + i][self.current_prefecture.y + j])
+        #if (self.Walkers_building.employees == self.Walkers_building.required_employees) :
+            for i in range(-1, 2) :
+                #print(abs(i))
+                for j in range(-1, 2) :
+                    #print("Test : " + str(self.current_building.current_map.array[self.current_building.x + i][self.current_building.y + j].type_of_cell)) 
+                    if abs(i) != abs(j) and self.current_building.current_map.array[self.current_building.x + i][self.current_building.y + j].type_of_cell  == 1: 
+                        #print("Test : " + str(self.current_building.x + i) + ";" + self.current_building.y + j)
+                        self.cell_assignement(self.current_building.current_map.array[self.current_building.x + i][self.current_building.y + j])
                         self.prefect_in_building = False 
                         break
+            print("Prefect is leaving the building on the cell " + str(self.current_Cell.x)+ ";" + str(self.current_Cell.y))
 
 class Prefect(Walker) : 
     def __init__(self, position_x, position_y, starting_Cell, current_prefecture):
@@ -186,11 +198,20 @@ class Prefect(Walker) :
         self.prefect_in_building = True
         self.current_building = current_prefecture
 
-    # def prefect_move(self) :
+    def prefect_move(self) :
+        if not(self.prefect_in_building):
+            path = self.check_path()
+            if (len(path) == 1):
+                self.cell_assignement(path[0])
+            else:
+                path.remove(self.previous_cell)
+                self.cell_assignement(random.choice(path))
+        print("Prefect is moving on the cell " + str(self.current_Cell.x)+ ";" + str(self.current_Cell.y))
+
         
 class LaborAdvisor(Walker) : 
-    def __init__(self, position_x, position_y, starting_Cell):
-        super().__init__("labor advisor", position_x, position_y, starting_Cell)
+    def __init__(self, position_x, position_y, starting_Cell, building):
+        super().__init__("labor advisor", position_x, position_y, starting_Cell, building)
 
 
 class TimerEvent :
@@ -199,9 +220,11 @@ class TimerEvent :
         match type_of_event :
             case "fire" :
                 self.timer = th.Timer(120, self.building.destroy())
-            case "Damage" : 
+            case "damage" : 
                 self.timer = th.Timer(240, self.building.destroy()) # pas les vrais valeur
-        
+    
+    def start(time):
+        pass
 
 
 
@@ -211,14 +234,23 @@ class TimerEvent :
 
 
 
-myMap = Map(20)
+myMap = Map(5)
 myMap.init_path()
 myMap.display()
 # myMap.array[1][1] = House(1, 1, myMap)
 myMap.array[1][1].build("house")
-myMap.display()
+
 #myMap.array[2][2] = Fountain(2, 2, myMap)
+myMap.array[3][0].build("prefecture")
+myMap.array[3][2].build("path")
+myMap.array[2][2].build("path")
+myMap.array[2][3].build("path")
+myMap.array[2][4].build("path")
+myMap.array[3][4].build("path")
 myMap.display()
+myMap.array[3][0].prefect.leave_building()
+for i in range(15):
+    myMap.array[3][0].prefect.prefect_move()
 print(myMap.array[1][1].type_of_building)
 print(myMap.array[1][1].water)
 
