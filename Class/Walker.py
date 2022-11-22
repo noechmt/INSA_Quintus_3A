@@ -1,14 +1,12 @@
-import random
 import Cell
+import random
 
 class Walker() : 
-    def __init__(self, job, position_x, position_y, starting_Cell, building) :
+    def __init__(self, job, building) :
         self.job = job #le métier (migrant, worker, etc) : string
-        self.position_x = position_x #position sur la map : int
-        self.position_y = position_y #position sur la map : int
-        self.current_Cell = starting_Cell #La cellule de départ de l'entity : Cell
+        self.current_Cell = building #La cellule de départ de l'entity : Cell
         self.previous_cell = None
-        self.current_Cell.current_map.walker_list.append(self)
+        self.current_Cell.map.walker_list.append(self)
         self.Walkers_building = building #string (prefecture, engineer post, house)
         
         
@@ -39,8 +37,8 @@ class Walker() :
         for i in range(-1, 2) :
             for j in range(-1, 2) : 
                 if abs(i) != abs(j) and self.current_Cell.inMap(self.current_Cell.x + i, self.current_Cell.y + j):
-                    if self.current_Cell.current_map.array[self.current_Cell.x + i][self.current_Cell.y + j].type_of_cell  == 1:
-                        path.append(self.current_Cell.current_map.array[self.current_Cell.x + i][self.current_Cell.y + j])
+                    if isinstance(self.current_Cell.map.getCell(self.current_Cell.x + i,self.current_Cell.y + j), Cell.Path):
+                        path.append(self.current_Cell.map.getCell(self.current_Cell.x + i, self.current_Cell.y + j))
         return path
 
     def leave_building(self) :
@@ -49,16 +47,16 @@ class Walker() :
                 #print(abs(i))
                 for j in range(-1, 2) :
                     #print("Test : " + str(self.current_building.current_map.array[self.current_building.x + i][self.current_building.y + j].type_of_cell)) 
-                    if abs(i) != abs(j) and self.current_building.current_map.array[self.current_building.x + i][self.current_building.y + j].type_of_cell  == 1: 
+                    if abs(i) != abs(j) and isinstance(self.current_building.map.getCell(self.current_building.x + i, self.current_building.y + j), Cell.Path): 
                         #print("Test : " + str(self.current_building.x + i) + ";" + self.current_building.y + j)
-                        self.cell_assignement(self.current_building.current_map.array[self.current_building.x + i][self.current_building.y + j])
+                        self.cell_assignement(self.current_building.map.getCell(self.current_building.x + i, self.current_building.y + j))
                         self.prefect_in_building = False 
                         break
             print("Prefect is leaving the building on the cell " + str(self.current_Cell.x)+ ";" + str(self.current_Cell.y))
 
 class Prefect(Walker) : 
-    def __init__(self, position_x, position_y, starting_Cell, current_prefecture):
-        super().__init__("prefect" , position_x, position_y, starting_Cell, "prefecture")
+    def __init__(self, current_prefecture):
+        super().__init__("prefect" , current_prefecture)
         self.prefect_in_building = True
         self.current_building = current_prefecture
 
@@ -73,6 +71,7 @@ class Prefect(Walker) :
         print("Prefect is moving on the cell " + str(self.current_Cell.x)+ ";" + str(self.current_Cell.y))
 
 class LaborAdvisor(Walker) : 
-    def __init__(self, position_x, position_y, starting_Cell, building):
-        super().__init__("labor advisor", position_x, position_y, starting_Cell, building)
+    def __init__(self, building):
+        super().__init__("labor advisor", building)
+        self.starting_Cell = building
 

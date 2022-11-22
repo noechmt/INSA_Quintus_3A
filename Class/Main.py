@@ -17,5 +17,5 @@ myMap.display()
 myMap.array[3][0].prefect.leave_building()
 for i in range(15):
     myMap.array[3][0].prefect.prefect_move()
-print(myMap.array[1][1].type_of_building)
+#print(myMap.array[1][1].type_of_building)
 print(myMap.array[1][1].water)
