@@ -1,5 +1,5 @@
 import random
-import Cell
+from Class.Cell import *
 
 class Walker() : 
     def __init__(self, job, position_x, position_y, starting_Cell, building) :

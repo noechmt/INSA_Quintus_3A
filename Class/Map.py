@@ -6,7 +6,7 @@ from Cell import *
 class Map:#Un ensemble de cellule
     def __init__(self, size):
         self.size = size #La taille de la map est size*size : int
-        self.array = [[Void(j,i, self) for i in range (size)] for j in range(size)] #tableau de cellule (voir classe cellule) : list
+        self.array = [[Empty(j,i, self) for i in range (size)] for j in range(size)] #tableau de cellule (voir classe cellule) : list
         self.walker_list = []
 
     def init_path(self) : #Permet d'initialiser le chemin de terre sur la map. 
@@ -16,6 +16,9 @@ class Map:#Un ensemble de cellule
 
     def display(self):
         print(np.array([[(self.array[i][j].type_of_cell) for i in range(self.size)] for j in range(self.size)]))
+    
+    def dispay_map(self):
+        print("Ceci est une map :)")
 
 
 

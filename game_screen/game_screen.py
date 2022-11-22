@@ -1,5 +1,7 @@
 import pygame
 from math import sqrt
+import numpy as np
+from Class.Cell import Empty
 
 #draw a rectangle with an opacity option 
 def draw_rect_alpha(surface, color, rect):
@@ -21,33 +23,12 @@ def game_screen():
 
     WIDTH_SCREEN, HEIGH_SCREEN = SCREEN.get_size()
 
-    #THIS PART IS FOR THE MAP GENERATION
-
-    land = pygame.image.load("game_screen/game_screen_sprites/land.png")
-    land_red_panel = pygame.image.load("game_screen/game_screen_sprites/land_red_panel.png")
-    land_blue_panel = pygame.image.load("game_screen/game_screen_sprites/land_blue_panel.png")
     heigh_land = HEIGH_SCREEN/60
     width_land = WIDTH_SCREEN*sqrt(2)/80
-    for i in range(40):
-        for j in range(i):
-            #quarter by quarter 
-            if(i < 20):
-                SCREEN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)-width_land*j, HEIGH_SCREEN/6+i*heigh_land))
-                SCREEN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)+width_land*j, HEIGH_SCREEN/6+i*heigh_land))
-
-                SCREEN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)-width_land/2-width_land*j, HEIGH_SCREEN/6+i*heigh_land+heigh_land/2))
-                SCREEN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)+width_land/2+width_land*j, HEIGH_SCREEN/6+i*heigh_land+heigh_land/2))
-            if(i >= 20 and j >= 20):
-                SCREEN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)-width_land*(j-20), (5*HEIGH_SCREEN/6-(i-19)*heigh_land)))
-                SCREEN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)+width_land*(j-20), 5*HEIGH_SCREEN/6-(i-19)*heigh_land))
-
-                SCREEN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)-width_land/2-width_land*(j-20), 5*HEIGH_SCREEN/6-(i-19)*heigh_land-heigh_land/2))
-                SCREEN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)+width_land/2+width_land*(j-20), 5*HEIGH_SCREEN/6-(i-19)*heigh_land- heigh_land/2))
-
-    #SCREEN.blit(pygame.transform.scale(land_blue_panel, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)+width_land*10, HEIGH_SCREEN/6+11*heigh_land))
-    #SCREEN.blit(pygame.transform.scale(land_red_panel, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)-width_land*(j-20), (5*HEIGH_SCREEN/6-*heigh_land)))
-
-    #THIS PART IS FOR THE LEFT PANEL 
+    array_test = np.zeros((40, 40), dtype=Empty)
+    for y in range(40):
+        for x in range(40):
+            array_test[x][y] = Empty(x, y, heigh_land, width_land, None, SCREEN)
 
     #background panel initialisation
     panel_background = pygame.image.load("game_screen/game_screen_sprites/panel_background.png")
