@@ -51,7 +51,7 @@ def choose_name():
     input_name_font = pygame.font.Font(
         "GUI/Fonts/Title Screen/Berry Rotunda.ttf", 25)
     input_name = InputBox(left_input_name, top_input_name, width_input_name,
-                          height_input_name, input_name_font, "Governor")
+                          height_input_name, input_name_font, 25,"Governor")
     input_name.draw(SCREEN)
 
     # Continue button/text
@@ -104,6 +104,8 @@ def choose_name():
             if (input_name.handle_event(event, SCREEN)):
                 SCREEN.blit(pygame.transform.scale(
                     menu_background, (width_menu, height_menu)), (left_menu, top_menu))
+                SCREEN.blit(pygame.transform.scale(background_image, (WIDTH_SCREEN, HEIGHT_SCREEN)), (0, 0))
+                SCREEN.blit(pygame.transform.scale(menu_background, (width_menu, height_menu)), (left_menu, top_menu))
                 text_name.draw(SCREEN)
                 input_name.draw(SCREEN)
                 text_back.draw(SCREEN)

@@ -2,7 +2,7 @@ import pygame
 
 
 class InputBox:
-    def __init__(self, left, top, width, height, font, text='',
+    def __init__(self, left, top, width, height, font, max_char = 50, text='',
                  color_inactive=(0, 0, 0), color_active=(240, 240, 240)):
         self.rect = pygame.Rect(left, top, width, height)
         self.left = left
@@ -12,6 +12,7 @@ class InputBox:
         self.darken_percent = .3
         self.darken = False
         self.font = font
+        self.max_char = max_char
         self.text = text
         self.color_inactive = color_inactive
         self.color_active = color_active
@@ -45,7 +46,7 @@ class InputBox:
                     self.text = ''
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
-                else:
+                elif len(self.text) <= self.max_char:
                     self.text += event.unicode
             self.darken = False
             return True

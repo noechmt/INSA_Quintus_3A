@@ -73,6 +73,7 @@ def title_screen():
             # Check for QUIT event
             if event.type == pygame.QUIT:
                 running = False
+                return False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if leave_game_button.is_hovered(pos):
                     running = False
@@ -93,3 +94,6 @@ def title_screen():
         # We display again this window if the back button is pressed from choose_name
         if (not choose_name()):
             title_screen()
+        
+        return True
+
