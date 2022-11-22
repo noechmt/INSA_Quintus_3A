@@ -1,3 +1,5 @@
+import random
+import Cell
 
 class Walker() : 
     def __init__(self, job, position_x, position_y, starting_Cell, building) :
@@ -53,3 +55,24 @@ class Walker() :
                         self.prefect_in_building = False 
                         break
             print("Prefect is leaving the building on the cell " + str(self.current_Cell.x)+ ";" + str(self.current_Cell.y))
+
+class Prefect(Walker) : 
+    def __init__(self, position_x, position_y, starting_Cell, current_prefecture):
+        super().__init__("prefect" , position_x, position_y, starting_Cell, "prefecture")
+        self.prefect_in_building = True
+        self.current_building = current_prefecture
+
+    def prefect_move(self) :
+        if not(self.prefect_in_building):
+            path = self.check_path()
+            if (len(path) == 1):
+                self.cell_assignement(path[0])
+            else:
+                path.remove(self.previous_cell)
+                self.cell_assignement(random.choice(path))
+        print("Prefect is moving on the cell " + str(self.current_Cell.x)+ ";" + str(self.current_Cell.y))
+
+class LaborAdvisor(Walker) : 
+    def __init__(self, position_x, position_y, starting_Cell, building):
+        super().__init__("labor advisor", position_x, position_y, starting_Cell, building)
+

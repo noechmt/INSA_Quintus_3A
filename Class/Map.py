@@ -1,8 +1,7 @@
 import numpy as np
 import math as m
 
-from Void import *
-from Path import *
+from Cell import *
 
 class Map:#Un ensemble de cellule
     def __init__(self, size):
