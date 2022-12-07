@@ -76,8 +76,13 @@ def game_screen():
     clock = pygame.time.Clock()
     while run:
         for event in pygame.event.get():
+            pos = pygame.mouse.get_pos()
             if event.type == pygame.QUIT:
                 run = False
+            if event.type == pygame.MOUSEMOTION:
+                for y in range(40):
+                    for x in range(40):
+                        array_test[x][y].handle_hover_button(pos)
         clock.tick(60)
         pygame.display.flip()    
 
