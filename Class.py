@@ -58,8 +58,6 @@ class Building(Cell) : #un fils de cellule (pas encore sûr de l'utilité)
         self.type_of_cell = 2
         self.type_of_building = my_type_of_building  #le type de batiments (house, fountain, ...) : ? 
         self.state = my_state #état (détruit ou pas) 
-        self.Firetimer = TimerEvent(self, "fire") #timer pour le feu : TimeEvent
-        self.CollapseTimer = TimerEvent(self, "damage") #timer pour les effondrement = : TimeEvent
         self.employees = 0
         match my_type_of_building :
             case "prefecture" :
@@ -94,7 +92,6 @@ class House(Building) : #la maison fils de building (?)
         self.level = level #niveau de la maison : int
         self.nb_occupants = nb_occupants #nombre d'occupants: int
         self.max_occupants = 5 #nombre max d'occupant (dépend du niveau de la maison) : int
-        self.Firetimer.start()
     
     def check_fountain(self):
         for i in range(-2, 3):
@@ -214,17 +211,23 @@ class LaborAdvisor(Walker) :
         super().__init__("labor advisor", position_x, position_y, starting_Cell, building)
 
 
-class TimerEvent :
-    def __init__(self, building, type_of_event) :
-        self.building = building
-        match type_of_event :
-            case "fire" :
-                self.timer = th.Timer(120, self.building.destroy())
-            case "damage" : 
-                self.timer = th.Timer(240, self.building.destroy()) # pas les vrais valeur
+
+
+# class TimerEvent :
+#     def __init__(self, building, type_of_event) :
+#         self.building = building
+#         match type_of_event :
+#             case "fire" :
+#                 self.timer = th.Timer(120, self.building.destroy())
+#             case "damage" : 
+#                 self.timer = th.Timer(240, self.building.destroy()) # pas les vrais valeur
     
-    def start(time):
-        pass
+#     def start(time):
+#         pass
+
+
+    
+        
 
 
 

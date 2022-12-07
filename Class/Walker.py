@@ -72,6 +72,15 @@ class Prefect(Walker) :
                 self.cell_assignement(random.choice(path))
         print("Prefect is moving on the cell " + str(self.current_Cell.x)+ ";" + str(self.current_Cell.y))
 
+    # def resetFire (self) : 
+    #     for i in range(-2, 3):
+    #         for j in range(-2, 3):
+    #             cell = self.current_Cell.current_map.array[self.x+i][self.y+j]
+    #             if isinstance(cell, Cell.House) :
+    #               ???????????????
+            
+            
+
 class LaborAdvisor(Walker) : 
     def __init__(self, position_x, position_y, starting_Cell, building):
         super().__init__("labor advisor", position_x, position_y, starting_Cell, building)
