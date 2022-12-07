@@ -8,9 +8,19 @@ class Cell: #Une case de la map
         self.map = map
         self.water = False
 
-
+    #Check if these coordinates are in the map
     def inMap(self, x,y):
         return (0 <= x and x <= self.map.size-1 and 0 <= y and y <= self.map.size-1)
+
+    #Return an cell array which match with the class type (ex: Path, Prefecture (not a string)) in argument
+    def check_cell_around(self, type) :
+        path = []
+        for i in range(-1, 2) :
+            for j in range(-1, 2) : 
+                if abs(i) != abs(j) and self.inMap(self.x + i, self.y + j):
+                    if isinstance(self.map.getCell(self.x + i,self.y + j), type):
+                        path.append(self.map.getCell(self.x + i, self.y + j))
+        return path
 
     def build(self, type):
         if isinstance(self, Empty) and self.type == "dirt":
