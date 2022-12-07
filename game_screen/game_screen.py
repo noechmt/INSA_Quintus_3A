@@ -26,7 +26,7 @@ def game_screen():
     array_test = np.zeros((40, 40), dtype=Empty)
     for y in range(40):
         for x in range(40):
-            array_test[x][y] = Empty(x, y, height_land, width_land, None, SCREEN)
+            array_test[x][y] = Empty(x, y, height_land, width_land, SCREEN, None)
             Grid(x, y, height_land, width_land, None, SCREEN)
     #background panel initialisation
     panel_background = pygame.image.load("game_screen/game_screen_sprites/panel_background.png")
