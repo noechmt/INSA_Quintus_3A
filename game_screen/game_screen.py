@@ -1,7 +1,7 @@
 import pygame
 from math import sqrt
 import numpy as np
-from Class.Cell import Empty
+from Class.Cell import *
 
 #draw a rectangle with an opacity option 
 def draw_rect_alpha(surface, color, rect):
@@ -20,16 +20,14 @@ def game_screen():
     SCREEN.fill((0, 0, 0))
 
     pygame.display.set_caption("Quintus III")
-
     WIDTH_SCREEN, HEIGH_SCREEN = SCREEN.get_size()
-
-    heigh_land = HEIGH_SCREEN/60
+    height_land = HEIGH_SCREEN/60
     width_land = WIDTH_SCREEN*sqrt(2)/80
     array_test = np.zeros((40, 40), dtype=Empty)
     for y in range(40):
         for x in range(40):
-            array_test[x][y] = Empty(x, y, heigh_land, width_land, None, SCREEN)
-
+            array_test[x][y] = Empty(x, y, height_land, width_land, None, SCREEN)
+            Grid(x, y, height_land, width_land, None, SCREEN)
     #background panel initialisation
     panel_background = pygame.image.load("game_screen/game_screen_sprites/panel_background.png")
     for i in range(2):

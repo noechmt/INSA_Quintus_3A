@@ -1,5 +1,6 @@
 from Class.Walker import *
 import pygame
+from math import sqrt
 
 class Cell: #Une case de la map
     def __init__(self, x, y, height, width, screen, map):
@@ -55,6 +56,15 @@ class Empty(Cell):
         if self.type_of_void == "tree":
             self.type_of_void = "dirt"
             # draw function
+    
+
+class Grid(Cell):
+    def __init__(self, x, y, height, width, map, screen):
+        super().__init__(x, y, height, width, screen, map)
+        self.x_screen = (self.WIDTH_SCREEN/2 - self.WIDTH_SCREEN/12) + self.width*self.x/2 - self.width*self.y/2
+        self.y_screen = self.HEIGHT_SCREEN/6 + self.x * self.height/2 + self.y * self.height/2
+        pygame.draw.line(self.screen, (255, 0, 0), (self.x_screen, self.y_screen+self.HEIGHT_SCREEN/120), (self.x_screen+self.WIDTH_SCREEN*sqrt(2)/160, self.y_screen), 1)
+        pygame.draw.line(self.screen, (255, 0, 0), (self.x_screen, self.y_screen+self.HEIGHT_SCREEN/120), (self.x_screen+self.WIDTH_SCREEN*sqrt(2)/160, self.y_screen+self.HEIGHT_SCREEN/60), 1)
 
 class Building(Cell) : #un fils de cellule (pas encore sûr de l'utilité)
     def __init__(self, x,y, my_current_map, my_type_of_building, my_state):

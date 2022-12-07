@@ -20,5 +20,7 @@ class Map:#Un ensemble de cellule
     def dispay_map(self):
         print("Ceci est une map :)")
 
+    
+
 
 
