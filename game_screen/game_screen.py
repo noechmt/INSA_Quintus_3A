@@ -28,7 +28,7 @@ def game_screen():
     array_test = np.zeros((40, 40), dtype=Empty)
     for y in range(40):
         for x in range(40):
-            array_test[x][y] = Empty(x, y, heigh_land, width_land, None, SCREEN)
+            array_test[x][y] = Empty(x, y, heigh_land, width_land, SCREEN, array_test)
 
     #background panel initialisation
     panel_background = pygame.image.load("game_screen/game_screen_sprites/panel_background.png")
@@ -78,8 +78,13 @@ def game_screen():
     clock = pygame.time.Clock()
     while run:
         for event in pygame.event.get():
+            pos = pygame.mouse.get_pos()
             if event.type == pygame.QUIT:
                 run = False
+            if event.type == pygame.MOUSEMOTION:
+                for y in range(40):
+                    for x in range(40):
+                        array_test[x][y].handle_hover_button(pos)
         clock.tick(60)
         pygame.display.flip()    
 

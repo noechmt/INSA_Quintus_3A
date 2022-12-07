@@ -1,26 +1,66 @@
 from Class.Walker import *
 import pygame
 
+def draw_polygon_alpha(surface, color, points):
+    lx, ly = zip(*points)
+    min_x, min_y, max_x, max_y = min(lx), min(ly), max(lx), max(ly)
+    target_rect = pygame.Rect(min_x, min_y, max_x - min_x, max_y - min_y)
+    shape_surf = pygame.Surface(target_rect.size, pygame.SRCALPHA)
+    pygame.draw.polygon(shape_surf, color, [(x - min_x, y - min_y) for x, y in points])
+    surface.blit(shape_surf, target_rect)
+
 class Cell: #Une case de la map
-    def __init__(self, x, y, height, width, screen, map):
-        self.x = x #coordonnée dans le tableau : int
-        self.y = y #coordonnée dans le tableau : int
+    def __init__(self, x, y, height, width, screen, map_array):
+        self.x = x
+        self.y = y 
         self.height = height
         self.width = width
-        self.map = map
+        self.map_array = map_array
         self.water = False
         self.sprite = None
         self.screen = screen
+        self.hovered = False
         self.WIDTH_SCREEN, self.HEIGHT_SCREEN = self.screen.get_size()
         self.init_screen_coordonates()
 
     def init_screen_coordonates(self):
         # Compute the x and y screen position of the cell
-        self.x_screen = (self.WIDTH_SCREEN/2 - self.WIDTH_SCREEN/12) + self.width*self.x/2 - self.width*self.y/2
-        self.y_screen = self.HEIGHT_SCREEN/6 + self.x * self.height/2 + self.y * self.height/2
+        self.left = (self.WIDTH_SCREEN/2 - self.WIDTH_SCREEN/12) + self.width*self.x/2 - self.width*self.y/2
+        self.top = self.HEIGHT_SCREEN/6 + self.x * self.height/2 + self.y * self.height/2
 
     def display(self):
-        self.screen.blit(pygame.transform.scale(self.sprite, (self.width, self.height)), (self.x_screen, self.y_screen))
+        self.screen.blit(pygame.transform.scale(self.sprite, (self.width, self.height)), (self.left, self.top))
+
+    def is_hovered(self, pos):
+        if pos[0] > self.left and pos[0] < self.left + self.width/2:
+            if pos[1] > self.top and pos[1] < self.top + self.height:
+                return True
+        return False
+
+    def handle_hover_button(self, pos):
+        if self.is_hovered(pos) and not self.hovered:
+            self.hovered = True
+            draw_polygon_alpha(self.screen, (0, 0, 0, 85), self.get_points())
+        if not self.is_hovered(pos) and self.hovered:
+            self.hovered = False
+            self.display()
+
+    def get_points(self):
+        return ((self.left + self.width / 2, self.top), (self.left, self.top + self.height / 2),
+        (self.left + self.width/2, self.top + self.height), (self.left + self.width, self.top + self.height / 2))
+
+    def get_size(self):
+        return (self.width, self.height)
+    
+    def get_pos(self):
+        return (self.left, self.top)
+
+    def get_hover(self):
+        return self.hover
+
+    def set_hover(self, hover):
+        self.hover = hover
+
 
     def inMap(self, x,y):
         return (0 <= x and x <= self.map.size-1 and 0 <= y and y <= self.map.size-1)
@@ -45,7 +85,7 @@ class Path(Cell):
         self.path_level = my_path_level
 
 class Empty(Cell):
-    def __init__(self, x, y, height, width, map, screen, type_empty="dirt"):
+    def __init__(self, x, y, height, width, screen, map, type_empty="dirt"):
         super().__init__(x, y, height, width, screen, map)
         self.type_empty = type_empty #"dirt", "trees", "water", #"rocks"
         self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_empty + "_" + str(1) + ".png")
