@@ -9,33 +9,17 @@ class Walker() :
         self.current_Cell = building #La cellule de départ de l'entity : Cell
         self.previous_cell = None
         self.current_Cell.map.walker_list.append(self)
-        self.Walkers_building = building #string (prefecture, engineer post, house)
+        self.building = building #string (prefecture, engineer post, house)
         self.inBuilding = state
         building.map.walkers.append(self)
+
         
-
-    def move_up(self) : #bouger d'une case vers le haut
-        assert (0 <= self.position_x < 40 and 0 <= self.position_y < 40)
-        self.position_y += 1
-
-    def move_down(self) : #bouger d'une case vers le bas
-        assert (0 <= self.position_x < 40 and 0 <= self.position_y < 40)
-        self.position_y -= 1
-
-    def move_left(self) : #bouger d'une case vers la gauche
-        assert (0 <= self.position_x < 40 and 0 <= self.position_y < 40)
-        self.position_x -= 1
- 
-    def move_right(self) : #bouger d'une case vers la droite
-        assert (0 <= self.position_x < 40 and 0 <= self.position_y < 40)
-        self.position_x += 1
-    
     def cell_assignement(self, new_cell) : #si la position est différente des coordonnées de la cellule, on change current_Cell
         #if (self.position_x != self.current_Cell.x or self.position_y != self.current_Cell.y ) :
             self.previous_cell = self.current_Cell
             self.current_Cell = new_cell
 
-    #if (self.Walkers_building.employees == self.Walkers_building.required_employees) :
+    #if (self.building.employees == self.building.required_employees) :
     def leave_building(self) :
         path = self.current_Cell.check_cell_arround(Cell.Path)
         assert len(path) != 0
@@ -44,8 +28,8 @@ class Walker() :
         print("Walker is leaving the building on the cell " + str(self.current_Cell.x)+ ";" + str(self.current_Cell.y))
 
     def enter_building(self):
-        assert self.Walkers_building in self.current_Cell.check_cell_arround(Cell.House)
-        self.cell_assignement(self.Walkers_building)
+        assert self.building in self.current_Cell.check_cell_arround(Cell.House)
+        self.cell_assignement(self.building)
         self.inBuilding = True
 
     def move(self):
@@ -90,7 +74,14 @@ class Migrant(Walker):
                         G.add_edge(i, j)
 
         #Calculate with the dijkstra algorithm the shortest path
-        self.path = nx.dijkstra_path(G, self.current_Cell, self.Walkers_building)
+        self.path = nx.dijkstra_path(G, self.current_Cell, self.building)
+
+    def enter_building(self):
+        super().enter_building()
+        assert self.building.nb_occupants < self.building.max_occupants
+        self.building.unemployedCount += 1
+        self.nb_occupants += 1
+        
 
     def move(self):
         if not self.inBuilding:
@@ -100,7 +91,28 @@ class Migrant(Walker):
 class LaborAdvisor(Walker) : 
     def __init__(self, building):
         super().__init__("labor advisor", building, True)
-        self.starting_Cell = building
+        
+    def move(self) : 
+        super().move()
+        HouseList = self.current_Cell.check_cell_around(Cell.House)
+        for i in HouseList : 
+            if i.unemployedCount > 0 : 
+                if i.unemployedCount >= (self.building.requiredEmployees - self.building.employees) : 
+                    i.unemployedCount -= (self.building.requiredEmployees - self.building.employees)
+                    self.building.employees = self.building.requiredEmployees
+                else : 
+                    self.building.employees += i.unemployedCount
+                    i.unemployedCount = 0
+
+        
+
+
+
+                
+
+
+
+        
 
 class Prefect(Walker) : 
     def __init__(self, current_prefecture):

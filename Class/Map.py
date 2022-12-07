@@ -10,6 +10,7 @@ class Map:#Un ensemble de cellule
         self.walkers = []
         self.spawn_cell = self.array[0][0]
         self.init_path()
+        self.wallet = 3000
 
     def init_path(self) : #Permet d'initialiser le chemin de terre sur la map. 
         for i in range(self.size) :

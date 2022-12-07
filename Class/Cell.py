@@ -27,14 +27,19 @@ class Cell: #Une case de la map
             match type:
                 case "path":
                     self.map.setCell(self, Path(self.x, self.y, self.map))
+                    self.map.wallet -= 4 
                 case "house":
                     self.map.setCell(self, House(self.x, self.y, self.map))
-                case "fountain":
-                    self.map.setCell(self, Fountain(self.x, self.y, self.map))
+                    self.map.wallet -= 10
+                case "Well":
+                    self.map.setCell(self, Well(self.x, self.y, self.map))
+                    self.map.wallet -= 5
                 case "prefecture":
                     self.map.setCell(self, Prefecture(self.x, self.y, self.map))
+                    self.map.wallet -= 30
                 case "engineer post":
                     self.map.setCell(self, EngineerPost(self.x, self.y, self.map))
+                    self.map.wallet -= 30
 
 class Path(Cell):
     def __init__(self, x, y, my_map, my_path_level=0):
@@ -45,25 +50,21 @@ class Empty(Cell):
     def __init__(self, x, y, my_map, type="dirt"):
         super().__init__(x, y, my_map)
         self.type = type #"dirt", "tree", "water", "rock"
+        self
 
     def clear(self):
-        if self.type == "tree":
-            self.type = "dirt"
+        if self.type == "tree" :
+            self.type = "dirt" 
+            self.map.wallet -= 2
+
+    def canBuild(self) : 
+        return self.type == "dirt"  
+
 
 class Building(Cell) : #un fils de cellule (pas encore sûr de l'utilité)
     def __init__(self, x,y, my_map):
         super().__init__(x, y, my_map)
         self.state = "build" #état (détruit ou pas) 
-        self.Firetimer = TimerEvent(self, "fire") #timer pour le feu : TimeEvent
-        self.CollapseTimer = TimerEvent(self, "damage") #timer pour les effondrement = : TimeEvent
-        self.employees = 0
-        # match my_type_of_building :
-        #     case "prefecture" :
-        #         self.required_employees = 6
-        #     case "engineer post" : 
-        #         self.required_employees = 5
-        #     case _: 
-        #         self.required_employees = None
     
     def destroy(self) : 
         self.state = "destroyed"
@@ -74,16 +75,24 @@ class House(Building) : #la maison fils de building (?)
         self.level = level #niveau de la maison : int
         self.nb_occupants = nb_occupants #nombre d'occupants: int
         self.max_occupants = 5 #nombre max d'occupant (dépend du niveau de la maison) : int
-        self.Firetimer.start()
+        # self.Firetimer.start()
 
-class Fountain(Building) :
+    def nextLevel(self) : 
+        self.level += 1 
+
+class Well(Building) :
     def __init__(self, x, y, my_map): 
         super().__init__(x, y, my_map)
-        self.CollapseTimer.start()
+        # self.CollapseTimer.start()
         for i in range(-2, 3):
             for j in range(-2, 3):
                 if self.inMap(self.x+i, self.y+j):
                     self.map.getCell(self.x+i, self.y+j).water = True
+                    checkedCell = self.map.getCell(self.x+i, self.y+i)
+                    if isinstance(checkedCell, House) and checkedCell.level == 1 and checkedCell.max_occupants == checkedCell.nb_occupants :
+                        checkedCell.nextLevel
+                        
+
 
 class Prefecture(Building) :
     def __init__(self, x, y, my_map):
@@ -91,7 +100,7 @@ class Prefecture(Building) :
         self.labor_advisor = LaborAdvisor(self)
         self.employees = 0
         self.prefect = Prefect(self)
-        self.CollapseTimer.start()
+        # self.CollapseTimer.start()
 
 class EngineerPost(Building):
     def __init__(self, x, y, my_map):

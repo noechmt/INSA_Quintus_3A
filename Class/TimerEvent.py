@@ -8,12 +8,13 @@ class TimerEvent (Thread):
             self.risk_time = 120
         if isinstance(building, Prefecture) :
             self.risk_time = 240
-            
+
 
     def countdown(self, t) : 
         while t:
             time.sleep(1)
             t -= 1
 
+    
     
     
