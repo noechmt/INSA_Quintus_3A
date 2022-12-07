@@ -27,7 +27,6 @@ def game_screen():
     for y in range(40):
         for x in range(40):
             array_test[x][y] = Empty(x, y, height_land, width_land, SCREEN, array_test)
-            Grid(x, y, height_land, width_land, None, SCREEN)
     #background panel initialisation
     panel_background = pygame.image.load("game_screen/game_screen_sprites/panel_background.png")
     for i in range(2):
