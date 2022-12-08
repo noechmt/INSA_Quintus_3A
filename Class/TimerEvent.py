@@ -1,13 +1,20 @@
-import threading as th
+from threading import *
+import time
+from Cell import *
 
-class TimerEvent :
-    def __init__(self, building, type_of_event) :
-        self.building = building
-        match type_of_event :
-            case "fire" :
-                self.timer = th.Timer(120, self.building.destroy())
-            case "damage" : 
-                self.timer = th.Timer(240, self.building.destroy()) # pas les vrais valeur
+class TimerEvent (Thread):
+    def __init__(self, building) : 
+        if isinstance(building, House) : 
+            self.risk_time = 120
+        if isinstance(building, Prefecture) :
+            self.risk_time = 240
+
+
+    def countdown(self, t) : 
+        while t:
+            time.sleep(1)
+            t -= 1
+
     
-    def start(time):
-        pass
+    
+    

@@ -12,6 +12,7 @@ class Walker() :
         self.inBuilding = state
         self.path = []
         self.ttl = 10   
+        building.map.walkers.append(self)
     
     def path_finding(self, start, end):
         # Create a graph
@@ -94,8 +95,20 @@ class Migrant(Walker):
 class LaborAdvisor(Walker) : 
     def __init__(self, building):
         super().__init__("labor advisor", building, True)
-        self.starting_Cell = building
+        
+    def move(self) : 
+        super().move()
+        HouseList = self.current_Cell.check_cell_around(Cell.House)
+        for i in HouseList : 
+            if i.unemployedCount > 0 : 
+                if i.unemployedCount >= (self.building.requiredEmployees - self.building.employees) : 
+                    i.unemployedCount -= (self.building.requiredEmployees - self.building.employees)
+                    self.building.employees = self.building.requiredEmployees
+                else : 
+                    self.building.employees += i.unemployedCount
+                    i.unemployedCount = 0
 
+        
 class Prefect(Walker) : 
     def __init__(self, current_prefecture):
         super().__init__("prefect" , current_prefecture, True)
