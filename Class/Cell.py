@@ -75,6 +75,7 @@ class House(Building) : #la maison fils de building (?)
         self.nb_occupants = nb_occupants #nombre d'occupants: int
         self.max_occupants = 5 #nombre max d'occupant (dépend du niveau de la maison) : int
         self.Firetimer.start()
+        self.migrant = Migrant(self)
 
 class Fountain(Building) :
     def __init__(self, x, y, my_map): 
