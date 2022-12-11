@@ -10,34 +10,23 @@ def draw_polygon_alpha(surface, color, points):
     surface.blit(shape_surf, target_rect)
 
 class Cell: #Une case de la map
-    def __init__(self, x, y, height, width, screen, map_array):
+    def __init__(self, x, y, height, width, screen, map):
         self.x = x
         self.y = y 
         self.height = height
         self.width = width
-        self.map_array = map_array
+        self.map = map
         self.water = False
         self.sprite = None
         self.screen = screen
         self.hovered = False
         self.WIDTH_SCREEN, self.HEIGHT_SCREEN = self.screen.get_size()
         self.init_screen_coordonates()
-        self.init_trs_coordonates()
 
     def init_screen_coordonates(self):
         # Compute the x and y screen position of the cell
         self.left = (self.WIDTH_SCREEN/2 - self.WIDTH_SCREEN/12) + self.width*self.x/2 - self.width*self.y/2
         self.top = self.HEIGHT_SCREEN/6 + self.x * self.height/2 + self.y * self.height/2
-    
-    def init_trs_coordonates(self):
-        self.t1 = (self.left, self.top)
-        self.t2 = (self.left, self.top + self.height)
-        self.t3 = (self.left + self.width, self.top + self.height)
-        self.t4 = (self.left + self.width, self.top)
-        self.t_1 = (self.left + self.width / 2, self.top)
-        self.t_2 = (self.left, self.top + self.height / 2)
-        self.t_3 = (self.left + self.width / 2, self.top + self.height)
-        self.t_4 = (self.left + self.width, self.top + self.height / 2)
 
     def display(self):
         self.screen.blit(pygame.transform.scale(self.sprite, (self.width, self.height)), (self.left, self.top))
@@ -64,6 +53,7 @@ class Cell: #Une case de la map
                     intersections += 1
         # If the number of intersections is odd, the point is inside the polygon
         return intersections % 2 == 1
+        
         
 
     def handle_hover_button(self, pos):

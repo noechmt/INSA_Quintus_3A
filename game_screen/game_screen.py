@@ -2,6 +2,7 @@ import pygame
 from math import sqrt
 import numpy as np
 from Class.Cell import *
+from Class.Map import *
 
 #draw a rectangle with an opacity option 
 def draw_rect_alpha(surface, color, rect):
@@ -23,10 +24,11 @@ def game_screen():
     WIDTH_SCREEN, HEIGH_SCREEN = SCREEN.get_size()
     height_land = HEIGH_SCREEN/60
     width_land = WIDTH_SCREEN*sqrt(2)/80
-    array_test = np.zeros((40, 40), dtype=Empty)
-    for y in range(40):
-        for x in range(40):
-            array_test[x][y] = Empty(x, y, height_land, width_land, SCREEN, array_test)
+    SIZE = 40
+    map = Map(SIZE)
+    for y in range(SIZE):
+        for x in range(SIZE):
+            map.set_cell_array(x, y, Empty(x, y, height_land, width_land, SCREEN, map))
     #background panel initialisation
     panel_background = pygame.image.load("game_screen/game_screen_sprites/panel_background.png")
     for i in range(2):
@@ -69,8 +71,11 @@ def game_screen():
     panel_bottom = pygame.image.load("game_screen/game_screen_sprites/paneling_bot.png")
     SCREEN.blit(pygame.transform.scale(panel_bottom, (WIDTH_SCREEN/12, HEIGH_SCREEN/10)), (((11/12)*WIDTH_SCREEN), (0.9*HEIGH_SCREEN)))
 
+    # Dims without left panel 
+    height_wo_panel = HEIGH_SCREEN
+    width_wo_panel = WIDTH_SCREEN - (WIDTH_SCREEN/7)
 
-
+    fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
     run = True
     clock = pygame.time.Clock()
     while run:
@@ -79,9 +84,12 @@ def game_screen():
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.MOUSEMOTION:
-                for y in range(40):
-                    for x in range(40):
-                        array_test[x][y].handle_hover_button(pos)
+                map.handle_hovered_cell(pos)
+
         clock.tick(60)
+        fps = (int)(clock.get_fps())
+        pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(0, 0, 60, 40))
+        text_fps = fps_font.render(str(fps), 1, (255, 255, 255))
+        SCREEN.blit(text_fps, (0,0))
         pygame.display.flip()    
 
