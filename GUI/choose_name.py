@@ -78,6 +78,7 @@ def choose_name():
     # Display the window
     pygame.display.flip()
 
+    fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
     # Loop that check if the user wants to close the window
     running = True
     # Used to manage how fast the screen updates
@@ -97,7 +98,7 @@ def choose_name():
                     return False
                 if text_continue.is_hovered(pos):
                     if input_name.get_text() != '':
-                        file = open("Saves/.temp.txt", "w")
+                        file = open("Saves/temp.txt", "w")
                         file.write(input_name.get_text())
                         file.close()
                         return True

@@ -1,5 +1,8 @@
 import pygame
 from math import sqrt
+import numpy as np
+from Class.Cell import *
+from Class.Map import *
 
 #draw a rectangle with an opacity option 
 def draw_rect_alpha(surface, color, rect):
@@ -18,37 +21,14 @@ def game_screen():
     SCREEN.fill((0, 0, 0))
 
     pygame.display.set_caption("Quintus III")
-
     WIDTH_SCREEN, HEIGH_SCREEN = SCREEN.get_size()
-
-    #THIS PART IS FOR THE MAP GENERATION
-
-    land = pygame.image.load("game_screen/game_screen_sprites/land.png")
-    land_red_panel = pygame.image.load("game_screen/game_screen_sprites/land_red_panel.png")
-    land_blue_panel = pygame.image.load("game_screen/game_screen_sprites/land_blue_panel.png")
-    heigh_land = HEIGH_SCREEN/60
+    height_land = HEIGH_SCREEN/60
     width_land = WIDTH_SCREEN*sqrt(2)/80
-    for i in range(40):
-        for j in range(i):
-            #quarter by quarter 
-            if(i < 20):
-                SCREEN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)-width_land*j, HEIGH_SCREEN/6+i*heigh_land))
-                SCREEN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)+width_land*j, HEIGH_SCREEN/6+i*heigh_land))
-
-                SCREEN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)-width_land/2-width_land*j, HEIGH_SCREEN/6+i*heigh_land+heigh_land/2))
-                SCREEN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)+width_land/2+width_land*j, HEIGH_SCREEN/6+i*heigh_land+heigh_land/2))
-            if(i >= 20 and j >= 20):
-                SCREEN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)-width_land*(j-20), (5*HEIGH_SCREEN/6-(i-19)*heigh_land)))
-                SCREEN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)+width_land*(j-20), 5*HEIGH_SCREEN/6-(i-19)*heigh_land))
-
-                SCREEN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)-width_land/2-width_land*(j-20), 5*HEIGH_SCREEN/6-(i-19)*heigh_land-heigh_land/2))
-                SCREEN.blit(pygame.transform.scale(land, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)+width_land/2+width_land*(j-20), 5*HEIGH_SCREEN/6-(i-19)*heigh_land- heigh_land/2))
-
-    #SCREEN.blit(pygame.transform.scale(land_blue_panel, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)+width_land*10, HEIGH_SCREEN/6+11*heigh_land))
-    #SCREEN.blit(pygame.transform.scale(land_red_panel, (width_land, heigh_land)), ((WIDTH_SCREEN/2-WIDTH_SCREEN/12)-width_land*(j-20), (5*HEIGH_SCREEN/6-*heigh_land)))
-
-    #THIS PART IS FOR THE LEFT PANEL 
-
+    SIZE = 40
+    map = Map(SIZE)
+    for y in range(SIZE):
+        for x in range(SIZE):
+            map.set_cell_array(x, y, Empty(x, y, height_land, width_land, SCREEN, map))
     #background panel initialisation
     panel_background = pygame.image.load("game_screen/game_screen_sprites/panel_background.png")
     for i in range(2):
@@ -91,14 +71,25 @@ def game_screen():
     panel_bottom = pygame.image.load("game_screen/game_screen_sprites/paneling_bot.png")
     SCREEN.blit(pygame.transform.scale(panel_bottom, (WIDTH_SCREEN/12, HEIGH_SCREEN/10)), (((11/12)*WIDTH_SCREEN), (0.9*HEIGH_SCREEN)))
 
+    # Dims without left panel 
+    height_wo_panel = HEIGH_SCREEN
+    width_wo_panel = WIDTH_SCREEN - (WIDTH_SCREEN/7)
 
-
+    fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
     run = True
     clock = pygame.time.Clock()
     while run:
         for event in pygame.event.get():
+            pos = pygame.mouse.get_pos()
             if event.type == pygame.QUIT:
                 run = False
+            if event.type == pygame.MOUSEMOTION:
+                map.handle_hovered_cell(pos)
+
         clock.tick(60)
+        fps = (int)(clock.get_fps())
+        pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(0, 0, 60, 40))
+        text_fps = fps_font.render(str(fps), 1, (255, 255, 255))
+        SCREEN.blit(text_fps, (0,0))
         pygame.display.flip()    
 

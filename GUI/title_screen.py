@@ -61,6 +61,7 @@ def title_screen():
     # Display the window
     pygame.display.flip()
 
+    fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
     # Loop that check if the user wants to close the window
     running = True
     window_name = False
