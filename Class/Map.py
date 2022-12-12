@@ -28,7 +28,7 @@ class Map:#Un ensemble de cellule
         # Only 3, 5, or maybe even is engough
         # It uses way less ressources and doesn't have a visual effect
         self.update_hover += 1
-        if (self.update_hover == 20):
+        if (self.update_hover == 10):
             self.update_hover = 0
             for x in range(self.size):
                     for y in range(self.size):
