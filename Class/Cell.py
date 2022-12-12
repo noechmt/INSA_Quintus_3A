@@ -31,7 +31,7 @@ class Cell: #Une case de la map
                 case "house":
                     self.map.setCell(self, House(self.x, self.y, self.map))
                     self.map.wallet -= 10
-                case "Well":
+                case "well":
                     self.map.setCell(self, Well(self.x, self.y, self.map))
                     self.map.wallet -= 5
                 case "prefecture":
@@ -46,11 +46,17 @@ class Path(Cell):
         super().__init__(x, y, my_map)
         self.level = my_path_level
 
+    def __str__(self):
+        return f"Chemin { self.level}"
+
 class Empty(Cell):
     def __init__(self, x, y, my_map, type="dirt"):
         super().__init__(x, y, my_map)
         self.type = type #"dirt", "tree", "water", "rock"
         self
+
+    def __str__(self):
+        return self.type
 
     def clear(self):
         if self.type == "tree" :
@@ -65,7 +71,7 @@ class Building(Cell) : #un fils de cellule (pas encore sûr de l'utilité)
     def __init__(self, x,y, my_map):
         super().__init__(x, y, my_map)
         self.state = "build" #état (détruit ou pas) 
-    
+
     def destroy(self) : 
         self.state = "destroyed"
                      
@@ -75,8 +81,12 @@ class House(Building) : #la maison fils de building (?)
         self.level = level #niveau de la maison : int
         self.nb_occupants = nb_occupants #nombre d'occupants: int
         self.max_occupants = 5 #nombre max d'occupant (dépend du niveau de la maison) : int
+        self.unemployedCount = 0
         # self.Firetimer.start()
         self.migrant = Migrant(self)
+
+    def __str__(self):
+        return f"House { self.level}"
 
     def nextLevel(self) : 
         self.level += 1 
@@ -93,7 +103,8 @@ class Well(Building) :
                     if isinstance(checkedCell, House) and checkedCell.level == 1 and checkedCell.max_occupants == checkedCell.nb_occupants :
                         checkedCell.nextLevel
                         
-
+    def __str__(self):
+        return "Puit"
 
 class Prefecture(Building) :
     def __init__(self, x, y, my_map):
@@ -103,8 +114,14 @@ class Prefecture(Building) :
         self.prefect = Prefect(self)
         # self.CollapseTimer.start()
 
+    def __str__(self):
+        return "Prefecture"
+
 class EngineerPost(Building):
     def __init__(self, x, y, my_map):
         super().__init__(x, y, my_map)
         self.labor_advisor = LaborAdvisor(self)
         self.employees = 0
+
+    def __str__(self):
+        return "Engineer Post"

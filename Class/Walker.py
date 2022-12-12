@@ -14,6 +14,8 @@ class Walker() :
         self.ttl = 10   
         building.map.walkers.append(self)
     
+    def __str__(self) -> str:
+        pass
     def path_finding(self, start, end):
         # Create a graph
         G = nx.Graph()
@@ -21,7 +23,7 @@ class Walker() :
         # Loop through the map to add edges to the graph
         for l in self.currentCell.map.array:
             for i in l:
-
+                #print(i.x, i.y, type (i))
                 #Check if the cell is a path
                 if isinstance(i, Cell.Path):
                     #Get an array of all neighbor path
@@ -35,7 +37,7 @@ class Walker() :
                 if isinstance(i, Cell.House) or isinstance(i, Cell.EngineerPost) or isinstance(i, Cell.Prefecture):
                     cell_around = i.check_cell_around(Cell.Path)
                     for j in cell_around:
-                        #print("Add edge from "+str((i.x, i.y))+" to "+str((j.x, j.y)))
+                        print("Add edge from "+str((i.x, i.y))+" to "+str((j.x, j.y)))
                         G.add_edge(i, j)
 
         #Calculate with the dijkstra algorithm the shortest path
@@ -56,7 +58,7 @@ class Walker() :
         print("Walker is leaving the building on the cell " + str(self.currentCell.x)+ ";" + str(self.currentCell.y))
 
     def enter_building(self):
-        assert self.building in self.currentCell.check_cell_arround(Cell.House)
+        assert self.building in self.currentCell.check_cell_around(Cell.House)
         self.cell_assignement(self.building)
         self.inBuilding = True
         self.building.map.walkers.remove(self)
@@ -78,19 +80,23 @@ class Walker() :
 class Migrant(Walker):
     def __init__(self, building):
         super().__init__("migrant", building, False)
-        self.cell_assignement(self.currentCell.map.array[4][4])
-        self.path_finding(self.currentCell, self.building)
+        self.cell_assignement(self.currentCell.map.array[2][3])
+
+    def __str__(self):
+        return "Migrant"
 
     def move(self):
         if not self.inBuilding:
+            if len(self.path) == 0:
+                self.path_finding(self.currentCell, self.building)
             if len(self.path) == 1:
-                self.enter_building
+                self.enter_building()
                 self.building.nb_occupants += 4
                 self.building.unemployedCount += 4
                 if self.building.nb_occupants == self.building.max_occupants and self.building.water:
                     self.building.nextLevel()
             else:
-                self.movePathFinding
+                self.movePathFinding()
 
 class LaborAdvisor(Walker) : 
     def __init__(self, building):

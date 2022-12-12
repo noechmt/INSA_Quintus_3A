@@ -17,9 +17,20 @@ class Map:#Un ensemble de cellule
             self.array[self.size-m.floor(self.size/4)][i] = Path(self.size-m.floor(self.size/4), i, self) #On modifie la valeur des cellules pour représenter le chemin dans la matrice
             #Pour aucune raison, le chemin est initialisé à 1/4 sur l'axe des y(vers le haut) de la map en partant de la gauche
 
-    def display(self):
-        print(np.array([[(1 if type(self.getCell(i, j)) == Path else 0)  for i in range(self.size)] for j in range(self.size)]))
-
+    def __str__(self):
+        s=f"Map {self.size}*{self.size}\n"
+        for j in range( self.size):
+            for i in range(self.size):
+                
+                for k in self.walkers:
+                    if k.currentCell == self.getCell(i,j):
+                        s += f"{(str(self.getCell(i,j)) + ' ' + str(k)):^20}"
+                        break
+                else:
+                    s += f"{str(self.getCell(i,j)):^20}"
+            s += "\n"
+        return s
+        
     def update(self):
         (i.move() for i in self.walkers)
 
