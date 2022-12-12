@@ -4,7 +4,7 @@ import math as m
 from Class.Cell import *
 
 class Map:#Un ensemble de cellule
-    def __init__(self, size, width_cell, height_cell, screen):
+    def __init__(self, size):
         self.size = size #La taille de la map est size*size : int
         self.array = np.zeros((size, size), dtype=Empty) #tableau de cellule (voir classe cellule) : list
         self.walker_list = []
