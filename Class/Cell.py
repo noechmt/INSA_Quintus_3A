@@ -21,6 +21,8 @@ class Cell: #Une case de la map
         self.sprite = None
         self.screen = screen
         self.hovered = False
+        self.grided = False
+        self.house_mode = False
         self.WIDTH_SCREEN, self.HEIGHT_SCREEN = self.screen.get_size()
         self.init_screen_coordonates()
 
@@ -45,7 +47,10 @@ class Cell: #Une case de la map
         if not self.is_hovered(pos) and self.hovered:
             self.hovered = False
             self.display()
-            self.grid()
+            if self.grided:
+                self.grid()
+
+
 
     def get_points(self):
         return ((self.left + self.width / 2, self.top), (self.left, self.top + self.height / 2),
@@ -85,10 +90,16 @@ class Cell: #Une case de la map
         (top, left, bot, right) = self.get_points()
         self.x_screen = (self.WIDTH_SCREEN/2 - self.WIDTH_SCREEN/12) + self.width*self.x/2 - self.width*self.y/2
         self.y_screen = self.HEIGHT_SCREEN/6 + self.x * self.height/2 + self.y * self.height/2
-        pygame.draw.line(self.screen, (0, 0, 0), top, right, 1)
-        pygame.draw.line(self.screen, (0, 0, 0), right, bot, 1)
-        pygame.draw.line(self.screen, (0, 0, 0), bot, left, 1)
-        pygame.draw.line(self.screen, (0, 0, 0), left, top, 1)
+        if not self.grided :
+            pygame.draw.line(self.screen, (0, 0, 0), top, right, 1)
+            pygame.draw.line(self.screen, (0, 0, 0), right, bot, 1)
+            pygame.draw.line(self.screen, (0, 0, 0), bot, left, 1)
+            pygame.draw.line(self.screen, (0, 0, 0), left, top, 1)
+            self.grided = True
+        else : 
+            self.display()
+            self.grided = False
+        
 
 class Path(Cell):
     def __init__(self, x, y, my_current_map, my_path_level=0):
@@ -101,7 +112,7 @@ class Empty(Cell):
         self.type_empty = type_empty #"dirt", "trees", "water", #"rocks"
         self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_empty + "_" + str(1) + ".png")
         self.display()
-        self.grid()
+        #self.grid()
 
     def clear(self):
         if self.type_of_void == "tree":

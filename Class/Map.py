@@ -1,12 +1,12 @@
 import numpy as np
 import math as m
 
-from Cell import *
+from Class.Cell import *
 
 class Map:#Un ensemble de cellule
-    def __init__(self, size):
+    def __init__(self, size, width_cell, height_cell, screen):
         self.size = size #La taille de la map est size*size : int
-        self.array = [[Empty(j,i, self) for i in range (size)] for j in range(size)] #tableau de cellule (voir classe cellule) : list
+        self.array = [[Empty(j,i, width_cell,height_cell, screen, self) for i in range (size)] for j in range(size)] #tableau de cellule (voir classe cellule) : list
         self.walker_list = []
 
     def init_path(self) : #Permet d'initialiser le chemin de terre sur la map. 
