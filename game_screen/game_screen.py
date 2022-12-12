@@ -89,9 +89,7 @@ def game_screen():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 #spawn the grid if is clicked
                 if(grid_button.is_hovered(pos)):
-                    for y in range(40):
-                        for x in range(40):
-                            map.array[x][y].grid()
+                    map.grid_map()
             if event.type == pygame.MOUSEMOTION:
                 for y in range(40):
                     for x in range(40):

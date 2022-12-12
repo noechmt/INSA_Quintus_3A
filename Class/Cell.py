@@ -11,12 +11,12 @@ def draw_polygon_alpha(surface, color, points):
     surface.blit(shape_surf, target_rect)
 
 class Cell: #Une case de la map
-    def __init__(self, x, y, height, width, screen, map_array):
+    def __init__(self, x, y, height, width, screen, map):
         self.x = x
         self.y = y 
         self.height = height
         self.width = width
-        self.map_array = map_array
+        self.map = map
         self.water = False
         self.sprite = None
         self.screen = screen
@@ -47,8 +47,7 @@ class Cell: #Une case de la map
         if not self.is_hovered(pos) and self.hovered:
             self.hovered = False
             self.display()
-            if self.grided:
-                self.grid()
+            self.grid()
 
 
 
@@ -90,15 +89,13 @@ class Cell: #Une case de la map
         (top, left, bot, right) = self.get_points()
         self.x_screen = (self.WIDTH_SCREEN/2 - self.WIDTH_SCREEN/12) + self.width*self.x/2 - self.width*self.y/2
         self.y_screen = self.HEIGHT_SCREEN/6 + self.x * self.height/2 + self.y * self.height/2
-        if not self.grided :
+        if self.map.get_grided() :
             pygame.draw.line(self.screen, (0, 0, 0), top, right, 1)
             pygame.draw.line(self.screen, (0, 0, 0), right, bot, 1)
             pygame.draw.line(self.screen, (0, 0, 0), bot, left, 1)
             pygame.draw.line(self.screen, (0, 0, 0), left, top, 1)
-            self.grided = True
         else : 
             self.display()
-            self.grided = False
         
 
 class Path(Cell):
