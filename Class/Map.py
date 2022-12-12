@@ -33,6 +33,10 @@ class Map:#Un ensemble de cellule
             for x in range(40):
                 for y in range(40):
                     self.array[x][y].grid()
+        else:
+            for x in range(40):
+                for y in range(40):
+                    self.array[x][y].display()
 
     
 
