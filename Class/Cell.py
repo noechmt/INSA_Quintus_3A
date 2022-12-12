@@ -88,8 +88,14 @@ class House(Building) : #la maison fils de building (?)
     def __str__(self):
         return f"House { self.level}"
 
-    def nextLevel(self) : 
-        self.level += 1 
+    def nextLevel(self) :
+        self.level += 1
+        match self.level:
+            case 1:
+                self.max_occupants = 7
+            case 2:
+                self.max_occupants = 9
+
 
 class Well(Building) :
     def __init__(self, x, y, my_map): 

@@ -91,8 +91,8 @@ class Migrant(Walker):
                 self.path_finding(self.currentCell, self.building)
             if len(self.path) == 1:
                 self.enter_building()
-                self.building.nb_occupants += 4
-                self.building.unemployedCount += 4
+                self.building.nb_occupants += 5
+                self.building.unemployedCount += 5
                 if self.building.nb_occupants == self.building.max_occupants and self.building.water:
                     self.building.nextLevel()
             else:
@@ -127,8 +127,7 @@ class Prefect(Walker) :
             if self.ttl == 0:
                 if len(self.path) == 0:
                     self.path_finding()
-                else:
-                    self.movePathFinding()
+                self.movePathFinding()
             else:
                 if len(self.path) == 1:
                     self.enter_building
@@ -159,8 +158,7 @@ class Engineer(Walker):
             if self.ttl == 0:
                 if len(self.path) == 0:
                     self.path_finding()
-                else:
-                    self.movePathFinding()
+                self.movePathFinding()
             else:
                 if len(self.path) == 1:
                     self.enter_building
