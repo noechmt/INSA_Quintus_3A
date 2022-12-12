@@ -4,11 +4,12 @@ import math as m
 from Class.Cell import *
 
 class Map:#Un ensemble de cellule
-    def __init__(self, size):
+    def __init__(self, size, width_cell, height_cell, screen):
         self.size = size #La taille de la map est size*size : int
         self.array = np.zeros((size, size), dtype=Empty) #tableau de cellule (voir classe cellule) : list
         self.walker_list = []
         self.update_hover = 0
+        self.grided = False
 
     def init_path(self) : #Permet d'initialiser le chemin de terre sur la map. 
         for i in range(self.size) :
@@ -39,6 +40,23 @@ class Map:#Un ensemble de cellule
     
     def dispay_map(self):
         print("Ceci est une map :)")
+    
+    def set_grided(self, g):
+        self.grided = g
+
+    def get_grided(self):
+        return self.grided
+    
+    def grid_map(self):
+        self.grided = not self.grided
+        if self.grided:
+            for x in range(40):
+                for y in range(40):
+                    self.array[x][y].grid()
+        else:
+            for x in range(40):
+                for y in range(40):
+                    self.array[x][y].display()
 
     
 

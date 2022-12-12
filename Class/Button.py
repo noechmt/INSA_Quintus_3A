@@ -61,3 +61,5 @@ class Button():
         if not self.is_hovered(pos) and self.darken:
             self.darken = False
             self.draw(screen)
+
+    

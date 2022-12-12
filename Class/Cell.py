@@ -20,6 +20,8 @@ class Cell: #Une case de la map
         self.sprite = None
         self.screen = screen
         self.hovered = False
+        self.grided = False
+        self.house_mode = False
         self.WIDTH_SCREEN, self.HEIGHT_SCREEN = self.screen.get_size()
         self.init_screen_coordonates()
 
@@ -66,6 +68,8 @@ class Cell: #Une case de la map
             self.display()
             self.grid()
 
+
+
     def get_points_polygone(self):
         return ((self.left + self.width / 2, self.top), (self.left, self.top + self.height / 2),
         (self.left + self.width/2, self.top + self.height), (self.left + self.width, self.top + self.height / 2))
@@ -104,13 +108,11 @@ class Cell: #Une case de la map
                     self.map.array[self.x][self.y] = EngineerPost(self.x, self.y, self.map)
 
     def grid(self):
-        (top, left, bot, right) = self.get_points_polygone()
-        self.x_screen = (self.WIDTH_SCREEN/2 - self.WIDTH_SCREEN/12) + self.width*self.x/2 - self.width*self.y/2
-        self.y_screen = self.HEIGHT_SCREEN/6 + self.x * self.height/2 + self.y * self.height/2
-        pygame.draw.line(self.screen, (0, 0, 0), top, right, 1)
-        pygame.draw.line(self.screen, (0, 0, 0), right, bot, 1)
-        pygame.draw.line(self.screen, (0, 0, 0), bot, left, 1)
-        pygame.draw.line(self.screen, (0, 0, 0), left, top, 1)
+        if self.map.get_grided() :
+            pygame.draw.polygon(self.screen, (25,25,25), self.get_points_polygone(), 2)
+        else : 
+            self.display()
+        
 
 class Path(Cell):
     def __init__(self, x, y, my_current_map, my_path_level=0):
@@ -123,7 +125,7 @@ class Empty(Cell):
         self.type_empty = type_empty #"dirt", "trees", "water", #"rocks"
         self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_empty + "_" + str(1) + ".png")
         self.display()
-        self.grid()
+        #self.grid()
 
     def clear(self):
         if self.type_of_void == "tree":
