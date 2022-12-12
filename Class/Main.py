@@ -16,14 +16,22 @@ myMap.array[3][0].build("house")
 myMap.array[2][1].build("well")
 print(myMap)
 
-exit = False
-while not exit:
-   for i in myMap.walkers:
-      i.move()
+
+while 1:
+      myMap.update()
       print(myMap)
-   sleep(2)
+      sleep(2)
 # myMap.array[3][0].prefect.leave_building()
 # for i in range(15):
 #     myMap.array[3][0].prefect.prefect_move()
 #print(myMap.array[1][1].type_of_building)
 #myMigrant = Migrant(myMap.array[3][0])
+
+
+
+#TODO 
+# risks
+#house levels
+#animation des walkers 
+#archeduc 
+

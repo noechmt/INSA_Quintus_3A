@@ -32,7 +32,8 @@ class Map:#Un ensemble de cellule
         return s
         
     def update(self):
-        (i.move() for i in self.walkers)
+        for i in self.walkers :
+            i.move()
 
     def getCell(self, x, y):
         return self.array[x][y]

@@ -1,5 +1,5 @@
 from Walker import *
-from TimerEvent import *
+from RiskEvent import *
 
 class Cell: #Une case de la map
     def __init__(self, x, y, map):
@@ -82,8 +82,8 @@ class House(Building) : #la maison fils de building (?)
         self.nb_occupants = nb_occupants #nombre d'occupants: int
         self.max_occupants = 5 #nombre max d'occupant (dépend du niveau de la maison) : int
         self.unemployedCount = 0
-        # self.Firetimer.start()
         self.migrant = Migrant(self)
+        self.fire = RiskEvent("fire")
 
     def __str__(self):
         return f"House { self.level}"
@@ -112,7 +112,8 @@ class Prefecture(Building) :
         self.labor_advisor = LaborAdvisor(self)
         self.employees = 0
         self.prefect = Prefect(self)
-        # self.CollapseTimer.start()
+        self.requiredEmployees = 5
+        self.risk = RiskEvent("fire")
 
     def __str__(self):
         return "Prefecture"
@@ -122,6 +123,9 @@ class EngineerPost(Building):
         super().__init__(x, y, my_map)
         self.labor_advisor = LaborAdvisor(self)
         self.employees = 0
+        self.requiredEmployees = 5
+        self.risk = RiskEvent("collapse")
 
     def __str__(self):
         return "Engineer Post"
+
