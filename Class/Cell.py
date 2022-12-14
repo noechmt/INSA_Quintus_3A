@@ -1,5 +1,6 @@
 from Class.Walker import *
 import pygame
+from random import *
 
 def draw_polygon_alpha(surface, color, points):
     lx, ly = zip(*points)
@@ -120,8 +121,8 @@ class Path(Cell):
 class Empty(Cell):
     def __init__(self, x, y, height, width, screen, map, type_empty="dirt"):
         super().__init__(x, y, height, width, screen, map)
-        self.type_empty = type_empty #"dirt", "trees", "water", #"rocks"
-        self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_empty + "_" + str(1) + ".png")
+        self.type_empty = type_empty #"dirt", "trees"
+        self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_empty + "_" + str(randint(1,4)) + ".png")
         self.display()
         self.grid()
 
@@ -129,10 +130,18 @@ class Empty(Cell):
         if self.type_of_void == "tree":
             self.type_of_void = "dirt"
             # draw function
-    
+
+class Water(Cell):
+    def __init__(self, x, y, height, width, screen, map, type_unbreakable="water"):
+        super().__init__(x, y, height, width, screen, map)
+        self.type_unbreakable = type_unbreakable #"water"
+        self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_unbreakable + "_" + str(randint(1,4)) + ".png")
+        self.display()
+
+
 
 class Building(Cell) : #un fils de cellule (pas encore sûr de l'utilité)
-    def __init__(self, x,y, my_current_map, my_type_of_building, my_state):
+    def __init__(self, x, y, my_current_map, my_type_of_building, my_state):
         super().__init__(x, y, my_current_map, 2)
         self.type_of_cell = 2
         self.type_of_building = my_type_of_building  #le type de batiments (house, fountain, ...) : ? 

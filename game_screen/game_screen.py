@@ -3,6 +3,7 @@ from math import sqrt
 import numpy as np
 from Class.Cell import *
 from Class.Map import *
+import sys
 
 #draw a rectangle with an opacity option 
 def draw_rect_alpha(surface, color, rect):
@@ -29,6 +30,10 @@ def game_screen():
     for y in range(SIZE):
         for x in range(SIZE):
             map.set_cell_array(x, y, Empty(x, y, height_land, width_land, SCREEN, map))
+    
+    for x in range (10):
+            map.set_cell_array(x,2*x+20, Water(x,2*x+20, height_land, width_land, SCREEN, map))
+
     #background panel initialisation
     panel_background = pygame.image.load("game_screen/game_screen_sprites/panel_background.png")
     for i in range(2):
@@ -74,6 +79,20 @@ def game_screen():
     # Dims without left panel 
     height_wo_panel = HEIGH_SCREEN
     width_wo_panel = WIDTH_SCREEN - (WIDTH_SCREEN/7)
+
+    #taskbar
+    color_brown = (70,46,1)
+    bar = pygame.image.load("game_screen/game_screen_sprites/taskbar_background.png")
+    SCREEN.blit(pygame.transform.scale(bar, (WIDTH_SCREEN, HEIGH_SCREEN/32)), (0, 0))
+    taskbarfont = pygame.font.SysFont('courriernew',25) #police, size
+    file_text = taskbarfont.render('File', False, color_brown)
+    options_text = taskbarfont.render('Options', False, color_brown)
+    help_text = taskbarfont.render('Help', False, color_brown)
+    advisors_text = taskbarfont.render('Advisors', False, color_brown)
+    SCREEN.blit(file_text, (WIDTH_SCREEN/60,HEIGH_SCREEN/256))
+    SCREEN.blit(options_text, (WIDTH_SCREEN/16,HEIGH_SCREEN/256))
+    SCREEN.blit(help_text, (WIDTH_SCREEN/7.5, HEIGH_SCREEN/256))
+    SCREEN.blit(advisors_text, (WIDTH_SCREEN/5.5, HEIGH_SCREEN/256))
 
     fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
     run = True
