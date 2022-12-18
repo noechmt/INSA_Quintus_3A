@@ -23,7 +23,9 @@ class Cell: #Une case de la map
         return path
 
     def build(self, type):
-        if isinstance(self, Empty) and self.type == "dirt":
+        if isinstance(self, Empty) and self.type != "dirt":
+            print("This cell is already taken")
+        else:
             match type:
                 case "path":
                     self.map.setCell(self, Path(self.x, self.y, self.map))
@@ -117,11 +119,15 @@ class Prefecture(Building) :
         super().__init__(x, y, my_map)
         self.labor_advisor = LaborAdvisor(self)
         self.employees = 0
+        self.requiredEmployees = 2
         self.prefect = Prefect(self)
         # self.CollapseTimer.start()
 
     def __str__(self):
-        return "Prefecture"
+        return f"Prefecture { self.employees}"
+
+    def patrol(self):
+        self.prefect.leave_building()
 
 class EngineerPost(Building):
     def __init__(self, x, y, my_map):
