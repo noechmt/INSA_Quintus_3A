@@ -1,27 +1,49 @@
 import numpy as np
 import math as m
 
-from Class.Cell import *
+from Cell import *
 
 class Map:#Un ensemble de cellule
     def __init__(self, size):
         self.size = size #La taille de la map est size*size : int
         self.array = np.zeros((size, size), dtype=Empty) #tableau de cellule (voir classe cellule) : list
-        self.walker_list = []
+        self.walkers = []
+        self.spawn_cell = self.array[0][0]
+        self.init_path()
+        self.wallet = 3000
         self.update_hover = 0
         self.grided = False
+
 
     def init_path(self) : #Permet d'initialiser le chemin de terre sur la map. 
         for i in range(self.size) :
             self.array[self.size-m.floor(self.size/4)][i] = Path(self.size-m.floor(self.size/4), i, self) #On modifie la valeur des cellules pour représenter le chemin dans la matrice
-            #Pour aucune raison, le chemin est initialisé à 1/4 sur l'axe des y(vers le haut) de la map en partant de la gauche 
-    
+            #Pour aucune raison, le chemin est initialisé à 1/4 sur l'axe des y(vers le haut) de la map en partant de la gauche
+
+    def __str__(self):
+        s=f"Map {self.size}*{self.size}\n"
+        for j in range( self.size):
+            for i in range(self.size):
+                
+                for k in self.walkers:
+                    if k.currentCell == self.getCell(i,j):
+                        s += f"{(str(self.getCell(i,j)) + ' ' + str(k)):^20}"
+                        break
+                else:
+                    s += f"{str(self.getCell(i,j)):^20}"
+            s += "\n"
+        return s
+        
+    def update(self):
+        for i in self.walkers:
+            i.move()
+
     def set_cell_array(self, x, y, cell):
         self.array[x][y] = cell
     
     def get_cell(self, x, y):
         return self.array[x][y]
-    
+
     def handle_hovered_cell(self, pos):
         # Goal of using update_hover :
         # Pygame uses almost all of the ressources with the graphics
@@ -40,6 +62,7 @@ class Map:#Un ensemble de cellule
     
     def dispay_map(self):
         print("Ceci est une map :)")
+<<<<<<< HEAD
     
     def set_grided(self, g):
         self.grided = g
@@ -62,3 +85,5 @@ class Map:#Un ensemble de cellule
 
 
 
+=======
+>>>>>>> ab4974524753951db45c4df6a7ec644aad3f7c6c

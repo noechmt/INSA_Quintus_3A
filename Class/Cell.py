@@ -1,4 +1,5 @@
-from Class.Walker import *
+from Walker import *
+from RiskEvent import *
 import pygame
 
 def draw_polygon_alpha(surface, color, points):
@@ -89,23 +90,40 @@ class Cell: #Une case de la map
     def set_hover(self, hover):
         self.hover = hover
 
-
+    #Check if these coordinates are in the map
     def inMap(self, x,y):
         return (0 <= x and x <= self.map.size-1 and 0 <= y and y <= self.map.size-1)
 
+    #Return an cell array which match with the class type (ex: Path, Prefecture (not a string)) in argument
+    def check_cell_around(self, type) :
+        path = []
+        for i in range(-1, 2) :
+            for j in range(-1, 2) : 
+                if abs(i) != abs(j) and self.inMap(self.x + i, self.y + j):
+                    if isinstance(self.map.getCell(self.x + i,self.y + j), type):
+                        path.append(self.map.getCell(self.x + i, self.y + j))
+        return path
+
     def build(self, type):
-        if self.map.array[self.x][self.y].type_of_void == "dirt":
+        if isinstance(self, Empty) and self.type != "dirt":
+            print("This cell is already taken")
+        else:
             match type:
                 case "path":
-                    self.map.array[self.x][self.y] = Path(self.x, self.y, self.map)
+                    self.map.setCell(self, Path(self.x, self.y, self.map))
+                    self.map.wallet -= 4 
                 case "house":
-                    self.map.array[self.x][self.y] = House(self.x, self.y, self.map)
-                case "fountain":
-                    self.map.array[self.x][self.y] = Fountain(self.x, self.y, self.map)
+                    self.map.setCell(self, House(self.x, self.y, self.map))
+                    self.map.wallet -= 10
+                case "well":
+                    self.map.setCell(self, Well(self.x, self.y, self.map))
+                    self.map.wallet -= 5
                 case "prefecture":
-                    self.map.array[self.x][self.y] = Prefecture(self.x, self.y, self.map)
+                    self.map.setCell(self, Prefecture(self.x, self.y, self.map))
+                    self.map.wallet -= 30
                 case "engineer post":
-                    self.map.array[self.x][self.y] = EngineerPost(self.x, self.y, self.map)
+                    self.map.setCell(self, EngineerPost(self.x, self.y, self.map))
+                    self.map.wallet -= 30
 
     def grid(self):
         if self.map.get_grided() :
@@ -115,9 +133,12 @@ class Cell: #Une case de la map
         
 
 class Path(Cell):
-    def __init__(self, x, y, my_current_map, my_path_level=0):
-        super().__init__(x, y, my_current_map, 1)
-        self.path_level = my_path_level
+    def __init__(self, x, y, my_map, my_path_level=0):
+        super().__init__(x, y, my_map)
+        self.level = my_path_level
+
+    def __str__(self):
+        return f"Chemin { self.level}"
 
 class Empty(Cell):
     def __init__(self, x, y, height, width, screen, map, type_empty="dirt"):
@@ -125,68 +146,87 @@ class Empty(Cell):
         self.type_empty = type_empty #"dirt", "trees", "water", #"rocks"
         self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_empty + "_" + str(1) + ".png")
         self.display()
-        #self.grid()
+        
+    def __str__(self):
+        return self.type_empty
 
     def clear(self):
-        if self.type_of_void == "tree":
-            self.type_of_void = "dirt"
-            # draw function
-    
+        if self.type_empty == "tree" :
+            self.type_empty = "dirt" 
+            self.map.wallet -= 2
+
+    def canBuild(self) : 
+        return self.type_empty == "dirt"  
+
 
 class Building(Cell) : #un fils de cellule (pas encore sûr de l'utilité)
-    def __init__(self, x,y, my_current_map, my_type_of_building, my_state):
-        super().__init__(x, y, my_current_map, 2)
-        self.type_of_cell = 2
-        self.type_of_building = my_type_of_building  #le type de batiments (house, fountain, ...) : ? 
-        self.state = my_state #état (détruit ou pas) 
-        self.employees = 0
-        match my_type_of_building :
-            case "prefecture" :
-                self.required_employees = 6
-            case "engineer post" : 
-                self.required_employees = 5
-            case _: 
-                self.required_employees = None
-    
+    def __init__(self, x,y, my_map):
+        super().__init__(x, y, my_map)
+        self.state = "build" #état (détruit ou pas) 
+
     def destroy(self) : 
         self.state = "destroyed"
-
-class EngineerPost(Building):
-    def __init__(self, x, y, my_current_map):
-        super().__init__(x, y, my_current_map, "engineer post", True)
-        self.labor_advisor = LaborAdvisor(self.x, self.y, self.map.array[self.x][self.y], self)
-        self.employees = 0
-
-class Fountain(Building) :
-    def __init__(self, x, y, my_current_map) : 
-        super().__init__(x, y, my_current_map, "fountain", True)
-    
-    def check_house(self) : 
-        for i in range(-2, 3):
-            for j in range(-2, 3):
-                cell = self.map.array[self.x+i][self.y+j]
-                if cell.type_of_cell == 2:
-                    if cell.type_of_building == "house":
-                        cell.water = True
-
+                     
 class House(Building) : #la maison fils de building (?)
-    def __init__(self, x, y, my_current_map, level=0, nb_occupants=0) :
-        super().__init__(x, y, my_current_map, "house", True)
+    def __init__(self, x, y, my_map, level=0, nb_occupants=0) :
+        super().__init__(x, y, my_map)
         self.level = level #niveau de la maison : int
         self.nb_occupants = nb_occupants #nombre d'occupants: int
         self.max_occupants = 5 #nombre max d'occupant (dépend du niveau de la maison) : int
-    
-    def check_fountain(self):
+        self.unemployedCount = 0
+        self.migrant = Migrant(self)
+        self.fire = RiskEvent("fire")
+
+    def __str__(self):
+        return f"House { self.level}"
+
+    def nextLevel(self) :
+        self.level += 1
+        match self.level:
+            case 1:
+                self.max_occupants = 7
+            case 2:
+                self.max_occupants = 9
+
+
+class Well(Building) :
+    def __init__(self, x, y, my_map): 
+        super().__init__(x, y, my_map)
+        # self.CollapseTimer.start()
         for i in range(-2, 3):
             for j in range(-2, 3):
-                cell = self.map.array[self.x+i][self.y+j]
-                if cell.type_of_cell == 2:
-                    if cell.type_of_building == "fountain":
-                        self.water = True
+                if self.inMap(self.x+i, self.y+j):
+                    self.map.getCell(self.x+i, self.y+j).water = True
+                    checkedCell = self.map.getCell(self.x+i, self.y+i)
+                    if isinstance(checkedCell, House) and checkedCell.level == 1 and checkedCell.max_occupants == checkedCell.nb_occupants :
+                        checkedCell.nextLevel
+                        
+    def __str__(self):
+        return "Puit"
 
 class Prefecture(Building) :
-    def __init__(self, x, y, my_current_map):
-        super().__init__(x, y, my_current_map, "prefecture", True)
-        self.labor_advisor = LaborAdvisor(self.x, self.y, self.map.array[self.x][self.y], self)
+    def __init__(self, x, y, my_map):
+        super().__init__(x, y, my_map)
+        self.labor_advisor = LaborAdvisor(self)
         self.employees = 0
-        self.prefect = Prefect(self.x, self.y, self.map.array[self.x][self.y], self)
+        self.prefect = Prefect(self)
+        self.requiredEmployees = 5
+        self.risk = RiskEvent("fire")
+
+    def __str__(self):
+        return f"Prefecture { self.employees}"
+
+    def patrol(self):
+        self.prefect.leave_building()
+
+class EngineerPost(Building):
+    def __init__(self, x, y, my_map):
+        super().__init__(x, y, my_map)
+        self.labor_advisor = LaborAdvisor(self)
+        self.employees = 0
+        self.requiredEmployees = 5
+        self.risk = RiskEvent("collapse")
+
+    def __str__(self):
+        return "Engineer Post"
+
