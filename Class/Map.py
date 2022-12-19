@@ -1,12 +1,15 @@
 import numpy as np
 import math as m
 
-from Cell import *
+from Class.Cell import *
 
 class Map:#Un ensemble de cellule
-    def __init__(self, size):
+    def __init__(self, size, height, width, screen):
         self.size = size #La taille de la map est size*size : int
-        self.array = np.zeros((size, size), dtype=Empty) #tableau de cellule (voir classe cellule) : list
+        self.height_land = height
+        self.width_land = width
+        self.screen = screen
+        self.array = [[Empty(j,i, self.height_land, self.width_land,self.screen, self) for i in range (size)] for j in range(size)] #tableau de cellule (voir classe cellule) : list
         self.walkers = []
         self.spawn_cell = self.array[0][0]
         self.init_path()
@@ -17,7 +20,7 @@ class Map:#Un ensemble de cellule
 
     def init_path(self) : #Permet d'initialiser le chemin de terre sur la map. 
         for i in range(self.size) :
-            self.array[self.size-m.floor(self.size/4)][i] = Path(self.size-m.floor(self.size/4), i, self) #On modifie la valeur des cellules pour représenter le chemin dans la matrice
+            self.array[self.size-m.floor(self.size/4)][i] = Path(self.size-m.floor(self.size/4), i, self.height_land, self.width_land, self.screen, self) #On modifie la valeur des cellules pour représenter le chemin dans la matrice
             #Pour aucune raison, le chemin est initialisé à 1/4 sur l'axe des y(vers le haut) de la map en partant de la gauche
 
     def __str__(self):
@@ -62,7 +65,6 @@ class Map:#Un ensemble de cellule
     
     def dispay_map(self):
         print("Ceci est une map :)")
-<<<<<<< HEAD
     
     def set_grided(self, g):
         self.grided = g
@@ -85,5 +87,3 @@ class Map:#Un ensemble de cellule
 
 
 
-=======
->>>>>>> ab4974524753951db45c4df6a7ec644aad3f7c6c

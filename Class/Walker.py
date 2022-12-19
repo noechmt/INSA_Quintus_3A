@@ -1,4 +1,4 @@
-import Cell
+import Class.Cell as Cell
 import random
 
 import networkx as nx

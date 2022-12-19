@@ -1,5 +1,5 @@
-from Walker import *
-from RiskEvent import *
+from Class.Walker import *
+from Class.RiskEvent import *
 import pygame
 
 def draw_polygon_alpha(surface, color, points):
@@ -110,19 +110,19 @@ class Cell: #Une case de la map
         else:
             match type:
                 case "path":
-                    self.map.setCell(self, Path(self.x, self.y, self.map))
+                    self.map.setCell(self, Path(self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 4 
                 case "house":
-                    self.map.setCell(self, House(self.x, self.y, self.map))
+                    self.map.setCell(self, House(self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 10
                 case "well":
-                    self.map.setCell(self, Well(self.x, self.y, self.map))
+                    self.map.setCell(self, Well(self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 5
                 case "prefecture":
-                    self.map.setCell(self, Prefecture(self.x, self.y, self.map))
+                    self.map.setCell(self, Prefecture(self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 30
                 case "engineer post":
-                    self.map.setCell(self, EngineerPost(self.x, self.y, self.map))
+                    self.map.setCell(self, EngineerPost(self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 30
 
     def grid(self):
@@ -133,8 +133,8 @@ class Cell: #Une case de la map
         
 
 class Path(Cell):
-    def __init__(self, x, y, my_map, my_path_level=0):
-        super().__init__(x, y, my_map)
+    def __init__(self, x, y, height, width, screen, my_map, my_path_level=0):
+        super().__init__(x, y, height, width, screen, my_map)
         self.level = my_path_level
 
     def __str__(self):
@@ -160,16 +160,16 @@ class Empty(Cell):
 
 
 class Building(Cell) : #un fils de cellule (pas encore sûr de l'utilité)
-    def __init__(self, x,y, my_map):
-        super().__init__(x, y, my_map)
+    def __init__(self, x,y, height, width, screen, my_map):
+        super().__init__(x, y, height, width, screen, my_map)
         self.state = "build" #état (détruit ou pas) 
 
     def destroy(self) : 
         self.state = "destroyed"
                      
 class House(Building) : #la maison fils de building (?)
-    def __init__(self, x, y, my_map, level=0, nb_occupants=0) :
-        super().__init__(x, y, my_map)
+    def __init__(self, x, y, height, width, screen, my_map, level=0, nb_occupants=0) :
+        super().__init__(x, y, height, width, screen, my_map)
         self.level = level #niveau de la maison : int
         self.nb_occupants = nb_occupants #nombre d'occupants: int
         self.max_occupants = 5 #nombre max d'occupant (dépend du niveau de la maison) : int
@@ -190,9 +190,8 @@ class House(Building) : #la maison fils de building (?)
 
 
 class Well(Building) :
-    def __init__(self, x, y, my_map): 
-        super().__init__(x, y, my_map)
-        # self.CollapseTimer.start()
+    def __init__(self, x, y, height, width, screen, my_map): 
+        super().__init__(x, y, height, width, screen, my_map)
         for i in range(-2, 3):
             for j in range(-2, 3):
                 if self.inMap(self.x+i, self.y+j):
@@ -205,8 +204,8 @@ class Well(Building) :
         return "Puit"
 
 class Prefecture(Building) :
-    def __init__(self, x, y, my_map):
-        super().__init__(x, y, my_map)
+    def __init__(self, x, y, height, width, screen, my_map):
+        super().__init__(x, y, height, width, screen, my_map)
         self.labor_advisor = LaborAdvisor(self)
         self.employees = 0
         self.prefect = Prefect(self)
@@ -220,8 +219,8 @@ class Prefecture(Building) :
         self.prefect.leave_building()
 
 class EngineerPost(Building):
-    def __init__(self, x, y, my_map):
-        super().__init__(x, y, my_map)
+    def __init__(self, x, y, height, width, screen, my_map):
+        super().__init__(x, y, height, width, screen, my_map)
         self.labor_advisor = LaborAdvisor(self)
         self.employees = 0
         self.requiredEmployees = 5

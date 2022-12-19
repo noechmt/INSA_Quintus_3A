@@ -1,6 +1,6 @@
 from threading import *
 import time
-from Cell import *
+from Class.Cell import *
 import random as rd
 
 class RiskEvent():

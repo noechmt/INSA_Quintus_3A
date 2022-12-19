@@ -26,10 +26,10 @@ def game_screen():
     height_land = HEIGH_SCREEN/60
     width_land = WIDTH_SCREEN*sqrt(2)/80
     SIZE = 40
-    map = Map(SIZE)
-    for y in range(SIZE):
-        for x in range(SIZE):
-            map.set_cell_array(x, y, Empty(x, y, height_land, width_land, SCREEN, map))
+    map = Map(SIZE, height_land, width_land, SCREEN)
+    # for y in range(SIZE):
+    #     for x in range(SIZE):
+    #         map.set_cell_array(x, y, Empty(x, y, height_land, width_land, SCREEN, map))
     #background panel initialisation
     panel_background = pygame.image.load("game_screen/game_screen_sprites/panel_background.png")
     for i in range(2):
