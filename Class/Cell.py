@@ -119,7 +119,6 @@ class Prefecture(Building) :
         super().__init__(x, y, my_map)
         self.labor_advisor = LaborAdvisor(self)
         self.employees = 0
-        self.requiredEmployees = 2
         self.prefect = Prefect(self)
         self.requiredEmployees = 5
         self.risk = RiskEvent("fire")
