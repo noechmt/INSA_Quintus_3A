@@ -6,11 +6,13 @@ from Cell import *
 class Map:#Un ensemble de cellule
     def __init__(self, size):
         self.size = size #La taille de la map est size*size : int
-        self.array = [[Empty(j,i, self) for i in range (size)] for j in range(size)] #tableau de cellule (voir classe cellule) : list
+        self.array = np.zeros((size, size), dtype=Empty) #tableau de cellule (voir classe cellule) : list
         self.walkers = []
         self.spawn_cell = self.array[0][0]
         self.init_path()
         self.wallet = 3000
+        self.update_hover = 0
+
 
     def init_path(self) : #Permet d'initialiser le chemin de terre sur la map. 
         for i in range(self.size) :
@@ -35,10 +37,27 @@ class Map:#Un ensemble de cellule
         for i in self.walkers:
             i.move()
 
-    def getCell(self, x, y):
+    def set_cell_array(self, x, y, cell):
+        self.array[x][y] = cell
+    
+    def get_cell(self, x, y):
         return self.array[x][y]
 
-    def setCell(self, prev_cell, new_cell):
-        self.array[prev_cell.x][prev_cell.y] = new_cell
+    def handle_hovered_cell(self, pos):
+        # Goal of using update_hover :
+        # Pygame uses almost all of the ressources with the graphics
+        # And updating the hovering case doesn't need to be at 60 per seconds
+        # Only 3, 5, or maybe even is engough
+        # It uses way less ressources and doesn't have a visual effect
+        self.update_hover += 1
+        if (self.update_hover == 10):
+            self.update_hover = 0
+            for x in range(self.size):
+                    for y in range(self.size):
+                        self.get_cell(x, y).handle_hover_button(pos)
 
-
+    def display(self):
+        print(np.array([[(self.array[i][j].type_of_cell) for i in range(self.size)] for j in range(self.size)]))
+    
+    def dispay_map(self):
+        print("Ceci est une map :)")

@@ -1,8 +1,9 @@
 import pygame
 
-from GUI.Title_screen import title_screen
+from GUI.title_screen import title_screen
+from game_screen.game_screen import game_screen
 
 if __name__ == "__main__":
-    title_screen()
-    # Call the main window function here
+    if (title_screen()):
+        game_screen()
     pygame.quit()
