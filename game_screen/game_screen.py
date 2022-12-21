@@ -122,7 +122,8 @@ def game_screen():
                 road_button.handle_hover_button(pos, SCREEN)
         clock.tick(60)
         fps = (int)(clock.get_fps())
-        pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(0, 0, 60, 40))
         text_fps = fps_font.render(str(fps), 1, (255, 255, 255))
-        SCREEN.blit(text_fps, (0, 0))
+        pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(
+            0, HEIGH_SCREEN - text_fps.get_size()[1], 60, 40))
+        SCREEN.blit(text_fps, (0, HEIGH_SCREEN - text_fps.get_size()[1]))
         pygame.display.flip()
