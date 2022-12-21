@@ -5,17 +5,20 @@ from Class.Cell import *
 from Class.Button import Button
 from Class.Map import *
 
-#draw a rectangle with an opacity option 
+# draw a rectangle with an opacity option
+
+
 def draw_rect_alpha(surface, color, rect):
     shape_surf = pygame.Surface(pygame.Rect(rect).size, pygame.SRCALPHA)
     pygame.draw.rect(shape_surf, color, shape_surf.get_rect())
     surface.blit(shape_surf, rect)
 
+
 def game_screen():
 
     pygame.init()
 
-    SCREEN = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+    SCREEN = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     FPS = 60
 
     # Re-initialize the window
@@ -27,58 +30,75 @@ def game_screen():
     width_land = WIDTH_SCREEN*sqrt(2)/80
     SIZE = 40
     map = Map(SIZE, height_land, width_land, SCREEN)
-    # for y in range(SIZE):
-    #     for x in range(SIZE):
-    #         map.set_cell_array(x, y, Empty(x, y, height_land, width_land, SCREEN, map))
-    #background panel initialisation
-    panel_background = pygame.image.load("game_screen/game_screen_sprites/panel_background.png")
+    # background panel initialisation
+    panel_background = pygame.image.load(
+        "game_screen/game_screen_sprites/panel_background.png")
     for i in range(2):
         for j in range(9):
-            SCREEN.blit(pygame.transform.scale(panel_background, (WIDTH_SCREEN/24, HEIGH_SCREEN/10)), ((((i+22)/24)*WIDTH_SCREEN), (j/10)*HEIGH_SCREEN))
-    draw_rect_alpha(SCREEN, (50, 50, 50, 60), (WIDTH_SCREEN*(11/12), 0, WIDTH_SCREEN/12, HEIGH_SCREEN*9/10))
+            SCREEN.blit(pygame.transform.scale(panel_background, (WIDTH_SCREEN/24,
+                        HEIGH_SCREEN/10)), ((((i+22)/24)*WIDTH_SCREEN), (j/10)*HEIGH_SCREEN))
+    draw_rect_alpha(SCREEN, (50, 50, 50, 60), (WIDTH_SCREEN *
+                    (11/12), 0, WIDTH_SCREEN/12, HEIGH_SCREEN*9/10))
 
-    #panel overlays initialisation (on the top of the panel)
-    panel_overlays = pygame.image.load("game_screen/game_screen_sprites/paneling_overlays.png")
-    SCREEN.blit(pygame.transform.scale(panel_overlays, (WIDTH_SCREEN/18, HEIGH_SCREEN/36)), (11*WIDTH_SCREEN/12+5, HEIGH_SCREEN/32+2))
+    # panel overlays initialisation (on the top of the panel)
+    panel_overlays = pygame.image.load(
+        "game_screen/game_screen_sprites/paneling_overlays.png")
+    SCREEN.blit(pygame.transform.scale(panel_overlays, (WIDTH_SCREEN/18,
+                HEIGH_SCREEN/36)), (11*WIDTH_SCREEN/12+5, HEIGH_SCREEN/32+2))
 
+    # white rectangle under the button on the panel
+    draw_rect_alpha(SCREEN, (255, 255, 255, 127), (177*WIDTH_SCREEN/192-2,
+                    0.25*HEIGH_SCREEN-2, (WIDTH_SCREEN)/48+4, (HEIGH_SCREEN)/40+4))
+    draw_rect_alpha(SCREEN, (255, 255, 255, 127), (182*WIDTH_SCREEN/192-2,
+                    0.25*HEIGH_SCREEN-2, (WIDTH_SCREEN)/48+4, (HEIGH_SCREEN)/40+4))
+    draw_rect_alpha(SCREEN, (255, 255, 255, 127), (187*WIDTH_SCREEN/192-2,
+                    0.25*HEIGH_SCREEN-2, (WIDTH_SCREEN)/48+4, (HEIGH_SCREEN)/40+4))
 
-    #white rectangle under the button on the panel
-    draw_rect_alpha(SCREEN, (255,255,255, 127), (177*WIDTH_SCREEN/192-2, 0.25*HEIGH_SCREEN-2, (WIDTH_SCREEN)/48+4, (HEIGH_SCREEN)/40+4))
-    draw_rect_alpha(SCREEN, (255,255,255, 127), (182*WIDTH_SCREEN/192-2, 0.25*HEIGH_SCREEN-2, (WIDTH_SCREEN)/48+4, (HEIGH_SCREEN)/40+4))
-    draw_rect_alpha(SCREEN, (255,255,255, 127), (187*WIDTH_SCREEN/192-2, 0.25*HEIGH_SCREEN-2, (WIDTH_SCREEN)/48+4, (HEIGH_SCREEN)/40+4))
+    # window upside button initialisation
+    panel_window_home = pygame.image.load(
+        "game_screen/game_screen_sprites/panel_window_home.png")
+    SCREEN.blit(pygame.transform.scale(panel_window_home, (WIDTH_SCREEN /
+                12-10, HEIGH_SCREEN/17)), (11*WIDTH_SCREEN/12+5, 0.18*HEIGH_SCREEN))
 
-    #window upside button initialisation
-    panel_window_home = pygame.image.load("game_screen/game_screen_sprites/panel_window_home.png")
-    SCREEN.blit(pygame.transform.scale(panel_window_home, (WIDTH_SCREEN/12-10, HEIGH_SCREEN/17)), (11*WIDTH_SCREEN/12+5, 0.18*HEIGH_SCREEN))
-
-    #panel grid button initialisation
-    panel_grid_button = pygame.image.load("game_screen/game_screen_sprites/paneling_grid_button.png")
-    grid_button = Button(177*WIDTH_SCREEN/192, 0.125*HEIGH_SCREEN, WIDTH_SCREEN/48, HEIGH_SCREEN/40, panel_grid_button)
+    # panel grid button initialisation
+    panel_grid_button = pygame.image.load(
+        "game_screen/game_screen_sprites/paneling_grid_button.png")
+    grid_button = Button(177*WIDTH_SCREEN/192, 0.125*HEIGH_SCREEN,
+                         WIDTH_SCREEN/48, HEIGH_SCREEN/40, panel_grid_button)
     grid_button.draw(SCREEN)
 
-    #panel home button initialisation
-    panel_home_button = pygame.image.load("game_screen/game_screen_sprites/paneling_home_button.png")
-    home_button = Button(177*WIDTH_SCREEN/192, 0.25*HEIGH_SCREEN, WIDTH_SCREEN/48, HEIGH_SCREEN/40, panel_home_button)
+    # panel home button initialisation
+    panel_home_button = pygame.image.load(
+        "game_screen/game_screen_sprites/paneling_home_button.png")
+    home_button = Button(177*WIDTH_SCREEN/192, 0.25*HEIGH_SCREEN,
+                         WIDTH_SCREEN/48, HEIGH_SCREEN/40, panel_home_button)
     home_button.draw(SCREEN)
 
-    #panel shovel button initialisation
-    panel_shovel_button = pygame.image.load("game_screen/game_screen_sprites/paneling_shovel_button.png")
-    shovel_button = Button(182*WIDTH_SCREEN/192, 0.25*HEIGH_SCREEN, WIDTH_SCREEN/48, HEIGH_SCREEN/40, panel_shovel_button)
+    # panel shovel button initialisation
+    panel_shovel_button = pygame.image.load(
+        "game_screen/game_screen_sprites/paneling_shovel_button.png")
+    shovel_button = Button(182*WIDTH_SCREEN/192, 0.25*HEIGH_SCREEN,
+                           WIDTH_SCREEN/48, HEIGH_SCREEN/40, panel_shovel_button)
     shovel_button.draw(SCREEN)
 
-    #panel road button initialisation
-    panel_road_button = pygame.image.load("game_screen/game_screen_sprites/paneling_road_button.png")
-    road_button = Button(187*WIDTH_SCREEN/192, 0.25*HEIGH_SCREEN, WIDTH_SCREEN/48, HEIGH_SCREEN/40, panel_road_button)
+    # panel road button initialisation
+    panel_road_button = pygame.image.load(
+        "game_screen/game_screen_sprites/paneling_road_button.png")
+    road_button = Button(187*WIDTH_SCREEN/192, 0.25*HEIGH_SCREEN,
+                         WIDTH_SCREEN/48, HEIGH_SCREEN/40, panel_road_button)
     road_button.draw(SCREEN)
 
-    #panel information initialisation
-    draw_rect_alpha(SCREEN, (25, 25, 25, 127), (WIDTH_SCREEN*(11/12)+2, HEIGH_SCREEN*(8/17), WIDTH_SCREEN/12-4, 3*HEIGH_SCREEN/7-2))
+    # panel information initialisation
+    draw_rect_alpha(SCREEN, (25, 25, 25, 127), (WIDTH_SCREEN*(11/12)+2,
+                    HEIGH_SCREEN*(8/17), WIDTH_SCREEN/12-4, 3*HEIGH_SCREEN/7-2))
 
-    #bottom panel initialisation
-    panel_bottom = pygame.image.load("game_screen/game_screen_sprites/paneling_bot.png")
-    SCREEN.blit(pygame.transform.scale(panel_bottom, (WIDTH_SCREEN/12, HEIGH_SCREEN/10)), (((11/12)*WIDTH_SCREEN), (0.9*HEIGH_SCREEN)))
+    # bottom panel initialisation
+    panel_bottom = pygame.image.load(
+        "game_screen/game_screen_sprites/paneling_bot.png")
+    SCREEN.blit(pygame.transform.scale(panel_bottom, (WIDTH_SCREEN/12,
+                HEIGH_SCREEN/10)), (((11/12)*WIDTH_SCREEN), (0.9*HEIGH_SCREEN)))
 
-    # Dims without left panel 
+    # Dims without left panel
     height_wo_panel = HEIGH_SCREEN
     width_wo_panel = WIDTH_SCREEN - (WIDTH_SCREEN/7)
 
@@ -91,8 +111,8 @@ def game_screen():
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                #spawn the grid if is clicked
-                if(grid_button.is_hovered(pos)):
+                # spawn the grid if is clicked
+                if (grid_button.is_hovered(pos)):
                     map.grid_map()
             if event.type == pygame.MOUSEMOTION:
                 map.handle_hovered_cell(pos)
@@ -104,6 +124,5 @@ def game_screen():
         fps = (int)(clock.get_fps())
         pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(0, 0, 60, 40))
         text_fps = fps_font.render(str(fps), 1, (255, 255, 255))
-        SCREEN.blit(text_fps, (0,0))
-        pygame.display.flip()    
-
+        SCREEN.blit(text_fps, (0, 0))
+        pygame.display.flip()
