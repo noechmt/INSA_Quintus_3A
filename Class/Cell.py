@@ -147,7 +147,7 @@ class Path(Cell):
     def __init__(self, x, y, height, width, screen, my_map, my_path_level=0):
         super().__init__(x, y, height, width, screen, my_map)
         self.sprite = self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/road_bot_top.png")
+            "game_screen/game_screen_sprites/road_straight_verti.png")
         self.level = my_path_level
         self.display()
 
