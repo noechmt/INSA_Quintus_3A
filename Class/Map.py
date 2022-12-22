@@ -62,10 +62,8 @@ class Map:  # Un ensemble de cellule
             self.update_hover = 0
             for x in range(self.size):
                 for y in range(self.size):
-                    if(self.get_housed()):
-                       self.get_cell(x, y).handle_hover_button_house(pos)
-                    else:
-                        self.get_cell(x, y).handle_hover_button(pos)
+                    self.get_cell(x, y).handle_hover_button(pos)
+
 
     def display(self):
         print(np.array([[(self.array[i][j].type_of_cell)
