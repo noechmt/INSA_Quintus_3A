@@ -122,7 +122,20 @@ class Empty(Cell):
     def __init__(self, x, y, height, width, screen, map, type_empty="dirt"):
         super().__init__(x, y, height, width, screen, map)
         self.type_empty = type_empty #"dirt", "trees"
-        self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_empty + "_" + str(randint(1,4)) + ".png")
+
+        for i in range (40):
+            if (x,y) == (i,i+10) and i<5:
+                self.type_empty = "watersiderightD"
+            elif (x,y) == (i,i+11) and i<5:
+                self.type_empty = "watersiderightW"
+            elif (x,y) == (i+1, i+11) and i==4:
+                self.type_empty = "watersidecornerA"
+            elif (x,y) == (5, i) and 15<i<20:
+                self.type_empty = "watersideunder"
+
+
+        self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_empty + "_" + str(randint(1,2)) + ".png")
+
         self.display()
         self.grid()
 
@@ -135,9 +148,11 @@ class Water(Cell):
     def __init__(self, x, y, height, width, screen, map, type_unbreakable="water"):
         super().__init__(x, y, height, width, screen, map)
         self.type_unbreakable = type_unbreakable #"water"
-        self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_unbreakable + "_" + str(randint(1,4)) + ".png")
-        self.display()
 
+        
+        self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_unbreakable + "_" + str(randint(1,2)) + ".png")
+        
+        self.display()
 
 
 class Building(Cell) : #un fils de cellule (pas encore sûr de l'utilité)

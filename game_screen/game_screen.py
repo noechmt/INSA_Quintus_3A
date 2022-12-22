@@ -31,8 +31,10 @@ def game_screen():
         for x in range(SIZE):
             map.set_cell_array(x, y, Empty(x, y, height_land, width_land, SCREEN, map))
     
-    for x in range (10):
-            map.set_cell_array(x,2*x+20, Water(x,2*x+20, height_land, width_land, SCREEN, map))
+    #place the water
+    #for y in range (SIZE):
+        #for x in range (SIZE):
+            #map.set_cell_array(x,y, Water(x,y, height_land, width_land, SCREEN, map))
 
     #background panel initialisation
     panel_background = pygame.image.load("game_screen/game_screen_sprites/panel_background.png")
