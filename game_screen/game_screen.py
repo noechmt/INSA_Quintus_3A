@@ -29,6 +29,7 @@ def game_screen():
     height_land = HEIGH_SCREEN/60
     width_land = WIDTH_SCREEN*sqrt(2)/80
     SIZE = 40
+
     map = Map(SIZE, height_land, width_land, SCREEN)
     # background panel initialisation
     panel_background = pygame.image.load(
@@ -106,14 +107,21 @@ def game_screen():
     run = True
     clock = pygame.time.Clock()
     while run:
+        
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
+            x = round((pos[1]-HEIGH_SCREEN/6)/height_land - (WIDTH_SCREEN/2-WIDTH_SCREEN/12-pos[0])/width_land)-1
+            y = round((WIDTH_SCREEN/2-WIDTH_SCREEN/12-pos[0])/width_land + (pos[1]-HEIGH_SCREEN/6)/height_land)
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # spawn the grid if is clicked
                 if (grid_button.is_hovered(pos)):
                     map.grid_map()
+                if(home_button.is_hovered(pos)):
+                    map.house_mod()
+                if(map.array[x][y].is_hovered(pos) and map.get_housed()):
+                    map.array[x][y].build("house")
             if event.type == pygame.MOUSEMOTION:
                 map.handle_hovered_cell(pos)
                 grid_button.handle_hover_button(pos, SCREEN)

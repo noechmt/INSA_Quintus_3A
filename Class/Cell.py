@@ -21,6 +21,7 @@ class Cell:  # Une case de la map
         self.height = height
         self.width = width
         self.map = map
+        self.type = ""
         self.water = False
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/house_" + str(0) + ".png")
@@ -76,6 +77,18 @@ class Cell:  # Une case de la map
             self.display()
             self.grid()
 
+    def handle_hover_button_house(self, pos):
+        is_hovered = self.is_hovered(pos)
+        if is_hovered and not self.hovered:
+            self.hovered = True
+            self.screen.blit("game_screen/game_screen_sprites/house_0.png", )
+            draw_polygon_alpha(self.screen, (0, 0, 0, 85),
+                               self.get_points_polygone())
+        if not is_hovered and self.hovered:
+            self.hovered = False
+            self.display()
+            self.grid()
+
     def get_points_polygone(self):
         return ((self.left + self.width / 2, self.top), (self.left, self.top + self.height / 2),
                 (self.left + self.width/2, self.top + self.height), (self.left + self.width, self.top + self.height / 2))
@@ -115,23 +128,21 @@ class Cell:  # Une case de la map
         else:
             match type:
                 case "path":
-                    self.map.setCell(self, Path(
-                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                    self.map.set_cell_array(self, self.x, self.y, Path(self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 4
                 case "house":
-                    self.map.setCell(self, House(
-                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                    self.map.set_cell_array(self.x, self.y, House(self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 10
                 case "well":
-                    self.map.setCell(self, Well(
+                    self.map.set_cell_array(self.x, self.y,Well(
                         self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 5
                 case "prefecture":
-                    self.map.setCell(self, Prefecture(
+                    self.map.set_cell_array(self.x, self.y,Prefecture(
                         self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 30
                 case "engineer post":
-                    self.map.setCell(self, EngineerPost(
+                    self.map.set_cell_array(self.x, self.y,EngineerPost(
                         self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 30
 
@@ -141,6 +152,9 @@ class Cell:  # Une case de la map
                                 self.get_points_polygone(), 2)
         else:
             self.display()
+
+    def set_type(self, type):
+        self.type = type
 
 
 class Path(Cell):
@@ -159,6 +173,7 @@ class Empty(Cell):
     def __init__(self, x, y, height, width, screen, map, type_empty="dirt"):
         super().__init__(x, y, height, width, screen, map)
         self.type_empty = type_empty  # "dirt", "trees", "water", #"rocks"
+        super().set_type(self.type_empty)
         self.n_rand = randint(0, 15)
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/" + self.type_empty + "_" + str(self.n_rand) + ".png")

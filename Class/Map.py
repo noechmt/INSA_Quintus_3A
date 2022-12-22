@@ -18,6 +18,7 @@ class Map:  # Un ensemble de cellule
         self.wallet = 3000
         self.update_hover = 0
         self.grided = False
+        self.housed = False
 
     def init_path(self):  # Permet d'initialiser le chemin de terre sur la map.
         for i in range(self.size):
@@ -45,6 +46,7 @@ class Map:  # Un ensemble de cellule
 
     def set_cell_array(self, x, y, cell):
         self.array[x][y] = cell
+        self.array[x][y].display()
 
     def get_cell(self, x, y):
         return self.array[x][y]
@@ -85,3 +87,14 @@ class Map:  # Un ensemble de cellule
             for x in range(40):
                 for y in range(40):
                     self.array[x][y].display()
+        
+    def house_mod(self):
+        self.housed = not self.housed
+
+    def get_housed(self):
+        return self.housed
+    
+    def set_housed(self, g):
+        self.housed = g
+
+
