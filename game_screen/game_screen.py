@@ -31,6 +31,7 @@ def game_screen():
     SIZE = 40
 
     map = Map(SIZE, height_land, width_land, SCREEN)
+    print(type(map.array[27][39]))
     # background panel initialisation
     panel_background = pygame.image.load(
         "game_screen/game_screen_sprites/panel_background.png")

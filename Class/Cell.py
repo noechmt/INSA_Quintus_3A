@@ -77,11 +77,13 @@ class Cell:  # Une case de la map
             self.display()
             self.grid()
 
+    #il y a surement un moyen beaaaaucoup plus simple
     def handle_hover_button_house(self, pos):
         is_hovered = self.is_hovered(pos)
         if is_hovered and not self.hovered:
             self.hovered = True
-            self.screen.blit("game_screen/game_screen_sprites/house_0.png", )
+            house_sprite = pygame.image.load("game_screen/game_screen_sprites/house_0.png")
+            self.screen.blit(pygame.transform.scale(house_sprite, (self.width, self.height)), (self.left, self.top))
             draw_polygon_alpha(self.screen, (0, 0, 0, 85),
                                self.get_points_polygone())
         if not is_hovered and self.hovered:
