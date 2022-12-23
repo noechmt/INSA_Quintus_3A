@@ -55,13 +55,13 @@ class Cell:  # Une case de la map
 
     def handle_move(self, move, m):
         if move == "up":
-            self.top += 8 * m
+            self.top += 15 * m
         if move == "down":
-            self.top -= 8 * m
+            self.top -= 15 * m
         if move == "right":
-            self.left -= 8 * m
+            self.left -= 15 * m
         if move == "left":
-            self.left += 8 * m
+            self.left += 15 * m
         self.display()
 
     def is_hovered(self, pos):
