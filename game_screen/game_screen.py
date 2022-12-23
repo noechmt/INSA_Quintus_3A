@@ -49,13 +49,13 @@ def game_screen():
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
+                    # spawn the grid if is clicked
+                    if (panel.get_grid_button().is_hovered(pos)):
+                        map.grid_map()
+                    if (panel.get_road_button().is_hovered(pos)):
+                        panel.set_window("road")
+                        map.handle_road_button()
                     if pos[0] <= width_wo_panel:
-                        # spawn the grid if is clicked
-                        if (panel.get_grid_button().is_hovered(pos)):
-                            map.grid_map()
-                        if (panel.get_road_button().is_hovered(pos)):
-                            panel.set_window("road")
-                            map.handle_road_button()
                         map.handle_click_cells(pos)
                 # Zoom in
                 if event.button == 4:
