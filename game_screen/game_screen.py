@@ -141,10 +141,6 @@ def game_screen():
                 12-10, HEIGH_SCREEN/17)), (11*WIDTH_SCREEN/12+5, 0.18*HEIGH_SCREEN))
                 if(map.array[x][y].is_hovered(pos) and map.get_housed()):
                     map.array[x][y].build("house")
-                """if(prefecture_button.is_hovered(pos)):
-                    map.prefecture_mod()
-                if(map.array[x][y].is_hovered(pos) and map.get_prefectured()):
-                    map.array[x][y].build("prefecture")"""
             if event.type == pygame.MOUSEMOTION:
                 map.handle_hovered_cell(pos)
                 grid_button.handle_hover_button(pos, SCREEN)
