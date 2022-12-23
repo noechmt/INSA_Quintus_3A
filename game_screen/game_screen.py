@@ -1,3 +1,4 @@
+from select import select
 import pygame
 from math import sqrt
 import numpy as np
@@ -85,25 +86,84 @@ def game_screen():
     fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
     run = True
     clock = pygame.time.Clock()
+    selection = {"is_active": False, "start": tuple, "cells": set()}
+    active_pannel = {"house": False, "shovel": False, "path": False}
+    hovered_cell = None
+    
+
     while run:
+
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
+
+            #Set and print logical coordinates
+            pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(0, 0, 300, 100))
+            x = round((pos[1]-HEIGH_SCREEN/6)/height_land - (WIDTH_SCREEN/2-WIDTH_SCREEN/12-pos[0])/width_land)-1
+            y = round((WIDTH_SCREEN/2-WIDTH_SCREEN/12-pos[0])/width_land + (pos[1]-HEIGH_SCREEN/6)/height_land)
+            text_click = fps_font.render(f"{x} {y}", 1, (255, 255, 255))
+            SCREEN.blit(text_click, (0,20))
+
             if event.type == pygame.QUIT:
                 run = False
+
             if event.type == pygame.MOUSEBUTTONDOWN:
+                if map.inMap(x,y) and not selection["is_active"]:
+                    selection["start"] = (x,y)
+                    selection["cells"].add(map.get_cell(x,y))
+                    selection["is_active"] = True           
+
                 #spawn the grid if is clicked
                 if(grid_button.is_hovered(pos)):
                     map.grid_map()
+                elif shovel_button.is_hovered(pos):
+                    active_pannel["shovel"] = False if active_pannel["shovel"] else True
+                elif road_button.is_hovered(pos):
+                    active_pannel["path"] = False if active_pannel["path"] else True
+                elif home_button.is_hovered(pos):
+                    active_pannel["house"] = False if active_pannel["house"] else True
+            
+            if event.type == pygame.MOUSEBUTTONUP:
+                if selection["is_active"]:
+                    for i in selection["cells"]:
+                        if active_pannel["shovel"] and i.type_empty == "trees":
+                            i.clear()
+                        elif active_pannel["path"]:
+                            i.build("path")
+                        elif active_pannel["house"]:
+                            i.build("house")
+                        else:
+                            i.display()
+                    selection["cells"].clear()
+                    selection["is_active"] = False
+
             if event.type == pygame.MOUSEMOTION:
-                map.handle_hovered_cell(pos)
+                #Display previous cell without hover
+                if hovered_cell: hovered_cell.display()
+                if map.inMap(x,y) and not selection["is_active"]:
+                    hovered_cell = map.get_cell(x,y)
+                    hovered_cell.handle_hover_button()
+                #map.handle_hovered_cell(pos)
+                
+                #Selection : fill the set with hovered cell
+                if map.inMap(x,y) and selection["is_active"]:
+                    for i in selection["cells"]: i.display()
+                    selection["cells"].clear()
+                    range_x = range(selection["start"][0], x+1, 1) if selection["start"][0] <= x else range(selection["start"][0], x-1, -1)
+                    range_y = range(selection["start"][1], y+1, 1) if selection["start"][1] <= y else range(selection["start"][1], y-1, -1)
+                    for i in range_x:
+                        for j in range_y:
+                            selection["cells"].add(map.get_cell(i,j))
+                            map.get_cell(i,j).handle_hover_button()
+
                 grid_button.handle_hover_button(pos, SCREEN)
                 home_button.handle_hover_button(pos, SCREEN)
                 shovel_button.handle_hover_button(pos, SCREEN)
                 road_button.handle_hover_button(pos, SCREEN)
         clock.tick(60)
         fps = (int)(clock.get_fps())
-        pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(0, 0, 60, 40))
+        #pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(0, 0, 60, 40))
         text_fps = fps_font.render(str(fps), 1, (255, 255, 255))
         SCREEN.blit(text_fps, (0,0))
+
         pygame.display.flip()    
 

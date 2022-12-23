@@ -33,6 +33,7 @@ class Cell: #Une case de la map
 
     def display(self):
         self.screen.blit(pygame.transform.scale(self.sprite, (self.width, self.height)), (self.left, self.top))
+        if self.map.grided: self.grid()
 
     def is_hovered(self, pos):
         # Initialize the number of intersections to 0
@@ -59,15 +60,15 @@ class Cell: #Une case de la map
         
         
 
-    def handle_hover_button(self, pos):
-        is_hovered = self.is_hovered(pos)
-        if is_hovered and not self.hovered:
-            self.hovered = True
+    def handle_hover_button(self):
+        #is_hovered = self.is_hovered(pos)
+        #if is_hovered and not self.hovered:
+            #self.hovered = True
             draw_polygon_alpha(self.screen, (0, 0, 0, 85), self.get_points_polygone())
-        if not is_hovered and self.hovered:
-            self.hovered = False
-            self.display()
-            self.grid()
+        #if not is_hovered and self.hovered:
+            #self.hovered = False
+            #self.display()
+            #self.grid()
 
 
 
@@ -90,10 +91,6 @@ class Cell: #Une case de la map
     def set_hover(self, hover):
         self.hover = hover
 
-    #Check if these coordinates are in the map
-    def inMap(self, x,y):
-        return (0 <= x and x <= self.map.size-1 and 0 <= y and y <= self.map.size-1)
-
     #Return an cell array which match with the class type (ex: Path, Prefecture (not a string)) in argument
     def check_cell_around(self, type) :
         path = []
@@ -105,24 +102,24 @@ class Cell: #Une case de la map
         return path
 
     def build(self, type):
-        if isinstance(self, Empty) and self.type != "dirt":
+        if isinstance(self, Empty) and self.type_empty != "dirt":
             print("This cell is already taken")
         else:
             match type:
                 case "path":
-                    self.map.setCell(self, Path(self.x, self.y, self.height, self.width, self.screen, self.map))
+                    self.map.array[self.x][self.y] =  Path(self.x, self.y, self.height, self.width, self.screen, self.map)
                     self.map.wallet -= 4 
                 case "house":
-                    self.map.setCell(self, House(self.x, self.y, self.height, self.width, self.screen, self.map))
+                    self.map.array[self.x][self.y] =  House(self.x, self.y, self.height, self.width, self.screen, self.map)
                     self.map.wallet -= 10
                 case "well":
-                    self.map.setCell(self, Well(self.x, self.y, self.height, self.width, self.screen, self.map))
+                    self.map.array[self.x][self.y] =  Well(self.x, self.y, self.height, self.width, self.screen, self.map)
                     self.map.wallet -= 5
                 case "prefecture":
-                    self.map.setCell(self, Prefecture(self.x, self.y, self.height, self.width, self.screen, self.map))
+                    self.map.array[self.x][self.y] =  Prefecture(self.x, self.y, self.height, self.width, self.screen, self.map)
                     self.map.wallet -= 30
                 case "engineer post":
-                    self.map.setCell(self, EngineerPost(self.x, self.y, self.height, self.width, self.screen, self.map))
+                    self.map.array[self.x][self.y] =  EngineerPost(self.x, self.y, self.height, self.width, self.screen, self.map)
                     self.map.wallet -= 30
 
     def grid(self):
@@ -151,7 +148,7 @@ class Empty(Cell):
         return self.type_empty
 
     def clear(self):
-        if self.type_empty == "tree" :
+        if self.type_empty == "trees" :
             self.type_empty = "dirt" 
             self.map.wallet -= 2
 
@@ -176,6 +173,9 @@ class House(Building) : #la maison fils de building (?)
         self.unemployedCount = 0
         self.migrant = Migrant(self)
         self.fire = RiskEvent("fire")
+        #Temporary
+        self.sprite = pygame.image.load("game_screen/game_screen_sprites/house_"+ str(self.level) +".png")
+        self.display()
 
     def __str__(self):
         return f"House { self.level}"
