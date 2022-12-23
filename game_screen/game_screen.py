@@ -31,7 +31,6 @@ def game_screen():
     SIZE = 40
 
     map = Map(SIZE, height_land, width_land, SCREEN)
-    print(type(map.array[27][39]))
     # background panel initialisation
     panel_background = pygame.image.load(
         "game_screen/game_screen_sprites/panel_background.png")
@@ -55,6 +54,8 @@ def game_screen():
                     0.25*HEIGH_SCREEN-2, (WIDTH_SCREEN)/48+4, (HEIGH_SCREEN)/40+4))
     draw_rect_alpha(SCREEN, (255, 255, 255, 127), (187*WIDTH_SCREEN/192-2,
                     0.25*HEIGH_SCREEN-2, (WIDTH_SCREEN)/48+4, (HEIGH_SCREEN)/40+4))
+    draw_rect_alpha(SCREEN, (255, 255, 255, 127), (177*WIDTH_SCREEN/192-2,
+                    0.25*HEIGH_SCREEN+3*HEIGH_SCREEN/80-1, (WIDTH_SCREEN)/48+4, (HEIGH_SCREEN)/40+3))
 
     # window upside button initialisation
     panel_window_home = pygame.image.load(
@@ -92,6 +93,13 @@ def game_screen():
                          WIDTH_SCREEN/48, HEIGH_SCREEN/40, panel_road_button)
     road_button.draw(SCREEN)
 
+    #panel prefecture button initialisation
+    panel_prefecture_button = pygame.image.load(
+        "game_screen/game_screen_sprites/paneling_prefecture.png")
+    prefecture_button = Button(177*WIDTH_SCREEN/192, 0.25*HEIGH_SCREEN+3*HEIGH_SCREEN/80,
+                         WIDTH_SCREEN/48, HEIGH_SCREEN/40, panel_prefecture_button)
+    prefecture_button.draw(SCREEN)
+
     # panel information initialisation
     draw_rect_alpha(SCREEN, (25, 25, 25, 127), (WIDTH_SCREEN*(11/12)+2,
                     HEIGH_SCREEN*(8/17), WIDTH_SCREEN/12-4, 3*HEIGH_SCREEN/7-2))
@@ -128,15 +136,22 @@ def game_screen():
                 map.handle_click_cells(pos)
 
                 if(home_button.is_hovered(pos)):
-                    map.house_mod()
+                    map.handle_house_button()
+                    SCREEN.blit(pygame.transform.scale(panel_window_home, (WIDTH_SCREEN /
+                12-10, HEIGH_SCREEN/17)), (11*WIDTH_SCREEN/12+5, 0.18*HEIGH_SCREEN))
                 if(map.array[x][y].is_hovered(pos) and map.get_housed()):
                     map.array[x][y].build("house")
+                """if(prefecture_button.is_hovered(pos)):
+                    map.prefecture_mod()
+                if(map.array[x][y].is_hovered(pos) and map.get_prefectured()):
+                    map.array[x][y].build("prefecture")"""
             if event.type == pygame.MOUSEMOTION:
                 map.handle_hovered_cell(pos)
                 grid_button.handle_hover_button(pos, SCREEN)
                 home_button.handle_hover_button(pos, SCREEN)
                 shovel_button.handle_hover_button(pos, SCREEN)
                 road_button.handle_hover_button(pos, SCREEN)
+                prefecture_button.handle_hover_button(pos, SCREEN)
             if event.type == pygame.KEYDOWN:
                 if pygame.key.get_pressed()[pygame.K_ESCAPE]:
                     SCREEN.blit(pygame.transform.scale(panel_window_home, (WIDTH_SCREEN /
