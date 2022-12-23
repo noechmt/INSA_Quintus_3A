@@ -182,133 +182,100 @@ class Path(Cell):
         self.level = path_level
         self.display()
 
-    def handle_sprites(self):
-
-        # Check if the road is in all turns
-        if self.check_surrondings([1, 1, 1, 1]):
-            self.set_sprite(sprite_all_turn)
-            if isinstance(self.map.get_cell(self.x - 1, self.y + 1), Path):
+    def handle_sprites(self, r=0):
+        if r < 2:
+            # Check if the road is in all turns
+            if self.check_surrondings([1, 1, 1, 1]):
+                self.set_sprite(sprite_all_turn)
+                self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
                 return
-            else:
-                self.map.get_cell(self.x - 1, self.y).handle_sprites()
-                self.map.get_cell(self.x + 1, self.y).handle_sprites()
-                self.map.get_cell(self.x, self.y - 1).handle_sprites()
-                self.map.get_cell(self.x, self.y + 1).handle_sprites()
+            # Check if the road is a turn bottom to left
+            if self.check_surrondings([1, 0, 1, 0]):
+                self.set_sprite(sprite_turn_bot_left)
+                self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
+                return
+            # Check if the road is a turn bottom to right
+            if self.check_surrondings([0, 0, 1, 1]):
+                self.set_sprite(sprite_turn_bot_right)
+                self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
+                return
+            # Check if the road is a turn horizontal to bottom
+            if self.check_surrondings([1, 0, 1, 1]):
+                self.set_sprite(sprite_turn_hori_bot)
+                self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
 
-            return
-        # Check if the road is a turn bottom to left
-        if self.check_surrondings([1, 0, 1, 0]):
-            self.set_sprite(sprite_turn_bot_left)
-            if isinstance(self.map.get_cell(self.x - 1, self.y + 1), Path):
-                self.map.get_cell(
-                    self.x - 1, self.y).set_sprite(sprite_turn_verti_right)
-                self.map.get_cell(
-                    self.x, self.y + 1).set_sprite(sprite_turn_hori_top)
-            else:
-                self.map.get_cell(self.x - 1, self.y).handle_sprites()
-            return
-        # Check if the road is a turn bottom to right
-        if self.check_surrondings([0, 0, 1, 1]):
-            self.set_sprite(sprite_turn_bot_right)
-            if isinstance(self.map.get_cell(self.x + 1, self.y - 1), Path):
-                self.map.get_cell(
-                    self.x + 1, self.y).set_sprite(sprite_turn_verti_left)
-                self.map.get_cell(
-                    self.x, self.y + 1).set_sprite(sprite_turn_hori_top)
-            else:
-                self.map.get_cell(self.x + 1, self.y).handle_sprites()
-            return
-        # Check if the road is a turn horizontal to bottom
-        if self.check_surrondings([1, 0, 1, 1]):
-            self.set_sprite(sprite_turn_hori_bot)
-            self.map.get_cell(self.x + 1, self.y).handle_sprites()
-            self.map.get_cell(self.x - 1, self.y).handle_sprites()
-            return
-        # Check if the road is a turn horizontal to top
-        if self.check_surrondings([1, 1, 0, 1]):
-            self.set_sprite(sprite_turn_hori_top)
-            self.map.get_cell(self.x + 1, self.y).handle_sprites()
-            self.map.get_cell(self.x - 1, self.y).handle_sprites()
-            return
-        # Check if the road is a turn letf to top
-        if self.check_surrondings([1, 1, 0, 0]):
-            self.set_sprite(sprite_turn_left_top)
-            if isinstance(self.map.get_cell(self.x - 1, self.y - 1), Path):
-                self.map.get_cell(
-                    self.x - 1, self.y).set_sprite(sprite_turn_verti_right)
-                self.map.get_cell(
-                    self.x, self.y-1).set_sprite(sprite_turn_hori_bot)
-            else:
-                self.map.get_cell(self.x - 1, self.y).handle_sprites()
-                self.map.get_cell(self.x, self.y - 1).handle_sprites()
-            return
-        # Check if the road is a turn right to top
-        if self.check_surrondings([0, 1, 0, 1]):
-            self.set_sprite(sprite_turn_right_top)
-            if isinstance(self.map.get_cell(self.x + 1, self.y - 1), Path):
-                self.map.get_cell(
-                    self.x + 1, self.y).set_sprite(sprite_turn_verti_left)
-                self.map.get_cell(
-                    self.x, self.y-1).set_sprite(sprite_turn_hori_bot)
-            else:
-                self.map.get_cell(self.x + 1, self.y).handle_sprites()
-                self.map.get_cell(self.x, self.y - 1).handle_sprites()
-            return
-        # Check if the road is a turn vertical to left
-        if self.check_surrondings([1, 1, 1, 0]):
-            self.set_sprite(sprite_turn_verti_left)
-            self.map.get_cell(self.x - 1, self.y).handle_sprites()
-            self.map.get_cell(self.x, self.y - 1).handle_sprites()
-            self.map.get_cell(self.x, self.y + 1).handle_sprites()
-            return
-        # Check if the road is a turn vertical to right
-        if self.check_surrondings([0, 1, 1, 1]):
-            self.set_sprite(sprite_turn_verti_right)
-            self.map.get_cell(self.x + 1, self.y).handle_sprites()
-            self.map.get_cell(self.x, self.y - 1).handle_sprites()
-            self.map.get_cell(self.x, self.y + 1).handle_sprites()
-            return
+                return
+            # Check if the road is a turn horizontal to top
+            if self.check_surrondings([1, 1, 0, 1]):
+                self.set_sprite(sprite_turn_hori_top)
+                self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
 
-        # Check horizontal road
-        if self.check_surrondings([2, 0, 0, 1]):
-            if self.sprite != sprite_hori:
+                return
+            # Check if the road is a turn letf to top
+            if self.check_surrondings([1, 1, 0, 0]):
+                self.set_sprite(sprite_turn_left_top)
+                self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
+                return
+            # Check if the road is a turn right to top
+            if self.check_surrondings([0, 1, 0, 1]):
+                self.set_sprite(sprite_turn_right_top)
+                self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
+
+                return
+            # Check if the road is a turn vertical to left
+            if self.check_surrondings([1, 1, 1, 0]):
+                self.set_sprite(sprite_turn_verti_left)
+                self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
+
+                return
+            # Check if the road is a turn vertical to right
+            if self.check_surrondings([0, 1, 1, 1]):
+                self.set_sprite(sprite_turn_verti_right)
+                self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
+
+                return
+
+            # Check horizontal road
+            if self.check_surrondings([2, 0, 0, 1]):
                 self.set_sprite(sprite_hori)
-                #self.map.get_cell(self.x + 1, self.y).set_sprite(sprite_hori)
-                self.map.get_cell(self.x + 1, self.y).handle_sprites()
+                self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x - 1, self.y), Path):
-                    self.map.get_cell(self.x - 1, self.y).handle_sprites()
-                if isinstance(self.map.get_cell(self.x + 1, self.y), Path):
-                    self.map.get_cell(self.x + 1, self.y).handle_sprites()
-            return
-        if self.check_surrondings([1, 0, 0, 2]):
-            if self.sprite != sprite_hori:
+                    self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
+                return
+            if self.check_surrondings([1, 0, 0, 2]):
                 self.set_sprite(sprite_hori)
-                #self.map.get_cell(self.x - 1, self.y).set_sprite(sprite_hori)
-                self.map.get_cell(self.x - 1, self.y).handle_sprites()
+                self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x + 1, self.y), Path):
-                    self.map.get_cell(self.x + 1, self.y).handle_sprites()
-                if isinstance(self.map.get_cell(self.x - 1, self.y), Path):
-                    self.map.get_cell(self.x - 1, self.y).handle_sprites()
-            return
-        # Check vertical road
-        if self.check_surrondings([0, 2, 1, 0]):
-            if self.sprite != sprite_verti:
+                    self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
+                return
+            # Check vertical road
+            if self.check_surrondings([0, 2, 1, 0]):
                 self.set_sprite(sprite_verti)
-                self.map.get_cell(self.x, self.y + 1).set_sprite(sprite_verti)
-                if isinstance(self.map.get_cell(self.x, self.y + 1), Path):
-                    self.map.get_cell(self.x, self.y + 1).handle_sprites()
+                self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x, self.y - 1), Path):
-                    self.map.get_cell(self.x, self.y - 1).handle_sprites()
-            return
-        if self.check_surrondings([0, 1, 2, 0]):
-            if self.sprite != sprite_verti:
+                    self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
+                return
+            if self.check_surrondings([0, 1, 2, 0]):
                 self.set_sprite(sprite_verti)
-                self.map.get_cell(self.x, self.y - 1).set_sprite(sprite_verti)
-                if isinstance(self.map.get_cell(self.x, self.y - 1), Path):
-                    self.map.get_cell(self.x, self.y - 1).handle_sprites()
+                self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x, self.y + 1), Path):
-                    self.map.get_cell(self.x, self.y + 1).handle_sprites()
-            return
+                    self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
+                return
 
     def check_surrondings(self, check):
         i = 0
