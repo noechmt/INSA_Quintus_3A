@@ -4,6 +4,7 @@ import numpy as np
 from Class.Cell import *
 from Class.Button import Button
 from Class.Map import *
+from Class.Walker import *
 
 # draw a rectangle with an opacity option
 

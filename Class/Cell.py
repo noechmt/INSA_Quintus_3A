@@ -381,7 +381,7 @@ class Well(Building):
 class Prefecture(Building):
     def __init__(self, x, y, height, width, screen, my_map):
         super().__init__(x, y, height, width, screen, my_map)
-        #self.labor_advisor = LaborAdvisor(self)
+        self.labor_advisor = LaborAdvisor(self)
         self.employees = 0
         self.prefect = Prefect(self)
         self.requiredEmployees = 5
