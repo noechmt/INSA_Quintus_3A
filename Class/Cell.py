@@ -53,6 +53,17 @@ class Cell:  # Une case de la map
         self.init_screen_coordonates()
         self.display()
 
+    def handle_move(self, move, m):
+        if move == "up":
+            self.top += 8 * m
+        if move == "down":
+            self.top -= 8 * m
+        if move == "right":
+            self.left -= 8 * m
+        if move == "left":
+            self.left += 8 * m
+        self.display()
+
     def is_hovered(self, pos):
         # Initialize the number of intersections to 0
         intersections = 0

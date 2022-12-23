@@ -36,17 +36,35 @@ def game_screen():
 
     # Dims without left panel
     height_wo_panel = HEIGH_SCREEN
-    width_wo_panel = WIDTH_SCREEN - WIDTH_SCREEN / 7.5
+    width_panel = WIDTH_SCREEN / 7.5
+    width_wo_panel = WIDTH_SCREEN - width_panel
 
     fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
     run = True
     clock = pygame.time.Clock()
     zoom = 1
+    move = 1
     while run:
+        pos = pygame.mouse.get_pos()
+        if move % 10 == 0:
+            if pos[1] <= 60:
+                map.handle_move("up", 3 - pos[1] / 20)
+                panel.display()
+            if pos[1] >= HEIGH_SCREEN - 60:
+                map.handle_move("down", 3 - (HEIGH_SCREEN - pos[1]) / 20)
+                panel.display()
+            if pos[0] <= 60:
+                map.handle_move("left", 3 - pos[0] / 20)
+                panel.display()
+            if pos[0] >= WIDTH_SCREEN - 60 and not panel.get_road_button().is_hovered(pos):
+                map.handle_move("right", 3 - (WIDTH_SCREEN - pos[0]) / 20)
+                panel.display()
+            move = 0
+        move += 1
         for event in pygame.event.get():
-            pos = pygame.mouse.get_pos()
             if event.type == pygame.QUIT:
                 run = False
+            # Move up
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     # spawn the grid if is clicked
@@ -62,20 +80,12 @@ def game_screen():
                 if event.button == 4:
                     if zoom <= 1.25:
                         zoom += 0.01
-                        SCREEN.fill((0, 0, 0))
-                        for x in range(40):
-                            for y in range(40):
-                                map.get_cell(x, y).handle_zoom(1)
-                        map.display_grid(0)
+                        map.handle_zoom(1)
                         panel.display()
                 if event.button == 5:
                     if zoom >= 0.95:
                         zoom -= 0.01
-                        SCREEN.fill((0, 0, 0))
-                        for x in range(40):
-                            for y in range(40):
-                                map.get_cell(x, y).handle_zoom(0)
-                        map.display_grid(0)
+                        map.handle_zoom(0)
                         panel.display()
 
             if event.type == pygame.MOUSEMOTION:

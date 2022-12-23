@@ -53,6 +53,20 @@ class Map:  # Un ensemble de cellule
         self.house_button_activated = False
         self.shovel_button_activated = False
 
+    def handle_zoom(self, zoom_in):
+        self.screen.fill((0, 0, 0))
+        for x in range(40):
+            for y in range(40):
+                self.get_cell(x, y).handle_zoom(zoom_in)
+        self.display_grid(0)
+
+    def handle_move(self, move, m):
+        self.screen.fill((0, 0, 0))
+        for x in range(40):
+            for y in range(40):
+                self.get_cell(x, y).handle_move(move, m)
+        self.display_grid(0)
+
     def update(self):
         for i in self.walkers:
             i.move()
