@@ -76,6 +76,7 @@ def game_screen():
                         map.handle_road_button()
                     if pos[0] <= width_wo_panel:
                         map.handle_click_cells(pos)
+                        panel.display()
                 # Zoom in
                 if event.button == 4:
                     if zoom <= 1.25:

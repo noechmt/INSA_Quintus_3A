@@ -10,6 +10,7 @@ class Map:  # Un ensemble de cellule
         self.height_land = height
         self.width_land = width
         self.screen = screen
+        self.grided = False
         self.array = [[Empty(j, i, self.height_land, self.width_land, self.screen, self) for i in range(
             size)] for j in range(size)]  # tableau de cellule (voir classe cellule) : list
         self.walkers = []
@@ -17,7 +18,6 @@ class Map:  # Un ensemble de cellule
         self.init_path()
         self.wallet = 3000
         self.update_hover = 0
-        self.grided = False
         self.road_button_activated = False
         self.house_button_activated = False
         self.shovel_button_activated = False
