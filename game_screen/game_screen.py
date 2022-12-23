@@ -107,20 +107,35 @@ def game_screen():
     fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
     run = True
     clock = pygame.time.Clock()
+    zoom = 1
     while run:
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                # spawn the grid if is clicked
-                if (grid_button.is_hovered(pos)):
-                    map.grid_map()
-                if (road_button.is_hovered(pos)):
-                    SCREEN.blit(pygame.transform.scale(panel_window_road, (WIDTH_SCREEN /
-                                                                           12-10, HEIGH_SCREEN/17)), (11*WIDTH_SCREEN/12+5, 0.18*HEIGH_SCREEN))
-                    map.handle_road_button()
-                map.handle_click_cells(pos)
+                if event.button == 1:
+                    # spawn the grid if is clicked
+                    if (grid_button.is_hovered(pos)):
+                        map.grid_map()
+                    if (road_button.is_hovered(pos)):
+                        SCREEN.blit(pygame.transform.scale(panel_window_road, (WIDTH_SCREEN /
+                                                                               12-10, HEIGH_SCREEN/17)), (11*WIDTH_SCREEN/12+5, 0.18*HEIGH_SCREEN))
+                        map.handle_road_button()
+                    map.handle_click_cells(pos)
+                # Zoom in
+                if event.button == 4:
+                    zoom += 0.01
+                    SCREEN.fill((0, 0, 0))
+                    for x in range(40):
+                        for y in range(40):
+                            map.get_cell(x, y).handle_zoom(1)
+                if event.button == 5:
+                    zoom -= 0.01
+                    SCREEN.fill((0, 0, 0))
+                    for x in range(40):
+                        for y in range(40):
+                            map.get_cell(x, y).handle_zoom(0)
 
             if event.type == pygame.MOUSEMOTION:
                 map.handle_hovered_cell(pos)

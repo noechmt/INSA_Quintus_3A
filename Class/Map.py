@@ -21,6 +21,7 @@ class Map:  # Un ensemble de cellule
         self.road_button_activated = False
         self.house_button_activated = False
         self.shovel_button_activated = False
+        self.zoom = 1
 
     def init_path(self):  # Permet d'initialiser le chemin de terre sur la map.
         for i in range(self.size):

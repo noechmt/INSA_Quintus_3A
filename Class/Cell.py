@@ -43,6 +43,16 @@ class Cell:  # Une case de la map
         self.screen.blit(pygame.transform.scale(
             self.sprite, (self.width, self.height)), (self.left, self.top))
 
+    def handle_zoom(self, zoom_in):
+        if zoom_in:
+            self.height *= 1.05
+            self.width *= 1.05
+        else:
+            self.height /= 1.05
+            self.width /= 1.05
+        self.init_screen_coordonates()
+        self.display()
+
     def is_hovered(self, pos):
         # Initialize the number of intersections to 0
         intersections = 0
