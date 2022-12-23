@@ -98,11 +98,14 @@ class Map:  # Un ensemble de cellule
 
     def grid_map(self):
         self.grided = not self.grided
+        self.display_grid()
+
+    def display_grid(self, pushed=1):
         if self.grided:
             for x in range(40):
                 for y in range(40):
                     self.array[x][y].grid()
-        else:
+        elif pushed:
             for x in range(40):
                 for y in range(40):
                     self.array[x][y].display()
