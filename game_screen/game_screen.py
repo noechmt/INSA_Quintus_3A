@@ -30,6 +30,7 @@ def game_screen():
     height_land = HEIGH_SCREEN/60
     width_land = WIDTH_SCREEN*sqrt(2)/80
     SIZE = 40
+
     map = Map(SIZE, height_land, width_land, SCREEN)
 
     panel = Panel(SCREEN)
@@ -62,6 +63,11 @@ def game_screen():
             move = 0
         move += 1
         for event in pygame.event.get():
+            pos = pygame.mouse.get_pos()
+            x = round((pos[1]-HEIGH_SCREEN/6)/height_land -
+                      (WIDTH_SCREEN/2-WIDTH_SCREEN/12-pos[0])/width_land)-1
+            y = round((WIDTH_SCREEN/2-WIDTH_SCREEN/12 -
+                      pos[0])/width_land + (pos[1]-HEIGH_SCREEN/6)/height_land)
             if event.type == pygame.QUIT:
                 run = False
             # Move up
@@ -74,6 +80,9 @@ def game_screen():
                     if (panel.get_road_button().is_hovered(pos)):
                         panel.set_window("road")
                         map.handle_road_button()
+                    if (panel.home_button.is_hovered(pos)):
+                        panel.set_window("house")
+                        map.handle_house_button()
                     if pos[0] <= width_wo_panel:
                         map.handle_click_cells(pos)
                         panel.display()
@@ -88,7 +97,9 @@ def game_screen():
                         zoom -= 0.01
                         map.handle_zoom(0)
                         panel.display()
-
+                if (map.array[x][y].is_hovered(pos) and map.get_housed()):
+                    print(x, y)
+                    map.array[x][y].build("house")
             if event.type == pygame.MOUSEMOTION:
                 if pos[0] <= width_wo_panel:
                     map.handle_hovered_cell(pos)

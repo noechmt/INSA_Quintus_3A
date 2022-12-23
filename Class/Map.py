@@ -21,6 +21,8 @@ class Map:  # Un ensemble de cellule
         self.road_button_activated = False
         self.house_button_activated = False
         self.shovel_button_activated = False
+        self.housed = False
+        self.prefectured = False
         self.zoom = 1
 
     def init_path(self):  # Permet d'initialiser le chemin de terre sur la map.
@@ -48,6 +50,12 @@ class Map:  # Un ensemble de cellule
         self.house_button_activated = False
         self.shovel_button_activated = False
 
+    def handle_house_button(self):
+        self.road_button_activated = False
+        self.house_button_activated = True
+        self.shovel_button_activated = False
+        print(self.house_button_activated)
+
     def handle_esc(self):
         self.road_button_activated = False
         self.house_button_activated = False
@@ -73,6 +81,7 @@ class Map:  # Un ensemble de cellule
 
     def set_cell_array(self, x, y, cell):
         self.array[x][y] = cell
+        self.array[x][y].display()
 
     def get_cell(self, x, y):
         if (x < 0 or x >= 40) or (y < 0 or y >= 40):
@@ -123,6 +132,15 @@ class Map:  # Un ensemble de cellule
             for x in range(40):
                 for y in range(40):
                     self.array[x][y].display()
+
+    def get_housed(self):
+        return self.house_button_activated
+
+    def prefecture_mod(self):
+        self.prefectured = not self.prefectured
+
+    def get_prefectured(self):
+        return self.prefectured
 
     def get_height_land(self):
         return self.height_land

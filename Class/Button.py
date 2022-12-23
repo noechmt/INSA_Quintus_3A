@@ -11,6 +11,7 @@ class Button():
         self.color = color
         self.text = text
         self.darken = False
+        self.house = False
 
     def draw(self, screen):
         if self.image != None:
@@ -61,5 +62,3 @@ class Button():
         if not self.is_hovered(pos) and self.darken:
             self.darken = False
             self.draw(screen)
-
-    
