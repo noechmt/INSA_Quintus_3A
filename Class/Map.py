@@ -18,6 +18,9 @@ class Map:  # Un ensemble de cellule
         self.wallet = 3000
         self.update_hover = 0
         self.grided = False
+        self.road_button_activated = False
+        self.house_button_activated = False
+        self.shovel_button_activated = False
         self.housed = False
 
     def init_path(self):  # Permet d'initialiser le chemin de terre sur la map.
@@ -40,6 +43,16 @@ class Map:  # Un ensemble de cellule
             s += "\n"
         return s
 
+    def handle_road_button(self):
+        self.road_button_activated = True
+        self.house_button_activated = False
+        self.shovel_button_activated = False
+
+    def handle_esc(self):
+        self.road_button_activated = False
+        self.house_button_activated = False
+        self.shovel_button_activated = False
+
     def update(self):
         for i in self.walkers:
             i.move()
@@ -49,6 +62,8 @@ class Map:  # Un ensemble de cellule
         self.array[x][y].display()
 
     def get_cell(self, x, y):
+        if (x < 0 or x >= 40) or (y < 0 or y >= 40):
+            return None
         return self.array[x][y]
 
     def handle_hovered_cell(self, pos):
@@ -64,6 +79,10 @@ class Map:  # Un ensemble de cellule
                 for y in range(self.size):
                     self.get_cell(x, y).handle_hover_button(pos)
 
+    def handle_click_cells(self, pos):
+        for x in range(self.size):
+            for y in range(self.size):
+                self.get_cell(x, y).handle_click_cell(pos)
 
     def display(self):
         print(np.array([[(self.array[i][j].type_of_cell)
@@ -99,3 +118,9 @@ class Map:  # Un ensemble de cellule
         self.housed = g
 
 
+
+    def get_height_land(self):
+        return self.height_land
+
+    def get_width_land(self):
+        return self.width_land

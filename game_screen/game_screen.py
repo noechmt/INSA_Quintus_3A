@@ -59,6 +59,8 @@ def game_screen():
     # window upside button initialisation
     panel_window_home = pygame.image.load(
         "game_screen/game_screen_sprites/panel_window_home.png")
+    panel_window_road = pygame.image.load(
+        "game_screen/game_screen_sprites/panel_window_road.png")
     SCREEN.blit(pygame.transform.scale(panel_window_home, (WIDTH_SCREEN /
                 12-10, HEIGH_SCREEN/17)), (11*WIDTH_SCREEN/12+5, 0.18*HEIGH_SCREEN))
 
@@ -119,6 +121,12 @@ def game_screen():
                 # spawn the grid if is clicked
                 if (grid_button.is_hovered(pos)):
                     map.grid_map()
+                if (road_button.is_hovered(pos)):
+                    SCREEN.blit(pygame.transform.scale(panel_window_road, (WIDTH_SCREEN /
+                                                                           12-10, HEIGH_SCREEN/17)), (11*WIDTH_SCREEN/12+5, 0.18*HEIGH_SCREEN))
+                    map.handle_road_button()
+                map.handle_click_cells(pos)
+
                 if(home_button.is_hovered(pos)):
                     map.house_mod()
                 if(map.array[x][y].is_hovered(pos) and map.get_housed()):
@@ -129,9 +137,16 @@ def game_screen():
                 home_button.handle_hover_button(pos, SCREEN)
                 shovel_button.handle_hover_button(pos, SCREEN)
                 road_button.handle_hover_button(pos, SCREEN)
+            if event.type == pygame.KEYDOWN:
+                if pygame.key.get_pressed()[pygame.K_ESCAPE]:
+                    SCREEN.blit(pygame.transform.scale(panel_window_home, (WIDTH_SCREEN /
+                                                                           12-10, HEIGH_SCREEN/17)), (11*WIDTH_SCREEN/12+5, 0.18*HEIGH_SCREEN))
+                    map.handle_esc()
+
         clock.tick(60)
         fps = (int)(clock.get_fps())
-        pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(0, 0, 60, 40))
         text_fps = fps_font.render(str(fps), 1, (255, 255, 255))
-        SCREEN.blit(text_fps, (0, 0))
+        pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(
+            0, HEIGH_SCREEN - text_fps.get_size()[1], 60, 40))
+        SCREEN.blit(text_fps, (0, HEIGH_SCREEN - text_fps.get_size()[1]))
         pygame.display.flip()
