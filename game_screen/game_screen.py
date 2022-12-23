@@ -4,6 +4,7 @@ import numpy as np
 from Class.Cell import *
 from Class.Button import Button
 from Class.Map import *
+from Class.Panel import Panel
 
 # draw a rectangle with an opacity option
 
@@ -30,79 +31,12 @@ def game_screen():
     width_land = WIDTH_SCREEN*sqrt(2)/80
     SIZE = 40
     map = Map(SIZE, height_land, width_land, SCREEN)
-    # background panel initialisation
-    panel_background = pygame.image.load(
-        "game_screen/game_screen_sprites/panel_background.png")
-    for i in range(2):
-        for j in range(9):
-            SCREEN.blit(pygame.transform.scale(panel_background, (WIDTH_SCREEN/24,
-                        HEIGH_SCREEN/10)), ((((i+22)/24)*WIDTH_SCREEN), (j/10)*HEIGH_SCREEN))
-    draw_rect_alpha(SCREEN, (50, 50, 50, 60), (WIDTH_SCREEN *
-                    (11/12), 0, WIDTH_SCREEN/12, HEIGH_SCREEN*9/10))
 
-    # panel overlays initialisation (on the top of the panel)
-    panel_overlays = pygame.image.load(
-        "game_screen/game_screen_sprites/paneling_overlays.png")
-    SCREEN.blit(pygame.transform.scale(panel_overlays, (WIDTH_SCREEN/18,
-                HEIGH_SCREEN/36)), (11*WIDTH_SCREEN/12+5, HEIGH_SCREEN/32+2))
-
-    # white rectangle under the button on the panel
-    draw_rect_alpha(SCREEN, (255, 255, 255, 127), (177*WIDTH_SCREEN/192-2,
-                    0.25*HEIGH_SCREEN-2, (WIDTH_SCREEN)/48+4, (HEIGH_SCREEN)/40+4))
-    draw_rect_alpha(SCREEN, (255, 255, 255, 127), (182*WIDTH_SCREEN/192-2,
-                    0.25*HEIGH_SCREEN-2, (WIDTH_SCREEN)/48+4, (HEIGH_SCREEN)/40+4))
-    draw_rect_alpha(SCREEN, (255, 255, 255, 127), (187*WIDTH_SCREEN/192-2,
-                    0.25*HEIGH_SCREEN-2, (WIDTH_SCREEN)/48+4, (HEIGH_SCREEN)/40+4))
-
-    # window upside button initialisation
-    panel_window_home = pygame.image.load(
-        "game_screen/game_screen_sprites/panel_window_home.png")
-    panel_window_road = pygame.image.load(
-        "game_screen/game_screen_sprites/panel_window_road.png")
-    SCREEN.blit(pygame.transform.scale(panel_window_home, (WIDTH_SCREEN /
-                12-10, HEIGH_SCREEN/17)), (11*WIDTH_SCREEN/12+5, 0.18*HEIGH_SCREEN))
-
-    # panel grid button initialisation
-    panel_grid_button = pygame.image.load(
-        "game_screen/game_screen_sprites/paneling_grid_button.png")
-    grid_button = Button(177*WIDTH_SCREEN/192, 0.125*HEIGH_SCREEN,
-                         WIDTH_SCREEN/48, HEIGH_SCREEN/40, panel_grid_button)
-    grid_button.draw(SCREEN)
-
-    # panel home button initialisation
-    panel_home_button = pygame.image.load(
-        "game_screen/game_screen_sprites/paneling_home_button.png")
-    home_button = Button(177*WIDTH_SCREEN/192, 0.25*HEIGH_SCREEN,
-                         WIDTH_SCREEN/48, HEIGH_SCREEN/40, panel_home_button)
-    home_button.draw(SCREEN)
-
-    # panel shovel button initialisation
-    panel_shovel_button = pygame.image.load(
-        "game_screen/game_screen_sprites/paneling_shovel_button.png")
-    shovel_button = Button(182*WIDTH_SCREEN/192, 0.25*HEIGH_SCREEN,
-                           WIDTH_SCREEN/48, HEIGH_SCREEN/40, panel_shovel_button)
-    shovel_button.draw(SCREEN)
-
-    # panel road button initialisation
-    panel_road_button = pygame.image.load(
-        "game_screen/game_screen_sprites/paneling_road_button.png")
-    road_button = Button(187*WIDTH_SCREEN/192, 0.25*HEIGH_SCREEN,
-                         WIDTH_SCREEN/48, HEIGH_SCREEN/40, panel_road_button)
-    road_button.draw(SCREEN)
-
-    # panel information initialisation
-    draw_rect_alpha(SCREEN, (25, 25, 25, 127), (WIDTH_SCREEN*(11/12)+2,
-                    HEIGH_SCREEN*(8/17), WIDTH_SCREEN/12-4, 3*HEIGH_SCREEN/7-2))
-
-    # bottom panel initialisation
-    panel_bottom = pygame.image.load(
-        "game_screen/game_screen_sprites/paneling_bot.png")
-    SCREEN.blit(pygame.transform.scale(panel_bottom, (WIDTH_SCREEN/12,
-                HEIGH_SCREEN/10)), (((11/12)*WIDTH_SCREEN), (0.9*HEIGH_SCREEN)))
+    panel = Panel(SCREEN)
 
     # Dims without left panel
     height_wo_panel = HEIGH_SCREEN
-    width_wo_panel = WIDTH_SCREEN - (WIDTH_SCREEN/7)
+    width_wo_panel = WIDTH_SCREEN - WIDTH_SCREEN / 7.5
 
     fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
     run = True
@@ -115,38 +49,42 @@ def game_screen():
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    # spawn the grid if is clicked
-                    if (grid_button.is_hovered(pos)):
-                        map.grid_map()
-                    if (road_button.is_hovered(pos)):
-                        SCREEN.blit(pygame.transform.scale(panel_window_road, (WIDTH_SCREEN /
-                                                                               12-10, HEIGH_SCREEN/17)), (11*WIDTH_SCREEN/12+5, 0.18*HEIGH_SCREEN))
-                        map.handle_road_button()
-                    map.handle_click_cells(pos)
+                    if pos[0] <= width_wo_panel:
+                        # spawn the grid if is clicked
+                        if (panel.get_grid_button().is_hovered(pos)):
+                            map.grid_map()
+                        if (panel.get_road_button().is_hovered(pos)):
+                            panel.set_window("road")
+                            map.handle_road_button()
+                        map.handle_click_cells(pos)
                 # Zoom in
                 if event.button == 4:
-                    zoom += 0.01
-                    SCREEN.fill((0, 0, 0))
-                    for x in range(40):
-                        for y in range(40):
-                            map.get_cell(x, y).handle_zoom(1)
+                    if zoom <= 1.25:
+                        zoom += 0.01
+                        SCREEN.fill((0, 0, 0))
+                        for x in range(40):
+                            for y in range(40):
+                                map.get_cell(x, y).handle_zoom(1)
+                        panel.display()
                 if event.button == 5:
-                    zoom -= 0.01
-                    SCREEN.fill((0, 0, 0))
-                    for x in range(40):
-                        for y in range(40):
-                            map.get_cell(x, y).handle_zoom(0)
+                    if zoom >= 0.95:
+                        zoom -= 0.01
+                        SCREEN.fill((0, 0, 0))
+                        for x in range(40):
+                            for y in range(40):
+                                map.get_cell(x, y).handle_zoom(0)
+                        panel.display()
 
             if event.type == pygame.MOUSEMOTION:
-                map.handle_hovered_cell(pos)
-                grid_button.handle_hover_button(pos, SCREEN)
-                home_button.handle_hover_button(pos, SCREEN)
-                shovel_button.handle_hover_button(pos, SCREEN)
-                road_button.handle_hover_button(pos, SCREEN)
+                if pos[0] <= width_wo_panel:
+                    map.handle_hovered_cell(pos)
+                panel.get_grid_button().handle_hover_button(pos, SCREEN)
+                panel.get_home_button().handle_hover_button(pos, SCREEN)
+                panel.get_shovel_button().handle_hover_button(pos, SCREEN)
+                panel.get_road_button().handle_hover_button(pos, SCREEN)
             if event.type == pygame.KEYDOWN:
                 if pygame.key.get_pressed()[pygame.K_ESCAPE]:
-                    SCREEN.blit(pygame.transform.scale(panel_window_home, (WIDTH_SCREEN /
-                                                                           12-10, HEIGH_SCREEN/17)), (11*WIDTH_SCREEN/12+5, 0.18*HEIGH_SCREEN))
+                    panel.set_window("home")
                     map.handle_esc()
 
         clock.tick(60)
