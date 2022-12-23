@@ -88,9 +88,9 @@ class Cell:  # Une case de la map
             self.grid()
 
     def handle_click_cell(self, pos):
-        if self.is_hovered(pos) and isinstance(self, Empty):
+        if self.is_hovered(pos) and isinstance(self, Empty) and self.map.road_button_activated:
             self.map.set_cell_array(self.x, self.y, Path(self.x, self.y,
-                                                         self.map.get_height_land(), self.map.get_width_land(), self.screen, self.map))
+                                                         self.height, self.width, self.screen, self.map))
             self.map.get_cell(self.x, self.y).handle_sprites()
 
     def get_points_polygone(self):
