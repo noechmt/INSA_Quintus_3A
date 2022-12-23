@@ -96,9 +96,9 @@ class Cell: #Une case de la map
         path = []
         for i in range(-1, 2) :
             for j in range(-1, 2) : 
-                if abs(i) != abs(j) and self.inMap(self.x + i, self.y + j):
-                    if isinstance(self.map.getCell(self.x + i,self.y + j), type):
-                        path.append(self.map.getCell(self.x + i, self.y + j))
+                if abs(i) != abs(j) and self.map.inMap(self.x + i, self.y + j):
+                    if isinstance(self.map.get_cell(self.x + i,self.y + j), type):
+                        path.append(self.map.get_cell(self.x + i, self.y + j))
         return path
 
     def build(self, type):
@@ -137,6 +137,8 @@ class Path(Cell):
     def __init__(self, x, y, height, width, screen, my_map, my_path_level=0):
         super().__init__(x, y, height, width, screen, my_map)
         self.level = my_path_level
+        self.sprite = pygame.image.load("walker_sprites/path/Land2a_00093.png")
+        self.display()
 
     def __str__(self):
         return f"Chemin { self.level}"
@@ -151,14 +153,7 @@ class Empty(Cell):
     def __str__(self):
         return self.type_empty
 
-<<<<<<< HEAD
-    def clear(self):
-        if self.type_empty == "trees" :
-            self.type_empty = "dirt" 
-            self.map.wallet -= 2
 
-=======
->>>>>>> 952ab134abc716e1e58b883703fd6a80ee7e970c
     def canBuild(self) : 
         return self.type_empty == "dirt"  
 

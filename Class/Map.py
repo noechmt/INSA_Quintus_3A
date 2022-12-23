@@ -12,7 +12,7 @@ class Map:#Un ensemble de cellule
         self.grided = False
         self.array = [[Empty(j,i, self.height_land, self.width_land,self.screen, self) for i in range (size)] for j in range(size)] #tableau de cellule (voir classe cellule) : list
         self.walkers = []
-        self.spawn_cell = self.array[0][0]
+        self.spawn_cell = self.array[39][19]
         self.init_path()
         self.wallet = 3000
         self.update_hover = 0
@@ -21,7 +21,7 @@ class Map:#Un ensemble de cellule
 
     def init_path(self) : #Permet d'initialiser le chemin de terre sur la map. 
         for i in range(self.size) :
-            #self.array[self.size-m.floor(self.size/4)][i] = Path(self.size-m.floor(self.size/4), i, self.height_land, self.width_land, self.screen, self) #On modifie la valeur des cellules pour représenter le chemin dans la matrice
+            self.array[self.size-m.floor(self.size/4)][i] = Path(self.size-m.floor(self.size/4), i, self.height_land, self.width_land, self.screen, self) #On modifie la valeur des cellules pour représenter le chemin dans la matrice
             #Pour aucune raison, le chemin est initialisé à 1/4 sur l'axe des y(vers le haut) de la map en partant de la gauche
             pass
 
@@ -44,9 +44,11 @@ class Map:#Un ensemble de cellule
     def inMap(self, x,y):
         return (0 <= x and x <= self.size-1 and 0 <= y and y <= self.size-1)
 
-    def update(self):
+    def update_walkers(self):
         for i in self.walkers:
             i.move()
+            i.display()
+            i.previousCell.display()
 
     def set_cell_array(self, x, y, cell):
         self.array[x][y] = cell

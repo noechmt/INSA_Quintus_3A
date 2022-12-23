@@ -102,6 +102,8 @@ def game_screen():
             y = round((WIDTH_SCREEN/2-WIDTH_SCREEN/12-pos[0])/width_land + (pos[1]-HEIGH_SCREEN/6)/height_land)
             text_click = fps_font.render(f"{x} {y}", 1, (255, 255, 255))
             SCREEN.blit(text_click, (0,20))
+            text_wallet = fps_font.render(f"{map.wallet}", 1, (255,255,255))
+            SCREEN.blit(text_wallet, (0, 40))
 
             if event.type == pygame.QUIT:
                 run = False
@@ -155,10 +157,14 @@ def game_screen():
                             selection["cells"].add(map.get_cell(i,j))
                             map.get_cell(i,j).handle_hover_button()
 
+                
                 grid_button.handle_hover_button(pos, SCREEN)
                 home_button.handle_hover_button(pos, SCREEN)
                 shovel_button.handle_hover_button(pos, SCREEN)
                 road_button.handle_hover_button(pos, SCREEN)
+
+            map.update_walkers()
+        
         clock.tick(60)
         fps = (int)(clock.get_fps())
         #pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(0, 0, 60, 40))
@@ -166,4 +172,5 @@ def game_screen():
         SCREEN.blit(text_fps, (0,0))
 
         pygame.display.flip()    
+
 

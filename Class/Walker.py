@@ -1,5 +1,6 @@
 import Class.Cell as Cell
 import random
+import pygame
 
 import networkx as nx
 
@@ -13,7 +14,12 @@ class Walker() :
         self.path = []
         self.ttl = 10
         print("Walker spawn")
-    
+        self.screen = self.currentCell.screen
+        self.walker_sprites = {}
+
+    def display(self) :
+        self.screen.blit(pygame.transform.scale(self.walker_sprites["top"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+
     def __str__(self) -> str:
         pass
     def path_finding(self, start, end):
@@ -41,7 +47,7 @@ class Walker() :
                         G.add_edge(i, j)
 
         #Calculate with the dijkstra algorithm the shortest path
-        #print("Path finding to reach", end, "from", start)
+        print("Path finding to reach", end, "from", start)
         self.path = nx.dijkstra_path(G, start, end)
 
     def cell_assignement(self, new_cell) : #si la position est différente des coordonnées de la cellule, on change currentCell
@@ -81,8 +87,10 @@ class Walker() :
 class Migrant(Walker):
     def __init__(self, building):
         super().__init__("migrant", building, False)
-        self.cell_assignement(self.currentCell.map.array[2][3])
+        self.cell_assignement(self.currentCell.map.array[30][39])
         building.map.walkers.append(self)
+        self.walker_sprites = dict((k,pygame.image.load("walker_sprites/test/migrant_" + k + ".png")) for k in ["top","bot","left","right"])
+        self.display()
 
     def __str__(self):
         return "Migrant"
