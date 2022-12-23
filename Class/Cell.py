@@ -127,7 +127,11 @@ class Cell: #Une case de la map
             pygame.draw.polygon(self.screen, (25,25,25), self.get_points_polygone(), 2)
         else : 
             self.display()
-        
+    
+    def clear(self):
+        if not (isinstance(self, Empty) and (self.type_empty == "rock" or self.type_empty == "water")):
+            self.type_empty = "dirt" 
+            self.map.wallet -= 2
 
 class Path(Cell):
     def __init__(self, x, y, height, width, screen, my_map, my_path_level=0):
@@ -147,11 +151,14 @@ class Empty(Cell):
     def __str__(self):
         return self.type_empty
 
+<<<<<<< HEAD
     def clear(self):
         if self.type_empty == "trees" :
             self.type_empty = "dirt" 
             self.map.wallet -= 2
 
+=======
+>>>>>>> 952ab134abc716e1e58b883703fd6a80ee7e970c
     def canBuild(self) : 
         return self.type_empty == "dirt"  
 
