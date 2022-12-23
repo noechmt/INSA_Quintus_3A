@@ -54,7 +54,6 @@ class Map:  # Un ensemble de cellule
         self.road_button_activated = False
         self.house_button_activated = True
         self.shovel_button_activated = False
-        print(self.house_button_activated)
 
     def handle_esc(self):
         self.road_button_activated = False
