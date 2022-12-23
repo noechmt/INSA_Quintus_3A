@@ -24,8 +24,7 @@ class Cell:  # Une case de la map
         self.map = map
         self.type = ""
         self.water = False
-        self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/house_" + str(0) + ".png")
+        self.sprite = ""
         self.screen = screen
         self.hovered = False
         self.grided = False
@@ -74,8 +73,16 @@ class Cell:  # Une case de la map
             if(self.map.get_housed()):
                 house_sprite = pygame.image.load("game_screen/game_screen_sprites/house_0.png")
                 self.screen.blit(pygame.transform.scale(house_sprite, (self.width, self.height)), (self.left, self.top))
-            draw_polygon_alpha(self.screen, (0, 0, 0, 85),
-                               self.get_points_polygone())
+                draw_polygon_alpha(self.screen, (255, 255, 255, 50),
+                                self.get_points_polygone())
+            elif(self.map.get_prefectured()):
+                prefecture_sprite = pygame.image.load("game_screen/game_screen_sprites/prefecture.png")
+                self.screen.blit(pygame.transform.scale(prefecture_sprite, (self.width, self.height)), (self.left, self.top))
+                draw_polygon_alpha(self.screen, (255, 255, 255, 50),
+                                self.get_points_polygone())
+            else:
+                draw_polygon_alpha(self.screen, (0, 0, 0, 85),
+                                self.get_points_polygone())
         if not is_hovered and self.hovered:
             self.hovered = False
             self.display()
@@ -341,6 +348,8 @@ class House(Building):  # la maison fils de building (?)
         self.unemployedCount = 0
         self.migrant = Migrant(self)
         self.fire = RiskEvent("fire")
+        self.sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/house_" + str(self.level) + ".png")
 
     def __str__(self):
         return f"House { self.level}"
@@ -377,6 +386,8 @@ class Prefecture(Building):
         self.prefect = Prefect(self)
         self.requiredEmployees = 5
         self.risk = RiskEvent("fire")
+        self.sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/prefecture.png")
 
     def __str__(self):
         return f"Prefecture { self.employees}"

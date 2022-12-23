@@ -21,6 +21,7 @@ class Map:  # Un ensemble de cellule
         self.road_button_activated = False
         self.house_button_activated = False
         self.shovel_button_activated = False
+        self.prefecture_button_activated = False
         self.housed = False
         self.prefectured = False
 
@@ -48,17 +49,25 @@ class Map:  # Un ensemble de cellule
         self.road_button_activated = True
         self.house_button_activated = False
         self.shovel_button_activated = False
+        self.prefecture_button_activated = False
 
     def handle_house_button(self):
         self.road_button_activated = False
         self.house_button_activated = True
         self.shovel_button_activated = False
-        print(self.house_button_activated)
+        self.prefecture_button_activated = False
 
     def handle_esc(self):
         self.road_button_activated = False
         self.house_button_activated = False
         self.shovel_button_activated = False
+        self.prefecture_button_activated = False
+
+    def handle_prefecture_button(self):
+        self.road_button_activated = False
+        self.house_button_activated = False
+        self.shovel_button_activated = False
+        self.prefecture_button_activated = True
 
     def update(self):
         for i in self.walkers:
@@ -117,12 +126,9 @@ class Map:  # Un ensemble de cellule
 
     def get_housed(self):
         return self.house_button_activated
-
-    def prefecture_mod(self):
-        self.prefectured = not self.prefectured
     
     def get_prefectured(self):
-        return self.prefectured
+        return self.prefecture_button_activated
 
     def get_height_land(self):
         return self.height_land
