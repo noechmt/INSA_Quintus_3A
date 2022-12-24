@@ -9,6 +9,8 @@ class Map:  # Un ensemble de cellule
         self.size = size  # La taille de la map est size*size : int
         self.height_land = height
         self.width_land = width
+        self.offset_top = 0
+        self.offset_left = 0
         self.screen = screen
         self.grided = False
         self.array = [[Empty(j, i, self.height_land, self.width_land, self.screen, self) for i in range(
@@ -55,6 +57,11 @@ class Map:  # Un ensemble de cellule
         self.house_button_activated = True
         self.shovel_button_activated = False
 
+    def handle_shovel_button(self):
+        self.road_button_activated = False
+        self.house_button_activated = False
+        self.shovel_button_activated = True
+
     def handle_esc(self):
         self.road_button_activated = False
         self.house_button_activated = False
@@ -62,6 +69,13 @@ class Map:  # Un ensemble de cellule
 
     def handle_zoom(self, zoom_in):
         self.screen.fill((0, 0, 0))
+        self.offset_left, self.offset_top = (0,0)
+        if zoom_in:
+            self.height_land *= 1.04
+            self.width_land *= 1.04
+        else:
+            self.height_land /= 1.04
+            self.width_land /= 1.04
         for x in range(40):
             for y in range(40):
                 self.get_cell(x, y).handle_zoom(zoom_in)
@@ -73,6 +87,10 @@ class Map:  # Un ensemble de cellule
             for y in range(40):
                 self.get_cell(x, y).handle_move(move, m)
         self.display_grid(0)
+
+    #Check if these coordinates are in the map
+    def inMap(self, x,y):
+        return (0 <= x and x <= self.size-1 and 0 <= y and y <= self.size-1)
 
     def update(self):
         for i in self.walkers:
@@ -87,18 +105,18 @@ class Map:  # Un ensemble de cellule
             return None
         return self.array[x][y]
 
-    def handle_hovered_cell(self, pos):
-        # Goal of using update_hover :
-        # Pygame uses almost all of the ressources with the graphics
-        # And updating the hovering case doesn't need to be at 60 per seconds
-        # Only 3, 5, or maybe even is engough
-        # It uses way less ressources and doesn't have a visual effect
-        self.update_hover += 1
-        if (self.update_hover == 10):
-            self.update_hover = 0
-            for x in range(self.size):
-                for y in range(self.size):
-                    self.get_cell(x, y).handle_hover_button(pos)
+    # def handle_hovered_cell(self, pos):
+    #     # Goal of using update_hover :
+    #     # Pygame uses almost all of the ressources with the graphics
+    #     # And updating the hovering case doesn't need to be at 60 per seconds
+    #     # Only 3, 5, or maybe even is engough
+    #     # It uses way less ressources and doesn't have a visual effect
+    #     self.update_hover += 1
+    #     if (self.update_hover == 10):
+    #         self.update_hover = 0
+    #         for x in range(self.size):
+    #             for y in range(self.size):
+    #                 self.get_cell(x, y).handle_hover_button(pos)
 
     def handle_click_cells(self, pos):
         for x in range(self.size):
@@ -134,6 +152,12 @@ class Map:  # Un ensemble de cellule
 
     def get_housed(self):
         return self.house_button_activated
+
+    def get_shoveled(self):
+        return self.shovel_button_activated
+    
+    def get_road_button_activated(self):
+        return self.road_button_activated
 
     def prefecture_mod(self):
         self.prefectured = not self.prefectured

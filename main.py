@@ -10,7 +10,8 @@ assert sys.version[0:4] == "3.10", "Merci d'utiliser une version de python >= 3.
 # Check if all the dependencies are installed
 os.system(str(sys.executable) + " -m pip install -r requirements.txt")
 
-if __name__ == "__main__":
+if __name__ == "__main__":      
     if (title_screen()):
         game_screen()
     pygame.quit()
+    

@@ -11,7 +11,8 @@ class Walker() :
         self.previousCell = None
         self.inBuilding = state
         self.path = []
-        self.ttl = 10   
+        self.ttl = 10
+        print("Walker spawn")
     
     def __str__(self) -> str:
         pass
