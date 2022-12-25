@@ -4,6 +4,9 @@ import pygame
 
 import networkx as nx
 
+def rm_dup_list(x):
+  return list(dict.fromkeys(x))
+
 class Walker() : 
     def __init__(self, job, building, state) :
         self.job = job #le métier (migrant, worker, etc) : string
@@ -12,13 +15,24 @@ class Walker() :
         self.previousCell = None
         self.inBuilding = state
         self.path = []
-        self.ttl = 10
+        self.ttl = 20
+        self.wait = 0
         print("Walker spawn")
         self.screen = self.currentCell.screen
         self.walker_sprites = {}
+        self.alive = False
 
     def display(self) :
-        self.screen.blit(pygame.transform.scale(self.walker_sprites["top"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+        if self.previousCell.x < self.currentCell.x :
+            self.screen.blit(pygame.transform.scale(self.walker_sprites["right"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+        elif self.previousCell.x > self.currentCell.x :
+             self.screen.blit(pygame.transform.scale(self.walker_sprites["left"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+        elif self.previousCell.y < self.currentCell.y :
+             self.screen.blit(pygame.transform.scale(self.walker_sprites["bot"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+        elif self.previousCell.y > self.currentCell.y :
+             self.screen.blit(pygame.transform.scale(self.walker_sprites["top"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+        elif self.inBuilding == True :
+            self.currentCell.display()
 
     def __str__(self) -> str:
         pass
@@ -47,7 +61,7 @@ class Walker() :
                         G.add_edge(i, j)
 
         #Calculate with the dijkstra algorithm the shortest path
-        print("Path finding to reach", end, "from", start)
+        # print("Path finding to reach", end, "from", start)
         self.path = nx.dijkstra_path(G, start, end)
 
     def cell_assignement(self, new_cell) : #si la position est différente des coordonnées de la cellule, on change currentCell
@@ -61,14 +75,20 @@ class Walker() :
         assert len(path) != 0
         self.cell_assignement(random.choice(path))
         self.inBuilding = False
-        self.building.map.walkers.append(self)
+        # if not isinstance(self, Prefect) and not isinstance(self, Engineer) :
+        if not self.alive :
+            self.building.map.walkers.append(self)
+            self.alive = True
+        
         print("Walker is leaving the building on the cell " + str(self.currentCell.x)+ ";" + str(self.currentCell.y))
 
     def enter_building(self):
         assert self.building in self.currentCell.check_cell_around(type(self.building))
         self.cell_assignement(self.building)
         self.inBuilding = True
-        self.building.map.walkers.remove(self)
+        print("walker enters" )
+        if not isinstance(self, Prefect) and not isinstance(self, Engineer) :
+            self.building.map.walkers.remove(self)
 
     def move(self):
         path = self.currentCell.check_cell_around(Cell.Path)
@@ -90,7 +110,8 @@ class Migrant(Walker):
         self.cell_assignement(self.currentCell.map.array[30][39])
         building.map.walkers.append(self)
         self.walker_sprites = dict((k,pygame.image.load("walker_sprites/test/migrant_" + k + ".png")) for k in ["top","bot","left","right"])
-        self.display()
+        self.screen.blit(pygame.transform.scale(self.walker_sprites["top"], 
+        (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
 
     def __str__(self):
         return "Migrant"
@@ -112,6 +133,7 @@ class LaborAdvisor(Walker) :
     def __init__(self, building):
         super().__init__("labor advisor", building, True)
         self.leave_building()
+        self.walker_sprites = dict((k,pygame.image.load("walker_sprites/test/migrant_" + k + ".png")) for k in ["top","bot","left","right"])
 
     def __str__(self):
         return "Labor Advisor"
@@ -145,17 +167,26 @@ class Prefect(Walker) :
     def __init__(self, current_prefecture):
         super().__init__("prefect" , current_prefecture, True)
         self.current_building = current_prefecture
+        self.walker_sprites = dict((k,pygame.image.load("walker_sprites/test/prefect_" + k + ".png")) for k in ["top","bot","left","right"])
 
     def __str__(self):
         return "Prefect"
 
     def move(self) :
+        print(len(self.path))
+        self.wait += 1
+        if self.wait <= 10 :
+            return
+        print("yoyoyoyo")
         if self.inBuilding: self.leave_building()
-        elif len(self.path) == 1: self.enter_building()
+        elif len(self.path) == 1: 
+            self.enter_building()
+            self.wait = 0
         else:
             if self.ttl == 0:
                 if len(self.path) == 0: self.path_finding(self.currentCell, self.building)
                 self.movePathFinding()
+                if self.currentCell == self.current_building : self.ttl = 20
             else:
                 super().move()
                 self.ttl -= 1
@@ -191,3 +222,9 @@ class Engineer(Walker):
                 #Method that can reset the risk / timer
                 pass
 
+
+
+# x increase -> right 
+# x decrease -> left 
+# y increase -> bot
+# y decrease -> top 

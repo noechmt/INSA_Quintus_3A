@@ -90,7 +90,8 @@ def game_screen():
     active_pannel = {"house": False, "shovel": False, "path": False}
     hovered_cell = None
     
-
+    walker_update_count = 0
+    tmpbool = True
     while run:
 
         for event in pygame.event.get():
@@ -163,8 +164,15 @@ def game_screen():
                 shovel_button.handle_hover_button(pos, SCREEN)
                 road_button.handle_hover_button(pos, SCREEN)
 
+        walker_update_count += 1
+        # print(walker_update_count)
+        if walker_update_count == 10:
             map.update_walkers()
-        
+            # print("break")
+            walker_update_count = 0
+        if tmpbool : 
+            map.array[13][29] = Prefecture(13, 29, map.height_land, map.width_land,map.screen, map)
+            tmpbool = False
         clock.tick(60)
         fps = (int)(clock.get_fps())
         #pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(0, 0, 60, 40))

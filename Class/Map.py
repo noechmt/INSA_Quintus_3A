@@ -22,7 +22,7 @@ class Map:#Un ensemble de cellule
     def init_path(self) : #Permet d'initialiser le chemin de terre sur la map. 
         for i in range(self.size) :
             self.array[self.size-m.floor(self.size/4)][i] = Path(self.size-m.floor(self.size/4), i, self.height_land, self.width_land, self.screen, self) #On modifie la valeur des cellules pour représenter le chemin dans la matrice
-            #Pour aucune raison, le chemin est initialisé à 1/4 sur l'axe des y(vers le haut) de la map en partant de la gauche
+            self.array[i][self.size-m.floor(self.size/4)] = Path(i, self.size-m.floor(self.size/4), self.height_land, self.width_land, self.screen, self)
             pass
 
         

@@ -213,6 +213,7 @@ class Prefecture(Building) :
         self.prefect = Prefect(self)
         self.requiredEmployees = 5
         self.risk = RiskEvent("fire")
+        self.sprite = pygame.image.load("walker_sprites/test/Housng1a_00019.png")
 
     def __str__(self):
         return f"Prefecture { self.employees}"
