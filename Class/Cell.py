@@ -46,7 +46,8 @@ class Cell:  # Une case de la map
     def display(self):
         self.screen.blit(pygame.transform.scale(
             self.sprite, (self.width, self.height)), (self.left, self.top))
-        if self.map.grided: self.grid()
+        if self.map.grided:
+            self.grid()
 
     def handle_zoom(self, zoom_in):
         if zoom_in:
@@ -95,19 +96,24 @@ class Cell:  # Une case de la map
     def handle_hover_button(self):
         #is_hovered = self.is_hovered(pos)
         # if is_hovered and not self.hovered:
-            #self.hovered = True
-            if(self.map.get_housed()):
-                if self.isBuildable():
-                    house_sprite = pygame.image.load("game_screen/game_screen_sprites/house_0.png")
-                    self.screen.blit(pygame.transform.scale(house_sprite, (self.width, self.height)), (self.left, self.top))
-                    draw_polygon_alpha(self.screen, (0, 0, 0, 85),
-                               self.get_points_polygone())
-                else:
-                    draw_polygon_alpha(self.screen, (255, 0, 0, 85), self.get_points_polygone())
-            elif self.map.get_road_button_activated() and not self.isBuildable():
-                draw_polygon_alpha(self.screen, (255, 0, 0, 85), self.get_points_polygone())
+        #self.hovered = True
+        if (self.map.get_housed()):
+            if self.isBuildable():
+                house_sprite = pygame.image.load(
+                    "game_screen/game_screen_sprites/house_0.png")
+                self.screen.blit(pygame.transform.scale(
+                    house_sprite, (self.width, self.height)), (self.left, self.top))
+                draw_polygon_alpha(self.screen, (0, 0, 0, 85),
+                                   self.get_points_polygone())
             else:
-                draw_polygon_alpha(self.screen, (0, 0, 0, 85), self.get_points_polygone())
+                draw_polygon_alpha(self.screen, (255, 0, 0, 85),
+                                   self.get_points_polygone())
+        elif self.map.get_road_button_activated() and not self.isBuildable():
+            draw_polygon_alpha(self.screen, (255, 0, 0, 85),
+                               self.get_points_polygone())
+        else:
+            draw_polygon_alpha(self.screen, (0, 0, 0, 85),
+                               self.get_points_polygone())
         # if not is_hovered and self.hovered:
         #     self.hovered = False
         #     self.display()
@@ -138,8 +144,8 @@ class Cell:  # Une case de la map
     def set_hover(self, hover):
         self.hover = hover
 
-    #Return an cell array which match with the class type (ex: Path, Prefecture (not a string)) in argument
-    def check_cell_around(self, type) :
+    # Return an cell array which match with the class type (ex: Path, Prefecture (not a string)) in argument
+    def check_cell_around(self, type):
         path = []
         for i in range(-1, 2):
             for j in range(-1, 2):
@@ -154,21 +160,24 @@ class Cell:  # Une case de la map
         else:
             match type:
                 case "path":
-                    self.map.set_cell_array(self.x, self.y, Path(self.x, self.y, self.height, self.width, self.screen, self.map))
+                    self.map.set_cell_array(self.x, self.y, Path(
+                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                    self.map.get_cell(self.x, self.y).handle_sprites()
                     self.map.wallet -= 4
                 case "house":
-                    self.map.set_cell_array(self.x, self.y, House(self.x, self.y, self.height, self.width, self.screen, self.map))
+                    self.map.set_cell_array(self.x, self.y, House(
+                        self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 10
                 case "well":
-                    self.map.set_cell_array(self.x, self.y,Well(
+                    self.map.set_cell_array(self.x, self.y, Well(
                         self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 5
                 case "prefecture":
-                    self.map.set_cell_array(self.x, self.y,Prefecture(
+                    self.map.set_cell_array(self.x, self.y, Prefecture(
                         self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 30
                 case "engineer post":
-                    self.map.set_cell_array(self.x, self.y,EngineerPost(
+                    self.map.set_cell_array(self.x, self.y, EngineerPost(
                         self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 30
 
@@ -181,7 +190,7 @@ class Cell:  # Une case de la map
 
     def clear(self):
         if not (isinstance(self, Empty) and (self.type_empty == "rock" or self.type_empty == "water")):
-            self.type_empty = "dirt" 
+            self.type_empty = "dirt"
             self.map.wallet -= 2
 
     def set_type(self, type):
@@ -366,6 +375,7 @@ class Empty(Cell):
             self.type_empty = "dirt"
             self.map.wallet -= 2
 
+
 class Building(Cell):  # un fils de cellule (pas encore sûr de l'utilité)
     def __init__(self, x, y, height, width, screen, my_map):
         super().__init__(x, y, height, width, screen, my_map)
@@ -385,8 +395,9 @@ class House(Building):  # la maison fils de building (?)
         self.unemployedCount = 0
         self.migrant = Migrant(self)
         self.fire = RiskEvent("fire")
-        #Temporary
-        self.sprite = pygame.image.load("game_screen/game_screen_sprites/house_"+ str(self.level) +".png")
+        # Temporary
+        self.sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/house_" + str(self.level) + ".png")
         self.display()
 
     def __str__(self):
