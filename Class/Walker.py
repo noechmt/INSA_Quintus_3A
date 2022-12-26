@@ -15,12 +15,13 @@ class Walker() :
         self.previousCell = None
         self.inBuilding = state
         self.path = []
-        self.ttl = 20
+        self.ttl = 50
         self.wait = 0
         print("Walker spawn")
         self.screen = self.currentCell.screen
         self.walker_sprites = {}
         self.alive = False
+        self.isWandering = False
 
     def display(self) :
         if self.previousCell.x < self.currentCell.x :
@@ -63,6 +64,7 @@ class Walker() :
         #Calculate with the dijkstra algorithm the shortest path
         # print("Path finding to reach", end, "from", start)
         self.path = nx.dijkstra_path(G, start, end)
+        self.isWandering = False
 
     def cell_assignement(self, new_cell) : #si la position est différente des coordonnées de la cellule, on change currentCell
         #if (self.position_x != self.currentCell.x or self.position_y != self.currentCell.y ) :
@@ -71,6 +73,8 @@ class Walker() :
 
     #if (self.building.employees == self.building.required_employees) :
     def leave_building(self) :
+        self.isWandering = True
+        print(self.isWandering)
         path = self.currentCell.check_cell_around(Cell.Path)
         assert len(path) != 0
         self.cell_assignement(random.choice(path))
@@ -80,6 +84,7 @@ class Walker() :
             self.building.map.walkers.append(self)
             self.alive = True
         
+
         print("Walker is leaving the building on the cell " + str(self.currentCell.x)+ ";" + str(self.currentCell.y))
 
     def enter_building(self):
@@ -173,20 +178,19 @@ class Prefect(Walker) :
         return "Prefect"
 
     def move(self) :
-        print(len(self.path))
         self.wait += 1
         if self.wait <= 10 :
             return
         print("yoyoyoyo")
         if self.inBuilding: self.leave_building()
-        elif len(self.path) == 1: 
+        elif len(self.path) == 1 and not self.isWandering : 
             self.enter_building()
             self.wait = 0
         else:
             if self.ttl == 0:
                 if len(self.path) == 0: self.path_finding(self.currentCell, self.building)
                 self.movePathFinding()
-                if self.currentCell == self.current_building : self.ttl = 20
+                if self.currentCell == self.current_building : self.ttl = 50
             else:
                 super().move()
                 self.ttl -= 1
