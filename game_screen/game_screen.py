@@ -52,7 +52,7 @@ def game_screen():
     move = 1
     while run:
         pos = pygame.mouse.get_pos()
-        if move % 10 == 0:
+        """ if move % 10 == 0:
             if pos[1] <= 60:
                 map.offset_top += 15*(3 - pos[1] / 20)
                 map.handle_move("up", 3 - pos[1] / 20)
@@ -70,7 +70,8 @@ def game_screen():
                 map.handle_move("right", 3 - (WIDTH_SCREEN - pos[0]) / 20)
                 panel.display()
             move = 0
-        move += 1
+        move += 1"""
+
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
 

@@ -41,10 +41,22 @@ class Cell:  # Une case de la map
             self.width*self.x/2 - self.width*self.y/2
         self.top = self.HEIGHT_SCREEN/6 + self.x * \
             self.height/2 + self.y * self.height/2
+        self.bot = self.HEIGHT_SCREEN/6 +self.x*self.height/2 + self.y*self.height/2 
 
     def display(self):
-        self.screen.blit(pygame.transform.scale(
-            self.sprite, (self.width, self.height)), (self.left, self.top))
+        print(self.type)
+        if(self.type == "well"):
+            self.screen.blit(pygame.transform.scale(
+            self.sprite, (self.width, self.height*53/30)), (self.left, self.top - self.height*23/30))
+        elif(self.type == "engineer post"):
+            self.screen.blit(pygame.transform.scale(
+            self.sprite, (self.width, self.height*50/30)), (self.left, self.top - self.height*20/30))
+        elif(self.type == "prefecture"):
+            self.screen.blit(pygame.transform.scale(
+            self.sprite, (self.width, self.height*38/30)), (self.left, self.top - self.height*8/30))
+        else:
+            self.screen.blit(pygame.transform.scale(
+                self.sprite, (self.width, self.height)), (self.left, self.top))
         if self.map.grided:
             self.grid()
 
@@ -397,6 +409,7 @@ class House(Building):  # la maison fils de building (?)
         # Temporary
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/house_" + str(self.level) + ".png")
+        self.type = "house"
         self.display()
 
     def __str__(self):
@@ -424,6 +437,7 @@ class Well(Building):
 
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/well.png")
+        self.type = "well"
 
 
     def __str__(self):
@@ -438,9 +452,9 @@ class Prefecture(Building):
         self.prefect = Prefect(self)
         self.requiredEmployees = 5
         self.risk = RiskEvent("fire")
-        print("caca")
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/prefecture.png")
+        self.type="prefecture"
 
     def __str__(self):
         return f"Prefecture { self.employees}"
@@ -458,6 +472,7 @@ class EngineerPost(Building):
         self.risk = RiskEvent("collapse")
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/engineerpost.png")
+        self.type="engineer post"
 
     def __str__(self):
         return "Engineer Post"
