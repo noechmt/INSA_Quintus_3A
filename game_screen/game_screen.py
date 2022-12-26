@@ -171,7 +171,7 @@ def game_screen():
                 panel.get_shovel_button().handle_hover_button(pos, SCREEN)
                 panel.get_road_button().handle_hover_button(pos, SCREEN)
                 panel.get_prefecture_button().handle_hover_button(pos, SCREEN)
-                panel.get_well_button().handle_hover_button(pos, SCREEN)
+                panel.get_engineerpost_button().handle_hover_button(pos, SCREEN)
                 panel.get_well_button().handle_hover_button(pos, SCREEN)
             
             if event.type == pygame.KEYDOWN:
