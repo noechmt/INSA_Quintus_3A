@@ -24,16 +24,17 @@ class Walker() :
         self.isWandering = False
 
     def display(self) :
-        if self.previousCell.x < self.currentCell.x :
-            self.screen.blit(pygame.transform.scale(self.walker_sprites["right"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
-        elif self.previousCell.x > self.currentCell.x :
-             self.screen.blit(pygame.transform.scale(self.walker_sprites["left"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
-        elif self.previousCell.y < self.currentCell.y :
-             self.screen.blit(pygame.transform.scale(self.walker_sprites["bot"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
-        elif self.previousCell.y > self.currentCell.y :
-             self.screen.blit(pygame.transform.scale(self.walker_sprites["top"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
-        elif self.inBuilding == True :
-            self.currentCell.display()
+        if not self.inBuilding :
+            if self.previousCell.x < self.currentCell.x :
+                self.screen.blit(pygame.transform.scale(self.walker_sprites["right"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+            elif self.previousCell.x > self.currentCell.x :
+                self.screen.blit(pygame.transform.scale(self.walker_sprites["left"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+            elif self.previousCell.y < self.currentCell.y :
+                self.screen.blit(pygame.transform.scale(self.walker_sprites["bot"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+            elif self.previousCell.y > self.currentCell.y :
+                self.screen.blit(pygame.transform.scale(self.walker_sprites["top"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+        # elif self.inBuilding == True :
+        #     self.currentCell.display()
 
     def __str__(self) -> str:
         pass
@@ -91,7 +92,10 @@ class Walker() :
         assert self.building in self.currentCell.check_cell_around(type(self.building))
         self.cell_assignement(self.building)
         self.inBuilding = True
+        self.currentCell.display()
+        self.previousCell.display()
         print("walker enters" )
+
         if not isinstance(self, Prefect) and not isinstance(self, Engineer) :
             self.building.map.walkers.remove(self)
 
@@ -114,9 +118,43 @@ class Migrant(Walker):
         super().__init__("migrant", building, False)
         self.cell_assignement(self.currentCell.map.array[30][39])
         building.map.walkers.append(self)
-        self.walker_sprites = dict((k,pygame.image.load("walker_sprites/test/migrant_" + k + ".png")) for k in ["top","bot","left","right"])
+        self.walker_sprites = dict((k,pygame.image.load("walker_sprites/migrant_sprites/mg_" + k + ".png")) for k in ["top","bot","left","right"])
+        self.cart_sprites = dict((k,pygame.image.load("walker_sprites/migrant_sprites/cart_" + k + ".png")) for k in ["top","bot","left","right"])
         self.screen.blit(pygame.transform.scale(self.walker_sprites["top"], 
         (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+
+
+    def display(self) :
+       
+        if self.previousCell.x < self.currentCell.x :
+            if not self.inBuilding :
+                self.screen.blit(pygame.transform.scale(self.walker_sprites["right"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+                self.screen.blit(pygame.transform.scale(self.cart_sprites["right"], (self.currentCell.width, self.currentCell.height)), (self.previousCell.left, self.previousCell.top))
+            if 0 < self.previousCell.x < 39 :
+                self.currentCell.map.array[self.previousCell.x -1][self.currentCell.y].display()
+        elif self.previousCell.x > self.currentCell.x :
+            if not self.inBuilding :
+                self.screen.blit(pygame.transform.scale(self.walker_sprites["left"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+                self.screen.blit(pygame.transform.scale(self.cart_sprites["left"], (self.currentCell.width, self.currentCell.height)), (self.previousCell.left, self.previousCell.top))
+            if 0 < self.previousCell.x < 39 :
+                self.currentCell.map.array[self.previousCell.x +1][self.currentCell.y].display()
+        elif self.previousCell.y < self.currentCell.y :
+            if not self.inBuilding :
+                self.screen.blit(pygame.transform.scale(self.walker_sprites["bot"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+                self.screen.blit(pygame.transform.scale(self.cart_sprites["bot"], (self.currentCell.width, self.currentCell.height)), (self.previousCell.left, self.previousCell.top))
+            if 0 < self.previousCell.y < 39 :
+                self.currentCell.map.array[self.currentCell.x][self.previousCell.y -1].display()
+        elif self.previousCell.y > self.currentCell.y :
+            if not self.inBuilding :
+                self.screen.blit(pygame.transform.scale(self.walker_sprites["top"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+                self.screen.blit(pygame.transform.scale(self.cart_sprites["top"], (self.currentCell.width, self.currentCell.height)), (self.previousCell.left, self.previousCell.top))
+            if 0 < self.previousCell.y < 39 :
+                self.currentCell.map.array[self.currentCell.x][self.previousCell.y +1].display()
+
+        if (len(self.currentCell.check_cell_around(Cell.Path)) > 2 and not (self.previousCell.x == self.path[0].x or self.previousCell.y == self.path[0].y)) or self.building in self.currentCell.check_cell_around(Cell.House):
+           for i in self.currentCell.check_cell_around(Cell.Path):
+                i.display()
+        
 
     def __str__(self):
         return "Migrant"
@@ -138,7 +176,7 @@ class LaborAdvisor(Walker) :
     def __init__(self, building):
         super().__init__("labor advisor", building, True)
         self.leave_building()
-        self.walker_sprites = dict((k,pygame.image.load("walker_sprites/test/migrant_" + k + ".png")) for k in ["top","bot","left","right"])
+        self.walker_sprites = dict((k,pygame.image.load("walker_sprites/LA_sprites/LA_" + k + ".png")) for k in ["top","bot","left","right"])
 
     def __str__(self):
         return "Labor Advisor"
@@ -172,7 +210,7 @@ class Prefect(Walker) :
     def __init__(self, current_prefecture):
         super().__init__("prefect" , current_prefecture, True)
         self.current_building = current_prefecture
-        self.walker_sprites = dict((k,pygame.image.load("walker_sprites/test/prefect_" + k + ".png")) for k in ["top","bot","left","right"])
+        self.walker_sprites = dict((k,pygame.image.load("walker_sprites/prefect_sprites/prefect_" + k + ".png")) for k in ["top","bot","left","right"])
 
     def __str__(self):
         return "Prefect"
@@ -181,7 +219,7 @@ class Prefect(Walker) :
         self.wait += 1
         if self.wait <= 10 :
             return
-        print("yoyoyoyo")
+        # print("yoyoyoyo")
         if self.inBuilding: self.leave_building()
         elif len(self.path) == 1 and not self.isWandering : 
             self.enter_building()
@@ -206,14 +244,22 @@ class Prefect(Walker) :
 class Engineer(Walker):
     def __init__(self, engineerPost):
         super().__init__("engineer", engineerPost, True)
+        self.current_building = engineerPost
+        self.walker_sprites = dict((k,pygame.image.load("walker_sprites/engineer_sprites/engineer_" + k + ".png")) for k in ["top","bot","left","right"])
 
     def move(self) :
+        self.wait += 1
+        if self.wait <= 10 :
+            return
         if self.inBuilding: self.leave_building()
-        elif len(self.path) == 1: self.enter_building()
+        elif len(self.path) == 1 and not self.isWandering : 
+            self.enter_building()
+            self.wait = 0
         else:
             if self.ttl == 0:
                 if len(self.path) == 0: self.path_finding(self.currentCell, self.building)
                 self.movePathFinding()
+                if self.currentCell == self.current_building : self.ttl = 50
             else:
                 super().move()
                 self.ttl -= 1

@@ -34,6 +34,7 @@ class Cell: #Une case de la map
     def display(self):
         self.screen.blit(pygame.transform.scale(self.sprite, (self.width, self.height)), (self.left, self.top))
         if self.map.grided: self.grid()
+        if self.x == 30 and self.y == 31: print("yoyoyoyo")
 
     def is_hovered(self, pos):
         # Initialize the number of intersections to 0
@@ -226,9 +227,14 @@ class EngineerPost(Building):
         super().__init__(x, y, height, width, screen, my_map)
         self.labor_advisor = LaborAdvisor(self)
         self.employees = 0
+        self.engineer = Engineer(self)
         self.requiredEmployees = 5
         self.risk = RiskEvent("collapse")
+        self.sprite = pygame.image.load("walker_sprites/test/Housng1a_00019.png")
 
     def __str__(self):
         return "Engineer Post"
+    
+    def patrol(self):
+        self.engineer.leave_building()
 

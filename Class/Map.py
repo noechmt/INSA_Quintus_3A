@@ -48,7 +48,8 @@ class Map:#Un ensemble de cellule
         for i in self.walkers:
             i.move()
             i.display()
-            i.previousCell.display()
+            if not isinstance(i, Migrant) :
+                i.previousCell.display()
 
     def set_cell_array(self, x, y, cell):
         self.array[x][y] = cell
