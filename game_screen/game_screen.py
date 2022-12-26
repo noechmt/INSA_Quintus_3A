@@ -31,7 +31,6 @@ def game_screen():
     SIZE = 40
 
     map = Map(SIZE, height_land, width_land, SCREEN)
-    print(type(map.array[27][39]))
     # background panel initialisation
     panel_background = pygame.image.load(
         "game_screen/game_screen_sprites/panel_background.png")
@@ -57,12 +56,20 @@ def game_screen():
                     0.25*HEIGH_SCREEN-2, (WIDTH_SCREEN)/48+4, (HEIGH_SCREEN)/40+4))
     draw_rect_alpha(SCREEN, (255, 255, 255, 127), (177*WIDTH_SCREEN/192-2,
                     0.25*HEIGH_SCREEN+3*HEIGH_SCREEN/80-1, (WIDTH_SCREEN)/48+4, (HEIGH_SCREEN)/40+3))
+    draw_rect_alpha(SCREEN, (255, 255, 255, 127), (182*WIDTH_SCREEN/192-2,
+                    0.25*HEIGH_SCREEN+3*HEIGH_SCREEN/80-1, (WIDTH_SCREEN)/48+4, (HEIGH_SCREEN)/40+4))
+    draw_rect_alpha(SCREEN, (255, 255, 255, 127), (187*WIDTH_SCREEN/192-1,
+                    0.25*HEIGH_SCREEN+3*HEIGH_SCREEN/80-2, (WIDTH_SCREEN)/48+4, (HEIGH_SCREEN)/40+4))
 
     # window upside button initialisation
     panel_window_home = pygame.image.load(
         "game_screen/game_screen_sprites/panel_window_home.png")
     panel_window_prefecture = pygame.image.load(
         "game_screen/game_screen_sprites/panel_window_prefecture.png")
+    panel_window_engineerpost = pygame.image.load(
+        "game_screen/game_screen_sprites/panel_window_engineerpost.png")
+    panel_window_well = pygame.image.load(
+        "game_screen/game_screen_sprites/panel_window_well.png")
     SCREEN.blit(pygame.transform.scale(panel_window_home, (WIDTH_SCREEN /
                 12-10, HEIGH_SCREEN/17)), (11*WIDTH_SCREEN/12+5, 0.18*HEIGH_SCREEN))
 
@@ -100,6 +107,18 @@ def game_screen():
     prefecture_button = Button(177*WIDTH_SCREEN/192, 0.25*HEIGH_SCREEN+3*HEIGH_SCREEN/80,
                          WIDTH_SCREEN/48, HEIGH_SCREEN/40, panel_prefecture_button)
     prefecture_button.draw(SCREEN)
+
+    panel_engineerpost_button = pygame.image.load(
+        "game_screen/game_screen_sprites/paneling_engineerpost_button.png")
+    engineerpost_button = Button(182*WIDTH_SCREEN/192, 0.25*HEIGH_SCREEN+3*HEIGH_SCREEN/80+1,
+                         WIDTH_SCREEN/48, HEIGH_SCREEN/40, panel_engineerpost_button)
+    engineerpost_button.draw(SCREEN)
+
+    panel_well_button = pygame.image.load(
+        "game_screen/game_screen_sprites/paneling_well_button.png")
+    well_button = Button(187*WIDTH_SCREEN/192, 0.25*HEIGH_SCREEN+3*HEIGH_SCREEN/80,
+                         WIDTH_SCREEN/48, HEIGH_SCREEN/40, panel_well_button)
+    well_button.draw(SCREEN)
 
     # panel information initialisation
     draw_rect_alpha(SCREEN, (25, 25, 25, 127), (WIDTH_SCREEN*(11/12)+2,
@@ -145,6 +164,20 @@ def game_screen():
                 if(map.array[x][y].is_hovered(pos) and map.get_prefectured()):
                     map.array[x][y].build("prefecture")
 
+                if(engineerpost_button.is_hovered(pos)):
+                    map.handle_engineerpost_button()
+                    SCREEN.blit(pygame.transform.scale(panel_window_engineerpost, (WIDTH_SCREEN /
+                12-10, HEIGH_SCREEN/17)), (11*WIDTH_SCREEN/12+5, 0.18*HEIGH_SCREEN))
+                if(map.array[x][y].is_hovered(pos) and map.get_engineered()):
+                    map.array[x][y].build("engineer post")
+
+                if(well_button.is_hovered(pos)):
+                    map.handle_well_button()
+                    SCREEN.blit(pygame.transform.scale(panel_window_well, (WIDTH_SCREEN /
+                12-10, HEIGH_SCREEN/17)), (11*WIDTH_SCREEN/12+5, 0.18*HEIGH_SCREEN))
+                if(map.array[x][y].is_hovered(pos) and map.get_welled()):
+                    map.array[x][y].build("well")
+
             if event.type == pygame.MOUSEMOTION:
                 map.handle_hovered_cell(pos)
                 grid_button.handle_hover_button(pos, SCREEN)
@@ -152,6 +185,8 @@ def game_screen():
                 shovel_button.handle_hover_button(pos, SCREEN)
                 road_button.handle_hover_button(pos, SCREEN)
                 prefecture_button.handle_hover_button(pos, SCREEN)
+                engineerpost_button.handle_hover_button(pos, SCREEN)
+                well_button.handle_hover_button(pos, SCREEN)
         clock.tick(60)
         fps = (int)(clock.get_fps())
         pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(0, 0, 60, 40))

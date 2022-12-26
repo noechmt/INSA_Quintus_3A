@@ -164,7 +164,7 @@ class Empty(Cell):
         super().__init__(x, y, height, width, screen, map)
         self.type_empty = type_empty  # "dirt", "trees", "water", #"rocks"
         super().set_type(self.type_empty)
-        self.n_rand = randint(0, 15)
+        self.n_rand = randint(0, 13)
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/" + self.type_empty + "_" + str(self.n_rand) + ".png")
         self.display()
@@ -226,6 +226,10 @@ class Well(Building):
                     if isinstance(checkedCell, House) and checkedCell.level == 1 and checkedCell.max_occupants == checkedCell.nb_occupants:
                         checkedCell.nextLevel
 
+        self.sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/well.png")
+
+
     def __str__(self):
         return "Puit"
 
@@ -251,10 +255,12 @@ class Prefecture(Building):
 class EngineerPost(Building):
     def __init__(self, x, y, height, width, screen, my_map):
         super().__init__(x, y, height, width, screen, my_map)
-        self.labor_advisor = LaborAdvisor(self)
+        #self.labor_advisor = LaborAdvisor(self)
         self.employees = 0
         self.requiredEmployees = 5
         self.risk = RiskEvent("collapse")
+        self.sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/engineerpost.png")
 
     def __str__(self):
         return "Engineer Post"

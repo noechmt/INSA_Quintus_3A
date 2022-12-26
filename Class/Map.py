@@ -22,6 +22,8 @@ class Map:  # Un ensemble de cellule
         self.house_button_activated = False
         self.shovel_button_activated = False
         self.prefecture_button_activated = False
+        self.engineerpost_button_activated = False
+        self.well_button_activated = False
 
     def init_path(self):  # Permet d'initialiser le chemin de terre sur la map.
         for i in range(self.size):
@@ -48,30 +50,56 @@ class Map:  # Un ensemble de cellule
         self.house_button_activated = False
         self.shovel_button_activated = False
         self.prefecture_button_activated = False
+        self.engineerpost_button_activated = False
+        self.well_button_activated = False
 
     def handle_house_button(self):
         self.road_button_activated = False
         self.house_button_activated = True
         self.shovel_button_activated = False
         self.prefecture_button_activated = False
+        self.engineerpost_button_activated = False
+        self.well_button_activated = False
 
     def handle_shovel_button(self):
         self.road_button_activated = False
         self.house_button_activated = False
         self.shovel_button_activated = True
         self.prefecture_button_activated = False
+        self.engineerpost_button_activated = False
+        self.well_button_activated = False
 
     def handle_prefecture_button(self):
         self.road_button_activated = False
         self.house_button_activated = False
         self.shovel_button_activated = False
         self.prefecture_button_activated = True
+        self.engineerpost_button_activated = False
+        self.well_button_activated = False
+
+    def handle_engineerpost_button(self):
+        self.road_button_activated = False
+        self.house_button_activated = False
+        self.shovel_button_activated = False
+        self.prefecture_button_activated = False
+        self.engineerpost_button_activated = True
+        self.well_button_activated = False
+
+    def handle_well_button(self):
+        self.road_button_activated = False
+        self.house_button_activated = False
+        self.shovel_button_activated = False
+        self.prefecture_button_activated = False
+        self.engineerpost_button_activated = False
+        self.well_button_activated = True
 
     def handle_esc(self):
         self.road_button_activated = False
         self.house_button_activated = False
         self.shovel_button_activated = False
         self.prefecture_button_activated = False
+        self.engineerpost_button_activated = True
+        self.well_button_activated = False
 
 
     def update(self):
@@ -128,6 +156,12 @@ class Map:  # Un ensemble de cellule
 
     def get_prefectured(self):
         return self.prefecture_button_activated
+
+    def get_engineered(self):
+        return self.engineerpost_button_activated
+
+    def get_welled(self):
+        return self.well_button_activated
     
     def set_housed(self, g):
         self.housed = g
