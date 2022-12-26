@@ -104,6 +104,15 @@ def game_screen():
                     if (panel.home_button.is_hovered(pos)):
                         panel.set_window("house")
                         map.handle_house_button()
+                    if (panel.prefecture_button.is_hovered(pos)):
+                        panel.set_window("prefecture")
+                        map.handle_prefecture_button()
+                    if (panel.engineerpost_button.is_hovered(pos)):
+                        panel.set_window("engineer post")
+                        map.handle_engineerpost_button()
+                    if (panel.well_button.is_hovered(pos)):
+                        panel.set_window("well")
+                        map.handle_well_button()
                     # if pos[0] <= width_wo_panel:
                     #     map.handle_click_cells(pos)
                     #     panel.display()
@@ -128,6 +137,12 @@ def game_screen():
                             i.build("house")
                         elif map.get_road_button_activated() and i.isBuildable():
                             i.build("path")
+                        elif map.get_prefectured() and i.isBuildable():
+                            i.build("prefecture")
+                        elif map.get_engineered() and i.isBuildable():
+                            i.build("engineer post")
+                        elif map.get_welled() and i.isBuildable():
+                            i.build("well")
                         else:
                             i.display()
                     selection["cells"].clear()
@@ -155,6 +170,9 @@ def game_screen():
                 panel.get_home_button().handle_hover_button(pos, SCREEN)
                 panel.get_shovel_button().handle_hover_button(pos, SCREEN)
                 panel.get_road_button().handle_hover_button(pos, SCREEN)
+                panel.get_prefecture_button().handle_hover_button(pos, SCREEN)
+                panel.get_well_button().handle_hover_button(pos, SCREEN)
+                panel.get_well_button().handle_hover_button(pos, SCREEN)
             
             if event.type == pygame.KEYDOWN:
                 if pygame.key.get_pressed()[pygame.K_ESCAPE]:
