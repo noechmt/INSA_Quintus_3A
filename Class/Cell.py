@@ -23,8 +23,7 @@ class Cell:  # Une case de la map
         self.map = map
         self.type = ""
         self.water = False
-        self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/house_" + str(0) + ".png")
+        self.sprite = ""
         self.screen = screen
         self.hovered = False
         self.grided = False
@@ -109,8 +108,8 @@ class Cell:  # Une case de la map
         for i in range(-1, 2):
             for j in range(-1, 2):
                 if abs(i) != abs(j) and self.inMap(self.x + i, self.y + j):
-                    if isinstance(self.map.getCell(self.x + i, self.y + j), type):
-                        path.append(self.map.getCell(self.x + i, self.y + j))
+                    if isinstance(self.map.get_cell(self.x + i, self.y + j), type):
+                        path.append(self.map.get_cell(self.x + i, self.y + j))
         return path
 
     def build(self, type):
@@ -201,6 +200,8 @@ class House(Building):  # la maison fils de building (?)
         self.unemployedCount = 0
         self.migrant = Migrant(self)
         self.fire = RiskEvent("fire")
+        self.sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/house_" + str(self.level) + ".png")
 
     def __str__(self):
         return f"House { self.level}"
@@ -220,8 +221,8 @@ class Well(Building):
         for i in range(-2, 3):
             for j in range(-2, 3):
                 if self.inMap(self.x+i, self.y+j):
-                    self.map.getCell(self.x+i, self.y+j).water = True
-                    checkedCell = self.map.getCell(self.x+i, self.y+i)
+                    self.map.get_cell(self.x+i, self.y+j).water = True
+                    checkedCell = self.map.get_cell(self.x+i, self.y+i)
                     if isinstance(checkedCell, House) and checkedCell.level == 1 and checkedCell.max_occupants == checkedCell.nb_occupants:
                         checkedCell.nextLevel
 
@@ -232,11 +233,13 @@ class Well(Building):
 class Prefecture(Building):
     def __init__(self, x, y, height, width, screen, my_map):
         super().__init__(x, y, height, width, screen, my_map)
-        self.labor_advisor = LaborAdvisor(self)
+        #self.labor_advisor = LaborAdvisor(self)
         self.employees = 0
         self.prefect = Prefect(self)
         self.requiredEmployees = 5
         self.risk = RiskEvent("fire")
+        self.sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/prefecture.png")
 
     def __str__(self):
         return f"Prefecture { self.employees}"

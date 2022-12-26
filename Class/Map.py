@@ -18,7 +18,10 @@ class Map:  # Un ensemble de cellule
         self.wallet = 3000
         self.update_hover = 0
         self.grided = False
-        self.housed = False
+        self.road_button_activated = False
+        self.house_button_activated = False
+        self.shovel_button_activated = False
+        self.prefecture_button_activated = False
 
     def init_path(self):  # Permet d'initialiser le chemin de terre sur la map.
         for i in range(self.size):
@@ -39,6 +42,37 @@ class Map:  # Un ensemble de cellule
                     s += f"{str(self.getCell(i,j)):^20}"
             s += "\n"
         return s
+
+    def handle_road_button(self):
+        self.road_button_activated = True
+        self.house_button_activated = False
+        self.shovel_button_activated = False
+        self.prefecture_button_activated = False
+
+    def handle_house_button(self):
+        self.road_button_activated = False
+        self.house_button_activated = True
+        self.shovel_button_activated = False
+        self.prefecture_button_activated = False
+
+    def handle_shovel_button(self):
+        self.road_button_activated = False
+        self.house_button_activated = False
+        self.shovel_button_activated = True
+        self.prefecture_button_activated = False
+
+    def handle_prefecture_button(self):
+        self.road_button_activated = False
+        self.house_button_activated = False
+        self.shovel_button_activated = False
+        self.prefecture_button_activated = True
+
+    def handle_esc(self):
+        self.road_button_activated = False
+        self.house_button_activated = False
+        self.shovel_button_activated = False
+        self.prefecture_button_activated = False
+
 
     def update(self):
         for i in self.walkers:
@@ -89,11 +123,11 @@ class Map:  # Un ensemble de cellule
                 for y in range(40):
                     self.array[x][y].display()
         
-    def house_mod(self):
-        self.housed = not self.housed
-
     def get_housed(self):
-        return self.housed
+        return self.house_button_activated
+
+    def get_prefectured(self):
+        return self.prefecture_button_activated
     
     def set_housed(self, g):
         self.housed = g
