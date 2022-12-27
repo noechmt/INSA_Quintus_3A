@@ -22,17 +22,20 @@ class Walker() :
         self.walker_sprites = {}
         self.alive = False
         self.isWandering = False
+        self.currentSprite = 0
 
     def display(self) :
         if not self.inBuilding :
             if self.previousCell.x < self.currentCell.x :
-                self.screen.blit(pygame.transform.scale(self.walker_sprites["right"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+                self.screen.blit(pygame.transform.scale(self.walker_sprites["right"][self.currentSprite%2], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
             elif self.previousCell.x > self.currentCell.x :
-                self.screen.blit(pygame.transform.scale(self.walker_sprites["left"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+                self.screen.blit(pygame.transform.scale(self.walker_sprites["left"][self.currentSprite%2], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
             elif self.previousCell.y < self.currentCell.y :
-                self.screen.blit(pygame.transform.scale(self.walker_sprites["bot"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+                self.screen.blit(pygame.transform.scale(self.walker_sprites["bot"][self.currentSprite%2], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
             elif self.previousCell.y > self.currentCell.y :
-                self.screen.blit(pygame.transform.scale(self.walker_sprites["top"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+                self.screen.blit(pygame.transform.scale(self.walker_sprites["top"][self.currentSprite%2], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+            
+            self.currentSprite += 1
         # elif self.inBuilding == True :
         #     self.currentCell.display()
 
@@ -107,7 +110,7 @@ class Walker() :
         else:
             if isinstance(self.previousCell, Cell.Path): path.remove(self.previousCell)
             self.cell_assignement(random.choice(path))
-        print("Prefect is moving on the cell " + str(self.currentCell.x)+ ";" + str(self.currentCell.y))
+        print("walker is moving on the cell " + str(self.currentCell.x)+ ";" + str(self.currentCell.y))
 
     def movePathFinding(self):
         assert len(self.path) != 0
@@ -119,7 +122,7 @@ class Migrant(Walker):
         self.cell_assignement(self.currentCell.map.array[30][39])
         building.map.walkers.append(self)
         self.walker_sprites = dict((k,pygame.image.load("walker_sprites/migrant_sprites/mg_" + k + ".png")) for k in ["top","bot","left","right"])
-        self.cart_sprites = dict((k,pygame.image.load("walker_sprites/migrant_sprites/cart_" + k + ".png")) for k in ["top","bot","left","right"])
+        self.cart_sprites = dict((k,pygame.image.load("walker_sprites/migrant_sprites/mg_cart_" + k + ".png")) for k in ["top","bot","left","right"])
         self.screen.blit(pygame.transform.scale(self.walker_sprites["top"], 
         (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
 
@@ -176,7 +179,13 @@ class LaborAdvisor(Walker) :
     def __init__(self, building):
         super().__init__("labor advisor", building, True)
         self.leave_building()
-        self.walker_sprites = dict((k,pygame.image.load("walker_sprites/LA_sprites/LA_" + k + ".png")) for k in ["top","bot","left","right"])
+        self.walker_sprites = dict((k,[0,0]) for k in ["top","bot","left","right"])
+        for i in self.walker_sprites :
+            for j in range(2) : 
+                self.walker_sprites[i][j] = pygame.image.load("walker_sprites/LA_sprites/LA_" + i + "_" + str(j) + ".png")    
+        # self.walker_sprites = dict((k,pygame.image.load("walker_sprites/LA_sprites/LA_" + k + ".png")) for k in ["top","bot","left","right"])
+        
+
 
     def __str__(self):
         return "Labor Advisor"
@@ -210,7 +219,11 @@ class Prefect(Walker) :
     def __init__(self, current_prefecture):
         super().__init__("prefect" , current_prefecture, True)
         self.current_building = current_prefecture
-        self.walker_sprites = dict((k,pygame.image.load("walker_sprites/prefect_sprites/prefect_" + k + ".png")) for k in ["top","bot","left","right"])
+        # self.walker_sprites = dict((k,pygame.image.load("walker_sprites/prefect_sprites/prefect_" + k + ".png")) for k in ["top","bot","left","right"])
+        self.walker_sprites = dict((k,[0,0]) for k in ["top","bot","left","right"])
+        for i in self.walker_sprites :
+            for j in range(2) : 
+                self.walker_sprites[i][j] = pygame.image.load("walker_sprites/prefect_sprites/prefect_" + i + "_" + str(j) + ".png")
 
     def __str__(self):
         return "Prefect"
@@ -245,7 +258,11 @@ class Engineer(Walker):
     def __init__(self, engineerPost):
         super().__init__("engineer", engineerPost, True)
         self.current_building = engineerPost
-        self.walker_sprites = dict((k,pygame.image.load("walker_sprites/engineer_sprites/engineer_" + k + ".png")) for k in ["top","bot","left","right"])
+        # self.walker_sprites = dict((k,pygame.image.load("walker_sprites/engineer_sprites/engineer_" + k + ".png")) for k in ["top","bot","left","right"])
+        self.walker_sprites = dict((k,[0,0]) for k in ["top","bot","left","right"])
+        for i in self.walker_sprites :
+            for j in range(2) : 
+                self.walker_sprites[i][j] = pygame.image.load("walker_sprites/engineer_sprites/engineer_" + i + "_" + str(j) + ".png")
 
     def move(self) :
         self.wait += 1

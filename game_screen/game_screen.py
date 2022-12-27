@@ -166,7 +166,7 @@ def game_screen():
 
         walker_update_count += 1
         # print(walker_update_count)
-        if walker_update_count == 10:
+        if walker_update_count == 5:
             map.update_walkers()
             # print("break")
             walker_update_count = 0
