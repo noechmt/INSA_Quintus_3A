@@ -153,8 +153,7 @@ def game_screen():
                 #Display previous cell without hover
                 if hovered_cell: 
                     hovered_cell.display()
-                    if map.inMap(a, b):
-                        map.display_around(a,b)
+                    map.display_around(a,b)
                 if map.inMap(x,y) and pos[0] <= width_wo_panel and not selection["is_active"]:
                     hovered_cell = map.get_cell(x,y)
                     hovered_cell.handle_hover_button()

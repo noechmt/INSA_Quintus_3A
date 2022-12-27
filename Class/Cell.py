@@ -240,6 +240,7 @@ class Path(Cell):
         self.handle_sprites()
         self.display()
         self.grid()
+        self.type = "path"
 
     def handle_sprites(self, r=0):
         if r < 2:
