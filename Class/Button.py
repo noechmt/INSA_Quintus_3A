@@ -62,3 +62,17 @@ class Button():
         if not self.is_hovered(pos) and self.darken:
             self.darken = False
             self.draw(screen)
+
+    def handle_hover_button_wodraw(self, pos, screen):
+        # Darken the button when hovered
+        # Darken the button if mouse is hover and the button is not darken
+        if self.is_hovered(pos) and not self.darken:
+            self.darken = True
+            darken_percent = .075
+            dark = pygame.Surface(
+                self.get_size()).convert_alpha()
+            dark.fill((0, 0, 0, darken_percent*255))
+            screen.blit(dark, self.get_pos())
+        # Clear the button if the button not hovered and the button is darken
+        if not self.is_hovered(pos) and self.darken:
+            self.darken = False

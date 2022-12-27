@@ -164,8 +164,23 @@ class Map:  # Un ensemble de cellule
         print(np.array([[(self.array[i][j].type_of_cell)
               for i in range(self.size)] for j in range(self.size)]))
 
-    def dispay_map(self):
-        print("Ceci est une map :)")
+    def display_map(self):
+        for i in range(40):
+            for j in range(40):
+                self.array[i][j].display()
+
+    def display_around(self, x, y):
+        if (x>0 and y<39 and self.array[x-1][y+1].type != "dirt"):
+            self.array[x-1][y+1].display()
+        if (x<39 and y>0 and self.array[x+1][y-1].type != "dirt"):
+            self.array[x+1][y-1].display()
+        if (y<39 and self.array[x][y+1].type != "dirt"):
+            self.array[x][y+1].display()
+        if (x<39 and self.array[x+1][y].type != "dirt"):
+            self.array[x+1][y].display()
+        if (x<39 and y<39 and self.array[x+1][y+1].type != "dirt"):
+            self.array[x+1][y+1].display()
+
 
     def set_grided(self, g):
         self.grided = g

@@ -44,7 +44,6 @@ class Cell:  # Une case de la map
         self.bot = self.HEIGHT_SCREEN/6 +self.x*self.height/2 + self.y*self.height/2 
 
     def display(self):
-        print(self.type)
         if(self.type == "well"):
             self.screen.blit(pygame.transform.scale(
             self.sprite, (self.width, self.height*53/30)), (self.left, self.top - self.height*23/30))
@@ -109,11 +108,11 @@ class Cell:  # Une case de la map
         # if is_hovered and not self.hovered:
         #self.hovered = True
         if (self.map.get_housed()):
-            if self.isBuildable():
-                house_sprite = pygame.image.load(
+            house_sprite = pygame.image.load(
                     "game_screen/game_screen_sprites/house_0.png")
-                self.screen.blit(pygame.transform.scale(
+            self.screen.blit(pygame.transform.scale(
                     house_sprite, (self.width, self.height)), (self.left, self.top))
+            if self.isBuildable():
                 draw_polygon_alpha(self.screen, (0, 0, 0, 85),
                                    self.get_points_polygone())
             else:

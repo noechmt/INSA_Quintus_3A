@@ -151,10 +151,16 @@ def game_screen():
 
             if event.type == pygame.MOUSEMOTION:
                 #Display previous cell without hover
-                if hovered_cell: hovered_cell.display()
+                if hovered_cell: 
+                    hovered_cell.display()
+                    if map.inMap(a, b):
+                        map.display_around(a,b)
                 if map.inMap(x,y) and pos[0] <= width_wo_panel and not selection["is_active"]:
                     hovered_cell = map.get_cell(x,y)
                     hovered_cell.handle_hover_button()
+                    map.display_around(x, y)
+                    a = x
+                    b = y
                 
                 #Selection : fill the set with hovered cell
                 if map.inMap(x,y) and selection["is_active"]:
@@ -179,7 +185,6 @@ def game_screen():
                 if pygame.key.get_pressed()[pygame.K_ESCAPE]:
                     panel.set_window("home")
                     map.handle_esc()
-
         clock.tick(60)
         fps = (int)(clock.get_fps())
         text_fps = fps_font.render(str(fps), 1, (255, 255, 255))
