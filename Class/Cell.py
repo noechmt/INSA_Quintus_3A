@@ -27,6 +27,7 @@ class Cell:  # Une case de la map
         self.sprite = ""
         self.screen = screen
         self.hovered = False
+        self.type_empty = None
         self.grided = False
         self.house_mode = False
         self.WIDTH_SCREEN, self.HEIGHT_SCREEN = self.screen.get_size()
@@ -67,7 +68,7 @@ class Cell:  # Une case de la map
             self.left -= 15 * m
         if move == "left":
             self.left += 15 * m
-        self.display()
+        # self.display()
 
     def is_hovered(self, pos):
         # Initialize the number of intersections to 0
@@ -146,10 +147,10 @@ class Cell:  # Une case de la map
     # Return an cell array which match with the class type (ex: Path, Prefecture (not a string)) in argument
     def check_cell_around(self, type):
         path = []
-        for i in range(-1, 2) :
-            for j in range(-1, 2) : 
+        for i in range(-1, 2):
+            for j in range(-1, 2):
                 if abs(i) != abs(j) and self.map.inMap(self.x + i, self.y + j):
-                    if isinstance(self.map.get_cell(self.x + i,self.y + j), type):
+                    if isinstance(self.map.get_cell(self.x + i, self.y + j), type):
                         path.append(self.map.get_cell(self.x + i, self.y + j))
         return path
 
@@ -162,6 +163,7 @@ class Cell:  # Une case de la map
                     self.map.set_cell_array(self.x, self.y, Path(
                         self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.get_cell(self.x, self.y).handle_sprites()
+                    self.map.get_cell(self.x, self.y).display()
                     self.map.wallet -= 4
                 case "house":
                     self.map.set_cell_array(self.x, self.y, House(
@@ -188,8 +190,10 @@ class Cell:  # Une case de la map
             self.display()
 
     def clear(self):
-        if not (isinstance(self, Empty) and (self.type_empty == "rock" or self.type_empty == "water")):
+        if not isinstance(self, Empty) and self.type_empty != "rock" and self.type_empty != "water":
             self.type_empty = "dirt"
+            self.map.set_cell_array(self.x, self.y, Empty(
+                self.x, self.y, self.height, self.width, self.screen, self.map))
             self.map.wallet -= 2
 
     def set_type(self, type):
@@ -374,8 +378,9 @@ class Empty(Cell):
             self.type_empty = "dirt"
             self.map.wallet -= 2
 
-    def canBuild(self) : 
-        return self.type_empty == "dirt"  
+    def canBuild(self):
+        return self.type_empty == "dirt"
+
 
 class Building(Cell):  # un fils de cellule (pas encore sûr de l'utilité)
     def __init__(self, x, y, height, width, screen, my_map):
@@ -427,7 +432,6 @@ class Well(Building):
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/well.png")
 
-
     def __str__(self):
         return "Puit"
 
@@ -464,7 +468,6 @@ class EngineerPost(Building):
 
     def __str__(self):
         return "Engineer Post"
-    
+
     def patrol(self):
         self.engineer.leave_building()
-
