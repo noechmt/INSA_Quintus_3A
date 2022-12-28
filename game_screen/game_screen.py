@@ -50,9 +50,12 @@ def game_screen():
     hovered_cell = None
     zoom = 1
     move = 1
+    
+    walker_update_count = 0
+    tmpbool = True
     while run:
         pos = pygame.mouse.get_pos()
-        """ if move % 10 == 0:
+        if move % 10 == 0:
             if pos[1] <= 60:
                 map.offset_top += 15*(3 - pos[1] / 20)
                 map.handle_move("up", 3 - pos[1] / 20)
@@ -70,7 +73,7 @@ def game_screen():
                 map.handle_move("right", 3 - (WIDTH_SCREEN - pos[0]) / 20)
                 panel.display()
             move = 0
-        move += 1"""
+        move += 1
 
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
@@ -81,6 +84,8 @@ def game_screen():
             y = round(((WIDTH_SCREEN/2-WIDTH_SCREEN/12-pos[0]-map.offset_left)/map.width_land + (pos[1]-map.offset_top-HEIGH_SCREEN/6)/map.height_land))
             text_click = fps_font.render(f"{x} {y}", 1, (255, 255, 255))
             SCREEN.blit(text_click, (0,20))
+            text_wallet = fps_font.render(f"{map.wallet}", 1, (255,255,255))
+            SCREEN.blit(text_wallet, (0, 40))
 
             if event.type == pygame.QUIT:
                 run = False
@@ -184,6 +189,25 @@ def game_screen():
                 if pygame.key.get_pressed()[pygame.K_ESCAPE]:
                     panel.set_window("home")
                     map.handle_esc()
+
+                
+                # grid_button.handle_hover_button(pos, SCREEN)
+                # home_button.handle_hover_button(pos, SCREEN)
+                # shovel_button.handle_hover_button(pos, SCREEN)
+                # road_button.handle_hover_button(pos, SCREEN)
+
+        walker_update_count += 1
+        # print(walker_update_count)
+        if walker_update_count == 20:
+            map.update_walkers()
+            # print("break")
+            walker_update_count = 0
+        # if tmpbool : 
+        #     map.array[13][29] = Prefecture(13, 29, map.height_land, map.width_land,map.screen, map)
+        #     SCREEN.blit(pygame.transform.scale(pygame.image.load("walker_sprites/test/Housng1a_00019.png"), (map.array[13][29].width, map.array[13][29].height)), (map.array[13][29].left, map.array[13][29].top))
+        #     map.array[31][19] = EngineerPost(31, 19, map.height_land, map.width_land, map.screen, map)
+        #     SCREEN.blit(pygame.transform.scale(pygame.image.load("walker_sprites/test/Housng1a_00019.png"), (map.array[31][19].width, map.array[31][19].height)), (map.array[31][19].left, map.array[31][19].top))
+        #     tmpbool = False
         clock.tick(60)
         fps = (int)(clock.get_fps())
         text_fps = fps_font.render(str(fps), 1, (255, 255, 255))
@@ -191,3 +215,5 @@ def game_screen():
             0, HEIGH_SCREEN - text_fps.get_size()[1], 60, 40))
         SCREEN.blit(text_fps, (0, HEIGH_SCREEN - text_fps.get_size()[1]))
         pygame.display.flip()
+
+

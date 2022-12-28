@@ -157,10 +157,10 @@ class Cell:  # Une case de la map
     # Return an cell array which match with the class type (ex: Path, Prefecture (not a string)) in argument
     def check_cell_around(self, type):
         path = []
-        for i in range(-1, 2):
-            for j in range(-1, 2):
-                if abs(i) != abs(j) and self.inMap(self.x + i, self.y + j):
-                    if isinstance(self.map.get_cell(self.x + i, self.y + j), type):
+        for i in range(-1, 2) :
+            for j in range(-1, 2) : 
+                if abs(i) != abs(j) and self.map.inMap(self.x + i, self.y + j):
+                    if isinstance(self.map.get_cell(self.x + i,self.y + j), type):
                         path.append(self.map.get_cell(self.x + i, self.y + j))
         return path
 
@@ -386,6 +386,8 @@ class Empty(Cell):
             self.type_empty = "dirt"
             self.map.wallet -= 2
 
+    def canBuild(self) : 
+        return self.type_empty == "dirt"  
 
 class Building(Cell):  # un fils de cellule (pas encore sûr de l'utilité)
     def __init__(self, x, y, height, width, screen, my_map):
@@ -447,7 +449,7 @@ class Well(Building):
 class Prefecture(Building):
     def __init__(self, x, y, height, width, screen, my_map):
         super().__init__(x, y, height, width, screen, my_map)
-        #self.labor_advisor = LaborAdvisor(self)
+        self.labor_advisor = LaborAdvisor(self)
         self.employees = 0
         self.prefect = Prefect(self)
         self.requiredEmployees = 5
@@ -466,8 +468,9 @@ class Prefecture(Building):
 class EngineerPost(Building):
     def __init__(self, x, y, height, width, screen, my_map):
         super().__init__(x, y, height, width, screen, my_map)
-        #self.labor_advisor = LaborAdvisor(self)
+        self.labor_advisor = LaborAdvisor(self)
         self.employees = 0
+        self.engineer = Engineer(self)
         self.requiredEmployees = 5
         self.risk = RiskEvent("collapse")
         self.sprite = pygame.image.load(
@@ -476,3 +479,7 @@ class EngineerPost(Building):
 
     def __str__(self):
         return "Engineer Post"
+    
+    def patrol(self):
+        self.engineer.leave_building()
+

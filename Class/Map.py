@@ -16,7 +16,7 @@ class Map:  # Un ensemble de cellule
         self.array = [[Empty(j, i, self.height_land, self.width_land, self.screen, self) for i in range(
             size)] for j in range(size)]  # tableau de cellule (voir classe cellule) : list
         self.walkers = []
-        self.spawn_cell = self.array[0][0]
+        self.spawn_cell = self.array[39][19]
         self.init_path()
         self.wallet = 3000
         self.update_hover = 0
@@ -129,9 +129,12 @@ class Map:  # Un ensemble de cellule
     def inMap(self, x,y):
         return (0 <= x and x <= self.size-1 and 0 <= y and y <= self.size-1)
 
-    def update(self):
+    def update_walkers(self):
         for i in self.walkers:
             i.move()
+            i.display()
+            if not isinstance(i, Migrant) :
+                i.previousCell.display()
 
     def set_cell_array(self, x, y, cell):
         self.array[x][y] = cell
