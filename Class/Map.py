@@ -171,7 +171,6 @@ class Map:  # Un ensemble de cellule
 
     def display_around(self, x, y):
         
-        print(self.array[x-1][y+1].type)
         if (x>0 and y<39 and self.array[x-1][y+1].type != "dirt" and self.array[x-1][y+1].type != "path"):
             self.array[x-1][y+1].display()
         if (x<39 and y>0 and self.array[x+1][y-1].type != "dirt" and self.array[x+1][y-1].type != "path"):
@@ -182,6 +181,8 @@ class Map:  # Un ensemble de cellule
             self.array[x+1][y].display()
         if (x<39 and y<39 and self.array[x+1][y+1].type != "dirt" and self.array[x+1][y+1].type != "path"):
             self.array[x+1][y+1].display()
+        
+        #juste un prototype qui fonctionne pas mais c'est au cas où
         """"
         i = 0
         j = 0
