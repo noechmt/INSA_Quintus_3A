@@ -123,16 +123,67 @@ class Empty(Cell):
         super().__init__(x, y, height, width, screen, map)
         self.type_empty = type_empty #"dirt", "trees"
 
+    #place the water with conditions for sprites
+        #river at the top
         for i in range (40):
-            if (x,y) == (i,i+10) and i<5:
+            
+            #line under the first river  
+            if ((x,y) == (i,i+10) and i<5) or ((x,y)==(i,i+14) and 5<i<8) or ((x,y)==(i,i+15) and 8<i<13) or ((x,y)==(i,i+18) and 14<i<17) or ((x,y)==(i,i+20) and 17<i<20):
                 self.type_empty = "watersiderightD"
-            elif (x,y) == (i,i+11) and i<5:
+            elif ((x,y) == (i,i+11) and i<5) or ((x,y)==(i,i+15) and 4<i<8) or ((x,y)==(i,i+16) and (7<i<13)) or (x,y)==(13,31) or ((x,y)==(i,i+19) and 13<i<17) or ((x,y)==(i,i+21) and 16<i<19):
                 self.type_empty = "watersiderightW"
-            elif (x,y) == (i+1, i+11) and i==4:
+            elif (x,y) == (5,15) or (x,y) == (8,22) or (x,y)==(13,28) or (x,y)==(14,31) or (x,y)==(17,35):
                 self.type_empty = "watersidecornerA"
-            elif (x,y) == (5, i) and 15<i<20:
+            elif ((x,y) == (5, i) and 15<i<20) or (x,y)==(8,23) or (x,y)==(13,29) or (x,y)==(13,30) or (x,y)==(14,32) or (x,y)==(17,36) or (x,y)==(17,37):
+                self.type_empty = "watersideunder"
+            
+            #line behind the first river
+            elif ((x,y) == (i,i+19) and i<10) or ((x,y)==(i,i+26) and 9<i<14):
+                self.type_empty = "watersideleftW"
+            elif ((x,y) == (i, i+20) and i<9) or ((x,y)==(i,i+27) and 8<i<13):
+                self.type_empty = "watersideleftD"
+            elif ((x,y)==(9,i) and 28<i<36):
+                self.type_empty = "watersideupper"
+        
+            #full water in the first river
+            for j in range (40):
+                if (x,y)==(i,j) and ((i<5 and 11+i<j<19+i) or (4<i<8 and 15+i<j<19+i) or (7<i<10 and 16+i<j<19+i) or (9<i<13 and 16+i<j<26+i) 
+                    or (i==13 and 18+i<j<26+i) or (13<i<17 and 19+i<j<26+i) or (i==17 and j==39)):
+                    self.type_empty = "water"
+        
+        #river at the bottom
+        for i in range (40):
+
+            #line under the second river
+            if ((x,y)==(i+31,i) and i<5) or ((x,y)==(i+28,i) and 8<i<12):
+                self.type_empty = "watersiderightD"
+            elif ((x,y)==(i+30,i) and i<6) or ((x,y)==(i+27,i) and 8<i<13):
+                self.type_empty = "watersiderightW"
+            elif (x,y)==(36,5):
+                self.type_empty = "watersidecornerA"
+            elif ((x,y)==(36,i) and 5<i<9):
                 self.type_empty = "watersideunder"
 
+            #line behind the second river
+            elif ((x,y)==(i+24,i) and 8<i<16) or ((x,y)==(i+27,i) and i<6):
+                self.type_empty = "watersideleftD"
+            elif ((x,y)==(i+25,i) and 8<i<15) or ((x,y)==(i+28,i) and i<6):
+                self.type_empty = "watersideleftW"
+            elif ((x,y)==(33,i) and 5<i<9):
+                self.type_empty = "watersideupper"
+            
+            #full water in the second river
+            elif ((x,y)==(i+26,i) and 7<i<14) or ((x,y)==(i+27,i) and 6<i<9) or ((x,y)==(i+28,i) and 5<i<9) or ((x,y)==(i+29,i) and i<7):
+                self.type_empty = "water"
+            
+
+        #place the rocks
+        #    for j in range (40):
+        #        if (x,y)==(i,j) and ((i>35 and j>30)):
+        #            self.type_empty = "rock"
+
+            if (x,y)==(35,35):
+                self.type_empty = "tree"
 
         self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_empty + "_" + str(randint(1,2)) + ".png")
 
@@ -143,16 +194,6 @@ class Empty(Cell):
         if self.type_of_void == "tree":
             self.type_of_void = "dirt"
             # draw function
-
-class Water(Cell):
-    def __init__(self, x, y, height, width, screen, map, type_unbreakable="water"):
-        super().__init__(x, y, height, width, screen, map)
-        self.type_unbreakable = type_unbreakable #"water"
-
-        
-        self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_unbreakable + "_" + str(randint(1,2)) + ".png")
-        
-        self.display()
 
 
 class Building(Cell) : #un fils de cellule (pas encore sûr de l'utilité)
