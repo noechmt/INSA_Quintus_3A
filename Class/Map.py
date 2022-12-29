@@ -158,7 +158,7 @@ class Map:  # Un ensemble de cellule
     def update_fire(self) : 
         for i in self.buildings :
             if i.risk.happened and i.risk.type == "fire":
-                i.risk.ignite()
+                i.risk.burn()
 
 
 

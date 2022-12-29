@@ -205,7 +205,7 @@ def game_screen():
             walker_update_count = 0
 
         fire_upadte_count += 1
-        if fire_upadte_count == 2 :
+        if fire_upadte_count == 5 :
             map.update_fire()
             fire_upadte_count = 0
         
