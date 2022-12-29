@@ -106,7 +106,7 @@ class Map:  # Un ensemble de cellule
 
     def handle_zoom(self, zoom_in):
         self.screen.fill((0, 0, 0))
-        self.offset_left, self.offset_top = (0,0)
+        self.offset_left, self.offset_top = (0, 0)
         if zoom_in:
             self.height_land *= 1.04
             self.width_land *= 1.04
@@ -123,17 +123,18 @@ class Map:  # Un ensemble de cellule
         for x in range(40):
             for y in range(40):
                 self.get_cell(x, y).handle_move(move, m)
+                self.get_cell(x, y).display()
         self.display_grid(0)
 
-    #Check if these coordinates are in the map
-    def inMap(self, x,y):
+    # Check if these coordinates are in the map
+    def inMap(self, x, y):
         return (0 <= x and x <= self.size-1 and 0 <= y and y <= self.size-1)
 
     def update_walkers(self):
         for i in self.walkers:
             i.move()
             i.display()
-            if not isinstance(i, Migrant) :
+            if not isinstance(i, Migrant):
                 i.previousCell.display()
 
     def set_cell_array(self, x, y, cell):
@@ -195,7 +196,7 @@ class Map:  # Un ensemble de cellule
 
     def get_shoveled(self):
         return self.shovel_button_activated
-    
+
     def get_road_button_activated(self):
         return self.road_button_activated
 

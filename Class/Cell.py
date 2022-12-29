@@ -27,6 +27,7 @@ class Cell:  # Une case de la map
         self.sprite = ""
         self.screen = screen
         self.hovered = False
+        self.type_empty = None
         self.grided = False
         self.house_mode = False
         self.WIDTH_SCREEN, self.HEIGHT_SCREEN = self.screen.get_size()
@@ -67,7 +68,7 @@ class Cell:  # Une case de la map
             self.left -= 15 * m
         if move == "left":
             self.left += 15 * m
-        self.display()
+        # self.display()
 
     def is_hovered(self, pos):
         # Initialize the number of intersections to 0
@@ -162,6 +163,7 @@ class Cell:  # Une case de la map
                     self.map.set_cell_array(self.x, self.y, Path(
                         self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.get_cell(self.x, self.y).handle_sprites()
+                    self.map.get_cell(self.x, self.y).display()
                     self.map.wallet -= 4
                 case "house":
                     self.map.set_cell_array(self.x, self.y, House(
@@ -188,8 +190,10 @@ class Cell:  # Une case de la map
             self.display()
 
     def clear(self):
-        if not (isinstance(self, Empty) and (self.type_empty == "rock" or self.type_empty == "water")):
+        if not isinstance(self, Empty) and self.type_empty != "rock" and self.type_empty != "water":
             self.type_empty = "dirt"
+            self.map.set_cell_array(self.x, self.y, Empty(
+                self.x, self.y, self.height, self.width, self.screen, self.map))
             self.map.wallet -= 2
 
     def set_type(self, type):
