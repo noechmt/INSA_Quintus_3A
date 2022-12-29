@@ -120,11 +120,13 @@ class Migrant(Walker):
     def __init__(self, building):
         super().__init__("migrant", building, False)
         self.cell_assignement(self.currentCell.map.array[27][39])
-        building.map.walkers.append(self)
+        self.currentCell.map.migrantQueue.append(self)
+        # building.map.walkers.append(self)
         self.walker_sprites = dict((k,pygame.image.load("walker_sprites/migrant_sprites/mg_" + k + ".png")) for k in ["top","bot","left","right"])
         self.cart_sprites = dict((k,pygame.image.load("walker_sprites/migrant_sprites/mg_cart_" + k + ".png")) for k in ["top","bot","left","right"])
-        self.screen.blit(pygame.transform.scale(self.walker_sprites["top"], 
-        (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+        # self.screen.blit(pygame.transform.scale(self.walker_sprites["top"], 
+        # (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
+        self.spawnCount = 0
 
 
     def display(self) :
@@ -295,3 +297,5 @@ class Engineer(Walker):
 # x decrease -> left 
 # y increase -> bot
 # y decrease -> top 
+
+

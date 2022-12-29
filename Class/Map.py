@@ -1,5 +1,6 @@
 import numpy as np
 import math as m
+import random as rd
 
 from Class.Cell import *
 
@@ -16,6 +17,7 @@ class Map:  # Un ensemble de cellule
         self.array = [[Empty(j, i, self.height_land, self.width_land, self.screen, self) for i in range(
             size)] for j in range(size)]  # tableau de cellule (voir classe cellule) : list
         self.walkers = []
+        self.migrantQueue = []
         self.spawn_cell = self.array[39][19]
         self.init_path()
         self.wallet = 3000
@@ -130,6 +132,20 @@ class Map:  # Un ensemble de cellule
         return (0 <= x and x <= self.size-1 and 0 <= y and y <= self.size-1)
 
     def update_walkers(self):
+        waitfornext = False
+        if len(self.migrantQueue) != 0 :
+            for i in self.migrantQueue :
+                if (rd.randint(0, 9) == 9 and not waitfornext) or i.spawnCount == 20:
+                    self.walkers.append(i)
+                    self.migrantQueue.remove(i)
+                    i.screen.blit(pygame.transform.scale(i.walker_sprites["top"], 
+                    (i.currentCell.width, i.currentCell.height)), (i.currentCell.left, i.currentCell.top))
+                    waitfornext = True
+                else : i.spawnCount += 1
+
+
+                    
+
         for i in self.walkers:
             i.move()
             i.display()

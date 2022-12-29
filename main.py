@@ -15,3 +15,9 @@ if __name__ == "__main__":
         game_screen()
     pygame.quit()
     
+
+
+# TODO
+# risques avece l'overlay
+# prefect -> éteindre le feu 
+# sauvegarde

@@ -38,10 +38,9 @@ class Cell:  # Une case de la map
     def init_screen_coordonates(self):
         # Compute the x and y screen position of the cell
         self.left = (self.WIDTH_SCREEN/2 - self.WIDTH_SCREEN/12) + \
-            self.width*self.x/2 - self.width*self.y/2
+            self.width*self.x/2 - self.width*self.y/2 - self.map.offset_left
         self.top = self.HEIGHT_SCREEN/6 + self.x * \
-            self.height/2 + self.y * self.height/2
-        self.bot = self.HEIGHT_SCREEN/6 +self.x*self.height/2 + self.y*self.height/2 
+            self.height/2 + self.y * self.height/2 + self.map.offset_top
 
     def display(self):
         if(self.type == "well"):
@@ -157,10 +156,10 @@ class Cell:  # Une case de la map
     # Return an cell array which match with the class type (ex: Path, Prefecture (not a string)) in argument
     def check_cell_around(self, type):
         path = []
-        for i in range(-1, 2) :
-            for j in range(-1, 2) : 
+        for i in range(-1, 2):
+            for j in range(-1, 2):
                 if abs(i) != abs(j) and self.map.inMap(self.x + i, self.y + j):
-                    if isinstance(self.map.get_cell(self.x + i,self.y + j), type):
+                    if isinstance(self.map.get_cell(self.x + i, self.y + j), type):
                         path.append(self.map.get_cell(self.x + i, self.y + j))
         return path
 
@@ -386,8 +385,9 @@ class Empty(Cell):
             self.type_empty = "dirt"
             self.map.wallet -= 2
 
-    def canBuild(self) : 
-        return self.type_empty == "dirt"  
+    def canBuild(self):
+        return self.type_empty == "dirt"
+
 
 class Building(Cell):  # un fils de cellule (pas encore sûr de l'utilité)
     def __init__(self, x, y, height, width, screen, my_map):
@@ -441,7 +441,6 @@ class Well(Building):
             "game_screen/game_screen_sprites/well.png")
         self.type = "well"
 
-
     def __str__(self):
         return "Puit"
 
@@ -479,7 +478,6 @@ class EngineerPost(Building):
 
     def __str__(self):
         return "Engineer Post"
-    
+
     def patrol(self):
         self.engineer.leave_building()
-
