@@ -44,13 +44,12 @@ def game_screen():
     fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
     run = True
     clock = pygame.time.Clock()
-    
-    
+
     selection = {"is_active": False, "start": tuple, "cells": set()}
     hovered_cell = None
     zoom = 1
     move = 1
-    
+
     walker_update_count = 0
     tmpbool = True
     while run:
@@ -68,23 +67,26 @@ def game_screen():
                 map.offset_left -= 15*(3 - pos[0] / 20)
                 map.handle_move("left", 3 - pos[0] / 20)
                 panel.display()
-            if pos[0] >= WIDTH_SCREEN - 60 and not panel.get_road_button().is_hovered(pos):
-                map.offset_left += 15*(3 - (WIDTH_SCREEN - pos[0]) / 20)
-                map.handle_move("right", 3 - (WIDTH_SCREEN - pos[0]) / 20)
-                panel.display()
+            if pos[0] >= WIDTH_SCREEN - 60:
+                if not panel.get_road_button().is_hovered(pos) and not panel.get_well_button().is_hovered(pos):
+                    map.offset_left += 15*(3 - (WIDTH_SCREEN - pos[0]) / 20)
+                    map.handle_move("right", 3 - (WIDTH_SCREEN - pos[0]) / 20)
+                    panel.display()
             move = 0
         move += 1
 
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
 
-            #Set and print logical coordinates
+            # Set and print logical coordinates
             pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(0, 0, 200, 100))
-            x = round(((pos[1]-map.offset_top-HEIGH_SCREEN/6)/map.height_land - (WIDTH_SCREEN/2-WIDTH_SCREEN/12-pos[0]-map.offset_left)/map.width_land))-1
-            y = round(((WIDTH_SCREEN/2-WIDTH_SCREEN/12-pos[0]-map.offset_left)/map.width_land + (pos[1]-map.offset_top-HEIGH_SCREEN/6)/map.height_land))
+            x = round(((pos[1]-map.offset_top-HEIGH_SCREEN/6)/map.height_land - (
+                WIDTH_SCREEN/2-WIDTH_SCREEN/12-pos[0]-map.offset_left)/map.width_land))-1
+            y = round(((WIDTH_SCREEN/2-WIDTH_SCREEN/12-pos[0]-map.offset_left)/map.width_land + (
+                pos[1]-map.offset_top-HEIGH_SCREEN/6)/map.height_land))
             text_click = fps_font.render(f"{x} {y}", 1, (255, 255, 255))
-            SCREEN.blit(text_click, (0,20))
-            text_wallet = fps_font.render(f"{map.wallet}", 1, (255,255,255))
+            SCREEN.blit(text_click, (0, 20))
+            text_wallet = fps_font.render(f"{map.wallet}", 1, (255, 255, 255))
             SCREEN.blit(text_wallet, (0, 40))
 
             if event.type == pygame.QUIT:
@@ -92,10 +94,10 @@ def game_screen():
             # Move up
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    if map.inMap(x,y) and not selection["is_active"]:
-                        selection["start"] = (x,y)
-                        selection["cells"].add(map.get_cell(x,y))
-                        selection["is_active"] = True           
+                    if map.inMap(x, y) and not selection["is_active"]:
+                        selection["start"] = (x, y)
+                        selection["cells"].add(map.get_cell(x, y))
+                        selection["is_active"] = True
 
                 # spawn the grid if is clicked
                     if (panel.get_grid_button().is_hovered(pos)):
@@ -133,7 +135,7 @@ def game_screen():
                         zoom -= 0.01
                         map.handle_zoom(0)
                         panel.display()
-            
+
             if event.type == pygame.MOUSEBUTTONUP:
                 if selection["is_active"]:
                     for i in selection["cells"]:
@@ -155,27 +157,26 @@ def game_screen():
                     selection["is_active"] = False
 
             if event.type == pygame.MOUSEMOTION:
-                #Display previous cell without hover
-                if hovered_cell: 
+                # Display previous cell without hover
+                if hovered_cell:
                     hovered_cell.display()
-                    map.display_around(a,b)
-                if map.inMap(x,y) and pos[0] <= width_wo_panel and not selection["is_active"]:
-                    hovered_cell = map.get_cell(x,y)
+                if map.inMap(x, y) and pos[0] <= width_wo_panel and not selection["is_active"]:
+                    hovered_cell = map.get_cell(x, y)
                     hovered_cell.handle_hover_button()
-                    map.display_around(x, y)
-                    a = x
-                    b = y
-                
-                #Selection : fill the set with hovered cell
-                if map.inMap(x,y) and selection["is_active"]:
-                    for i in selection["cells"]: i.display()
+
+                # Selection : fill the set with hovered cell
+                if map.inMap(x, y) and selection["is_active"]:
+                    for i in selection["cells"]:
+                        i.display()
                     selection["cells"].clear()
-                    range_x = range(selection["start"][0], x+1, 1) if selection["start"][0] <= x else range(selection["start"][0], x-1, -1)
-                    range_y = range(selection["start"][1], y+1, 1) if selection["start"][1] <= y else range(selection["start"][1], y-1, -1)
+                    range_x = range(
+                        selection["start"][0], x+1, 1) if selection["start"][0] <= x else range(selection["start"][0], x-1, -1)
+                    range_y = range(
+                        selection["start"][1], y+1, 1) if selection["start"][1] <= y else range(selection["start"][1], y-1, -1)
                     for i in range_x:
                         for j in range_y:
-                            selection["cells"].add(map.get_cell(i,j))
-                            map.get_cell(i,j).handle_hover_button()
+                            selection["cells"].add(map.get_cell(i, j))
+                            map.get_cell(i, j).handle_hover_button()
 
                 panel.get_grid_button().handle_hover_button(pos, SCREEN)
                 panel.get_home_button().handle_hover_button(pos, SCREEN)
@@ -184,13 +185,12 @@ def game_screen():
                 panel.get_prefecture_button().handle_hover_button(pos, SCREEN)
                 panel.get_engineerpost_button().handle_hover_button(pos, SCREEN)
                 panel.get_well_button().handle_hover_button(pos, SCREEN)
-            
+
             if event.type == pygame.KEYDOWN:
                 if pygame.key.get_pressed()[pygame.K_ESCAPE]:
                     panel.set_window("home")
                     map.handle_esc()
 
-                
                 # grid_button.handle_hover_button(pos, SCREEN)
                 # home_button.handle_hover_button(pos, SCREEN)
                 # shovel_button.handle_hover_button(pos, SCREEN)
@@ -202,7 +202,7 @@ def game_screen():
             map.update_walkers()
             # print("break")
             walker_update_count = 0
-        # if tmpbool : 
+        # if tmpbool :
         #     map.array[13][29] = Prefecture(13, 29, map.height_land, map.width_land,map.screen, map)
         #     SCREEN.blit(pygame.transform.scale(pygame.image.load("walker_sprites/test/Housng1a_00019.png"), (map.array[13][29].width, map.array[13][29].height)), (map.array[13][29].left, map.array[13][29].top))
         #     map.array[31][19] = EngineerPost(31, 19, map.height_land, map.width_land, map.screen, map)
@@ -215,5 +215,3 @@ def game_screen():
             0, HEIGH_SCREEN - text_fps.get_size()[1], 60, 40))
         SCREEN.blit(text_fps, (0, HEIGH_SCREEN - text_fps.get_size()[1]))
         pygame.display.flip()
-
-
