@@ -104,15 +104,15 @@ def game_screen():
                     if (panel.get_grid_button().is_hovered(pos)):
                         map.grid_map()
                         panel.display()
-                    if (panel.home_button.is_hovered(pos)):
+                    if (panel.house_button.is_hovered(pos)):
+                        panel.set_window("house")
+                        map.handle_house_button()
+                    if (panel.shovel_button.is_hovered(pos)):
                         panel.set_window("shovel")
                         map.handle_shovel_button()
                     if (panel.get_road_button().is_hovered(pos)):
                         panel.set_window("road")
                         map.handle_road_button()
-                    if (panel.home_button.is_hovered(pos)):
-                        panel.set_window("house")
-                        map.handle_house_button()
                     if (panel.prefecture_button.is_hovered(pos)):
                         panel.set_window("prefecture")
                         map.handle_prefecture_button()
@@ -141,19 +141,18 @@ def game_screen():
                 if selection["is_active"]:
                     for i in selection["cells"]:
                         if map.get_shoveled():
-                            i.clear()
+                            map.get_cell(i.x, i.y).clear()
                         elif map.get_housed() and i.isBuildable():
-                            i.build("house")
+                            map.get_cell(i.x, i.y).build("house")
                         elif map.get_road_button_activated() and i.isBuildable():
-                            i.build("path")
+                            map.get_cell(i.x, i.y).build("path")
                         elif map.get_prefectured() and i.isBuildable():
-                            i.build("prefecture")
+                            map.get_cell(i.x, i.y).build("prefecture")
                         elif map.get_engineered() and i.isBuildable():
-                            i.build("engineer post")
+                            map.get_cell(i.x, i.y).build("engineer post")
                         elif map.get_welled() and i.isBuildable():
-                            i.build("well")
-                        else:
-                            i.display()
+                            map.get_cell(i.x, i.y).build("well")
+                        map.get_cell(i.x, i.y).display()
                     selection["cells"].clear()
                     selection["is_active"] = False
 
@@ -189,7 +188,7 @@ def game_screen():
 
             if event.type == pygame.KEYDOWN:
                 if pygame.key.get_pressed()[pygame.K_ESCAPE]:
-                    panel.set_window("home")
+                    panel.set_window("none")
                     map.handle_esc()
 
                 # grid_button.handle_hover_button(pos, SCREEN)
