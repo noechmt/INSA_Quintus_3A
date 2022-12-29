@@ -18,6 +18,7 @@ class Map:  # Un ensemble de cellule
             size)] for j in range(size)]  # tableau de cellule (voir classe cellule) : list
         self.walkers = []
         self.migrantQueue = []
+        self.buildings = []
         self.spawn_cell = self.array[39][19]
         self.init_path()
         self.wallet = 3000
@@ -132,6 +133,7 @@ class Map:  # Un ensemble de cellule
         return (0 <= x and x <= self.size-1 and 0 <= y and y <= self.size-1)
 
     def update_walkers(self):
+
         waitfornext = False
         if len(self.migrantQueue) != 0 :
             for i in self.migrantQueue :
@@ -141,16 +143,24 @@ class Map:  # Un ensemble de cellule
                     i.screen.blit(pygame.transform.scale(i.walker_sprites["top"], 
                     (i.currentCell.width, i.currentCell.height)), (i.currentCell.left, i.currentCell.top))
                     waitfornext = True
-                else : i.spawnCount += 1
-
-
-                    
+                else : i.spawnCount += 1     
 
         for i in self.walkers:
             i.move()
             i.display()
             if not isinstance(i, Migrant) :
                 i.previousCell.display()
+
+
+        for i in self.buildings :
+            if not i.risk.happened : i.risk.riskIncrease()
+
+    def update_fire(self) : 
+        for i in self.buildings :
+            if i.risk.happened and i.risk.type == "fire":
+                i.risk.ignite()
+
+
 
     def set_cell_array(self, x, y, cell):
         self.array[x][y] = cell

@@ -243,6 +243,7 @@ class Prefect(Walker) :
             if self.ttl == 0:
                 if len(self.path) == 0: self.path_finding(self.currentCell, self.building)
                 self.movePathFinding()
+                self.reset_fire_risk()
                 if self.currentCell == self.current_building : self.ttl = 50
             else:
                 super().move()
@@ -252,9 +253,9 @@ class Prefect(Walker) :
     def reset_fire_risk(self):
         cell = self.currentCell.check_cell_around(Cell.Building)
         for i in cell:
-            if not isinstance(i, Cell.Prefecture):
-                #Method that can reset the risk / timer
-                pass
+            if not isinstance(i, Cell.Prefecture) and not isinstance(i, Cell.Well) and not i.risk.happened :
+                i.risk.resetEvent()
+                
 
 class Engineer(Walker):
     def __init__(self, engineerPost):

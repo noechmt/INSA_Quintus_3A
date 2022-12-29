@@ -392,10 +392,12 @@ class Empty(Cell):
 class Building(Cell):  # un fils de cellule (pas encore sûr de l'utilité)
     def __init__(self, x, y, height, width, screen, my_map):
         super().__init__(x, y, height, width, screen, my_map)
-        self.state = "build"  # état (détruit ou pas)
+        self.map.buildings.append(self)
+        self.destroyed = False
+
 
     def destroy(self):
-        self.state = "destroyed"
+        self.destroyed = True
 
 
 class House(Building):  # la maison fils de building (?)
@@ -407,7 +409,7 @@ class House(Building):  # la maison fils de building (?)
         self.max_occupants = 5
         self.unemployedCount = 0
         self.migrant = Migrant(self)
-        self.fire = RiskEvent("fire")
+        self.risk = RiskEvent("fire", self)
         # Temporary
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/house_" + str(self.level) + ".png")
@@ -452,7 +454,7 @@ class Prefecture(Building):
         self.employees = 0
         self.prefect = Prefect(self)
         self.requiredEmployees = 5
-        self.risk = RiskEvent("fire")
+        self.risk = RiskEvent("collapse", self)
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/prefecture.png")
         self.type="prefecture"
@@ -471,7 +473,7 @@ class EngineerPost(Building):
         self.employees = 0
         self.engineer = Engineer(self)
         self.requiredEmployees = 5
-        self.risk = RiskEvent("collapse")
+        self.risk = RiskEvent("fire", self)
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/engineerpost.png")
         self.type="engineer post"
