@@ -180,14 +180,17 @@ class Migrant(Walker):
 class LaborAdvisor(Walker) : 
     def __init__(self, building):
         super().__init__("labor advisor", building, True)
-        self.leave_building()
+        # self.leave_building()
+        self.building.map.laborAdvisorQueue.append(self)
         self.walker_sprites = dict((k,[0,0]) for k in ["top","bot","left","right"])
         for i in self.walker_sprites :
             for j in range(2) : 
                 self.walker_sprites[i][j] = pygame.image.load("walker_sprites/LA_sprites/LA_" + i + "_" + str(j) + ".png")    
         # self.walker_sprites = dict((k,pygame.image.load("walker_sprites/LA_sprites/LA_" + k + ".png")) for k in ["top","bot","left","right"])
         
-
+    def leave_building(self):
+        super().leave_building()
+        self.currentCell.map.laborAdvisorQueue.remove(self)
 
     def __str__(self):
         return "Labor Advisor"

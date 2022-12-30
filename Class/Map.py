@@ -18,6 +18,7 @@ class Map:  # Un ensemble de cellule
             size)] for j in range(size)]  # tableau de cellule (voir classe cellule) : list
         self.walkers = []
         self.migrantQueue = []
+        self.laborAdvisorQueue = []
         self.buildings = []
         self.spawn_cell = self.array[39][19]
         self.init_path()
@@ -144,7 +145,12 @@ class Map:  # Un ensemble de cellule
                     i.screen.blit(pygame.transform.scale(i.walker_sprites["top"], 
                     (i.currentCell.width, i.currentCell.height)), (i.currentCell.left, i.currentCell.top))
                     waitfornext = True
-                else : i.spawnCount += 1     
+                else : i.spawnCount += 1   
+
+
+        if len(self.laborAdvisorQueue) != 0 :
+            for i in self.laborAdvisorQueue : 
+                if any(house.nb_occupants != 0 for house in self.buildings if isinstance(house, House)): i.leave_building()
 
         for i in self.walkers:
             i.move()
