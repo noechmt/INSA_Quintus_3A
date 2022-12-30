@@ -171,16 +171,15 @@ class Map:  # Un ensemble de cellule
 
     def display_around(self, x, y):
         
-        if (x>0 and y<39 and self.array[x-1][y+1].type != "dirt" and self.array[x-1][y+1].type != "path"):
-            self.array[x-1][y+1].display()
-        if (x<39 and y>0 and self.array[x+1][y-1].type != "dirt" and self.array[x+1][y-1].type != "path"):
-            self.array[x+1][y-1].display()
         if (y<39 and self.array[x][y+1].type != "dirt" and self.array[x][y+1].type != "path"):
             self.array[x][y+1].display()
+            self.display_around(x, y+1)
         if (x<39 and self.array[x+1][y].type != "dirt" and self.array[x+1][y].type != "path"):
             self.array[x+1][y].display()
+            self.display_around(x+1, y)
         if (x<39 and y<39 and self.array[x+1][y+1].type != "dirt" and self.array[x+1][y+1].type != "path"):
             self.array[x+1][y+1].display()
+            self.display_around(x+1, y+1)
         
         #juste un prototype qui fonctionne pas mais c'est au cas où
         """"
