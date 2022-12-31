@@ -48,6 +48,28 @@ class Map:  # Un ensemble de cellule
             s += "\n"
         return s
 
+    def set_water_zone(self, x, y):
+        for i in range(-2, 3):
+            for j in range(-2, 3):
+                if(39-i>x>i and 39-j>y>j):
+                    self.array[x+i][y+j].set_water(True)
+        self.array[x][y].set_water(False)
+
+    def display_water_zone(self):
+        if(self.get_welled()):
+            for i in range(40):
+                for j in range(40):
+                    if(self.array[i][j].type == "well"):
+                        self.set_water_zone(i, j)
+            for i in range(40):
+                for j in range(40):
+                    if(self.array[i][j].get_water()):
+                        self.array[i][j].display()
+                        self.array[i][j].display_water()
+                    if(self.array[i][j].type == "well"):
+                        self.array[i][j].display()
+
+
     def handle_road_button(self):
         self.road_button_activated = True
         self.house_button_activated = False
@@ -101,7 +123,7 @@ class Map:  # Un ensemble de cellule
         self.house_button_activated = False
         self.shovel_button_activated = False
         self.prefecture_button_activated = False
-        self.engineerpost_button_activated = True
+        self.engineerpost_button_activated = False
         self.well_button_activated = False
 
     def handle_zoom(self, zoom_in):
@@ -173,12 +195,18 @@ class Map:  # Un ensemble de cellule
         
         if (y<39 and self.array[x][y+1].type != "dirt" and self.array[x][y+1].type != "path"):
             self.array[x][y+1].display()
+            if(self.array[x][y+1].get_water() and self.get_welled()):
+                self.array[x][y+1].display_water()
             self.display_around(x, y+1)
         if (x<39 and self.array[x+1][y].type != "dirt" and self.array[x+1][y].type != "path"):
             self.array[x+1][y].display()
+            if(self.array[x+1][y].get_water() and self.get_welled()):
+                self.array[x+1][y].display_water()
             self.display_around(x+1, y)
         if (x<39 and y<39 and self.array[x+1][y+1].type != "dirt" and self.array[x+1][y+1].type != "path"):
             self.array[x+1][y+1].display()
+            if(self.array[x+1][y+1].get_water() and self.get_welled()):
+                self.array[x+1][y+1].display_water()
             self.display_around(x+1, y+1)
         
         #juste un prototype qui fonctionne pas mais c'est au cas où

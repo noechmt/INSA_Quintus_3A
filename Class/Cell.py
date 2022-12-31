@@ -59,6 +59,10 @@ class Cell:  # Une case de la map
         if self.map.grided:
             self.grid()
 
+    def display_water(self):
+        draw_polygon_alpha(self.screen, (0, 0, 255, 85),
+                                   self.get_points_polygone())
+
     def handle_zoom(self, zoom_in):
         if zoom_in:
             self.height *= 1.04
@@ -205,6 +209,12 @@ class Cell:  # Une case de la map
 
     def set_type(self, type):
         self.type = type
+
+    def set_water(self, bool):
+        self.water = bool
+
+    def get_water(self):
+        return self.water
 
 
 sprite_hori = pygame.image.load(
@@ -476,3 +486,5 @@ class EngineerPost(Building):
 
     def __str__(self):
         return "Engineer Post"
+
+
