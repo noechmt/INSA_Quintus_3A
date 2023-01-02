@@ -194,6 +194,7 @@ class Cell:  # Une case de la map
                     self.map.set_cell_array(self.x, self.y, EngineerPost(
                         self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 30
+            self.map.check_water_zone(self.x, self.y)
 
     def grid(self):
         if self.map.get_grided():

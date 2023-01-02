@@ -59,15 +59,17 @@ class Map:  # Un ensemble de cellule
         if(self.get_welled()):
             for i in range(40):
                 for j in range(40):
-                    if(self.array[i][j].type == "well"):
-                        self.set_water_zone(i, j)
-            for i in range(40):
-                for j in range(40):
                     if(self.array[i][j].get_water()):
                         self.array[i][j].display()
                         self.array[i][j].display_water()
                     if(self.array[i][j].type == "well"):
                         self.array[i][j].display()
+
+    def check_water_zone(self, x, y):
+        for i in range(-2, 3):
+            for j in range(-2, 3):
+                if(39-i>x>i and 39-j>y>j and self.array[x+i][y+j].type == "well"):
+                    self.array[x][y].set_water(True)
 
 
     def handle_road_button(self):
