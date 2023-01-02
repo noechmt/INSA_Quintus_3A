@@ -150,7 +150,6 @@ def game_screen():
                             i.build("engineer post")
                         elif map.get_welled() and i.isBuildable():
                             i.build("well")
-                            map.set_water_zone(x, y)
                             map.display_water_zone()
                         else:
                             i.display()
@@ -161,7 +160,7 @@ def game_screen():
                 #Display previous cell without hover
                 if hovered_cell: 
                     hovered_cell.display()
-                    if(hovered_cell.get_water() and map.get_welled()):
+                    if(hovered_cell.get_water() and map.get_welled() and hovered_cell.type != "well"):
                         draw_polygon_alpha(SCREEN, (0, 0, 255, 85), hovered_cell.get_points_polygone())
                     map.display_around(a,b)
                 if map.inMap(x,y) and pos[0] <= width_wo_panel and not selection["is_active"]:

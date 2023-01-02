@@ -194,7 +194,10 @@ class Cell:  # Une case de la map
                     self.map.set_cell_array(self.x, self.y, EngineerPost(
                         self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 30
-            self.map.check_water_zone(self.x, self.y)
+            for i in range(-2, 3):
+                for j in range(-2, 3):
+                    if(39-i>self.x>i and 39-j>self.y>j and self.map.get_cell(self.x+i, self.y+j).type == "well"):
+                        self.map.get_cell(self.x,self.y).set_water(True)
 
     def grid(self):
         if self.map.get_grided():
@@ -438,13 +441,13 @@ class House(Building):  # la maison fils de building (?)
 class Well(Building):
     def __init__(self, x, y, height, width, screen, my_map):
         super().__init__(x, y, height, width, screen, my_map)
-        """for i in range(-2, 3):
+        for i in range(-2, 3):
             for j in range(-2, 3):
-                if self.inMap(self.x+i, self.y+j):
+                if (39-i>self.x>i, 39-j>self.y>j):
                     self.map.get_cell(self.x+i, self.y+j).water = True
                     checkedCell = self.map.get_cell(self.x+i, self.y+i)
                     if isinstance(checkedCell, House) and checkedCell.level == 1 and checkedCell.max_occupants == checkedCell.nb_occupants:
-                        checkedCell.nextLevel"""
+                        checkedCell.nextLevel
 
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/well.png")

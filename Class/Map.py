@@ -48,13 +48,6 @@ class Map:  # Un ensemble de cellule
             s += "\n"
         return s
 
-    def set_water_zone(self, x, y):
-        for i in range(-2, 3):
-            for j in range(-2, 3):
-                if(39-i>x>i and 39-j>y>j):
-                    self.array[x+i][y+j].set_water(True)
-        self.array[x][y].set_water(False)
-
     def display_water_zone(self):
         if(self.get_welled()):
             for i in range(40):
@@ -64,12 +57,6 @@ class Map:  # Un ensemble de cellule
                         self.array[i][j].display_water()
                     if(self.array[i][j].type == "well"):
                         self.array[i][j].display()
-
-    def check_water_zone(self, x, y):
-        for i in range(-2, 3):
-            for j in range(-2, 3):
-                if(39-i>x>i and 39-j>y>j and self.array[x+i][y+j].type == "well"):
-                    self.array[x][y].set_water(True)
 
 
     def handle_road_button(self):
@@ -197,17 +184,17 @@ class Map:  # Un ensemble de cellule
         
         if (y<39 and self.array[x][y+1].type != "dirt" and self.array[x][y+1].type != "path"):
             self.array[x][y+1].display()
-            if(self.array[x][y+1].get_water() and self.get_welled()):
+            if(self.array[x][y+1].get_water() and self.get_welled() and self.array[x][y+1].type != "well"):
                 self.array[x][y+1].display_water()
             self.display_around(x, y+1)
         if (x<39 and self.array[x+1][y].type != "dirt" and self.array[x+1][y].type != "path"):
             self.array[x+1][y].display()
-            if(self.array[x+1][y].get_water() and self.get_welled()):
+            if(self.array[x+1][y].get_water() and self.get_welled() and self.array[x+1][y].type != "well"):
                 self.array[x+1][y].display_water()
             self.display_around(x+1, y)
         if (x<39 and y<39 and self.array[x+1][y+1].type != "dirt" and self.array[x+1][y+1].type != "path"):
             self.array[x+1][y+1].display()
-            if(self.array[x+1][y+1].get_water() and self.get_welled()):
+            if(self.array[x+1][y+1].get_water() and self.get_welled() and self.array[x+1][y+1].type != "well"):
                 self.array[x+1][y+1].display_water()
             self.display_around(x+1, y+1)
         
