@@ -29,7 +29,7 @@ def game_screen():
     pygame.display.set_caption("Quintus III")
     WIDTH_SCREEN, HEIGH_SCREEN = SCREEN.get_size()
     height_land = HEIGH_SCREEN/60
-    width_land = WIDTH_SCREEN*sqrt(2)/80
+    width_land = WIDTH_SCREEN*sqrt(2)/80 
     SIZE = 40
 
     map = Map(SIZE, height_land, width_land, SCREEN)
@@ -107,21 +107,27 @@ def game_screen():
                     if (panel.house_button.is_hovered(pos)):
                         panel.set_window("house")
                         map.handle_house_button()
+                        map.display_map()
                     if (panel.shovel_button.is_hovered(pos)):
                         panel.set_window("shovel")
                         map.handle_shovel_button()
+                        map.display_map()
                     if (panel.get_road_button().is_hovered(pos)):
                         panel.set_window("road")
                         map.handle_road_button()
+                        map.display_map()
                     if (panel.prefecture_button.is_hovered(pos)):
                         panel.set_window("prefecture")
                         map.handle_prefecture_button()
+                        map.display_map()
                     if (panel.engineerpost_button.is_hovered(pos)):
                         panel.set_window("engineer post")
                         map.handle_engineerpost_button()
+                        map.display_map()
                     if (panel.well_button.is_hovered(pos)):
                         panel.set_window("well")
                         map.handle_well_button()
+                        map.display_water_zone()
                     # if pos[0] <= width_wo_panel:
                     #     map.handle_click_cells(pos)
                     #     panel.display()
@@ -152,6 +158,7 @@ def game_screen():
                             map.get_cell(i.x, i.y).build("engineer post")
                         elif map.get_welled() and i.isBuildable():
                             map.get_cell(i.x, i.y).build("well")
+                            map.display_water_zone()
                         map.get_cell(i.x, i.y).display()
                     selection["cells"].clear()
                     selection["is_active"] = False
@@ -160,14 +167,16 @@ def game_screen():
                 # Display previous cell without hover
                 if hovered_cell:
                     hovered_cell.display()
-                if map.inMap(x, y) and pos[0] <= width_wo_panel and not selection["is_active"]:
-                    hovered_cell = map.get_cell(x, y)
+                    if(hovered_cell.get_water() and map.get_welled() and hovered_cell.type != "well"):
+                        draw_polygon_alpha(SCREEN, (0, 0, 255, 85), hovered_cell.get_points_polygone())
+                    hovered_cell.display_around()
+                if map.inMap(x,y) and pos[0] <= width_wo_panel and not selection["is_active"]:
+                    hovered_cell = map.get_cell(x,y)
                     hovered_cell.handle_hover_button()
-
-                # Selection : fill the set with hovered cell
-                if map.inMap(x, y) and selection["is_active"]:
-                    for i in selection["cells"]:
-                        i.display()
+                    hovered_cell.display_around()
+                #Selection : fill the set with hovered cell
+                if map.inMap(x,y) and selection["is_active"]:
+                    for i in selection["cells"]: i.display()
                     selection["cells"].clear()
                     range_x = range(
                         selection["start"][0], x+1, 1) if selection["start"][0] <= x else range(selection["start"][0], x-1, -1)
