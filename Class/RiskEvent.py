@@ -1,5 +1,3 @@
-from threading import *
-import time
 import Class.Cell as Cell
 import random as rd
 import pygame
@@ -24,10 +22,10 @@ class RiskEvent():
         else : 
             self.riskCounter += rd.randint(0,1)
 
-        if self.riskCounter >= 200 :
+        if self.riskCounter >= 2000 :
             self.happened = True
             self.building.type = "ruin"
-            if self.type == "fire" : self.building.sprite = pygame.image.load("risks_sprites/house_fire/fire_8.png")
+            if self.type == "fire" or self.type == "collapse" : self.building.sprite = pygame.image.load("risks_sprites/house_fire/fire_8.png") # Au cas où il faut changer de sprite pour le collapse
             if isinstance(self.building, Cell.House) : self.building.nb_occupants, self.building.unemployedCount = 0, 0
             elif isinstance(self.building, Cell.Prefecture) : 
                 if self.building.labor_advisor in self.building.map.walkers :
@@ -53,20 +51,15 @@ class RiskEvent():
             self.building.screen.blit(pygame.transform.scale(self.fire_sprites[8], (self.building.width, self.building.height)), (self.building.left, self.building.top))
             self.fireCounter = 0
             self.building.destroyed = True
+            self.building.map.buildings.remove(self.building)
+            self.update_sprites_around()
             
         else : 
             self.building.screen.blit(pygame.transform.scale(self.fire_sprites[self.fireCounter%8], (self.building.width, self.building.height)), (self.building.left, self.building.top))
             self.building.map.array[self.building.x][self.building.y + 1].display()
             self.fireCounter += 1
             if self.tmpbool :
-                
-                arr = self.building.check_cell_around(Cell.Cell)
-                for i in arr :
-                    if not isinstance(i, Cell.Building) : i.display()
-                    for j in i.check_cell_around(Cell.Cell) :
-                        if j.x < self.building.x + 2 and j.y < self.building.y + 2 : 
-                            if not isinstance(j, Cell.Building) : #and not (j in [i.map.array[i.x-1][i.y], i.map.array[i.x - 1][i.y - 1]]) and (isinstance(i, Cell.Prefecture) or isinstance(i, Cell.EngineerPost)): 
-                                j.display()
+                self.update_sprites_around()
                 self.tmpbool = False
 
         if self.fireCounter >= 400 : 
@@ -76,13 +69,27 @@ class RiskEvent():
                 i.type = "ruin"
                 i.sprite = pygame.image.load("risks_sprites/house_fire/fire_8.png")
         
-
+    def collapse(self) : 
+        if not self.happened or self.building.destroyed :
+            return
+        self.building.destroyed = True
+        self.building.screen.blit(pygame.transform.scale(pygame.image.load("game_screen/game_screen_sprites/dirt_0.png"), (self.building.width, self.building.height)), (self.building.left, self.building.top))
+        self.building.screen.blit(pygame.transform.scale(self.fire_sprites[8], (self.building.width, self.building.height)), (self.building.left, self.building.top))
+        
+        self.update_sprites_around()
+        self.building.map.buildings.remove(self.building)
 
     def resetEvent(self) :
         self.riskCounter = 0
 
-    
-         
 
-
+    def update_sprites_around(self) :
+        arr = self.building.check_cell_around(Cell.Cell)
+        for i in arr :
+            if not isinstance(i, Cell.Building) : 
+                i.display()
+            for j in i.check_cell_around(Cell.Cell) :
+                if j.x < self.building.x + 2 and j.y < self.building.y + 2 : 
+                    if not isinstance(j, Cell.Building) : #and not (j in [i.map.array[i.x-1][i.y], i.map.array[i.x - 1][i.y - 1]]) and (isinstance(i, Cell.Prefecture) or isinstance(i, Cell.EngineerPost)): 
+                        j.display()
      

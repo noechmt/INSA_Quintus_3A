@@ -154,6 +154,7 @@ class Migrant(Walker):
                 pass
             elif len(self.path) == 1:
                 self.enter_building()
+                self.building.nextLevel()
                 self.building.nb_occupants += 5
                 self.building.unemployedCount += 5
                 if self.building.nb_occupants == self.building.max_occupants and self.building.water:
@@ -276,8 +277,7 @@ class Engineer(Walker):
         cell = self.currentCell.check_cell_around(Cell.Building)
         for i in cell:
             if not isinstance(i, Cell.EngineerPost):
-                #Method that can reset the risk / timer
-                pass
+                i.risk.resetEvent()
 
 
 
