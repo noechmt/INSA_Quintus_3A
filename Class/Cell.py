@@ -1,6 +1,8 @@
 from Class.Walker import *
+from Class.RiskEvent import *
 import pygame
 from random import *
+import math
 import random
 
 def draw_polygon_alpha(surface, color, points):
@@ -8,28 +10,38 @@ def draw_polygon_alpha(surface, color, points):
     min_x, min_y, max_x, max_y = min(lx), min(ly), max(lx), max(ly)
     target_rect = pygame.Rect(min_x, min_y, max_x - min_x, max_y - min_y)
     shape_surf = pygame.Surface(target_rect.size, pygame.SRCALPHA)
-    pygame.draw.polygon(shape_surf, color, [(x - min_x, y - min_y) for x, y in points])
+    pygame.draw.polygon(shape_surf, color, [
+                        (x - min_x, y - min_y) for x, y in points])
     surface.blit(shape_surf, target_rect)
 
-class Cell: #Une case de la map
+
+class Cell:  # Une case de la map
     def __init__(self, x, y, height, width, screen, map):
         self.x = x
-        self.y = y 
+        self.y = y
         self.height = height
         self.width = width
         self.map = map
+        self.type = ""
         self.water = False
-        self.sprite = None
+        self.sprite = ""
         self.screen = screen
         self.hovered = False
-        self.type = ""
+        self.type_empty = None
+        self.grided = False
+        self.house_mode = False
         self.WIDTH_SCREEN, self.HEIGHT_SCREEN = self.screen.get_size()
         self.init_screen_coordonates()
 
+    def isBuildable(self):
+        return isinstance(self, Empty) and self.type_empty == "dirt"
+
     def init_screen_coordonates(self):
         # Compute the x and y screen position of the cell
-        self.left = (self.WIDTH_SCREEN/2 - self.WIDTH_SCREEN/12) + self.width*self.x/2 - self.width*self.y/2
-        self.top = self.HEIGHT_SCREEN/6 + self.x * self.height/2 + self.y * self.height/2
+        self.left = (self.WIDTH_SCREEN/2 - self.WIDTH_SCREEN/12) + \
+            self.width*self.x/2 - self.width*self.y/2 - self.map.offset_left
+        self.top = self.HEIGHT_SCREEN/6 + self.x * \
+            self.height/2 + self.y * self.height/2 + self.map.offset_top
 
     def display(self):
         if self.type  == "empty_tree":
@@ -38,7 +50,63 @@ class Cell: #Une case de la map
             self.screen.blit(pygame.transform.scale(self.sprite,(self.width, self.height*35/30)), (self.left, self.top-self.height*5/30))
         
 
-        self.screen.blit(pygame.transform.scale(self.sprite, (self.width, self.height)), (self.left, self.top))
+        if(self.type == "well"):
+            self.screen.blit(pygame.transform.scale(
+            self.sprite, (self.width, self.height*53/30)), (self.left, self.top - self.height*23/30))
+        elif(self.type == "engineer post"):
+            self.screen.blit(pygame.transform.scale(
+            self.sprite, (self.width, self.height*50/30)), (self.left, self.top - self.height*20/30))
+        elif(self.type == "prefecture"):
+            self.screen.blit(pygame.transform.scale(
+            self.sprite, (self.width, self.height*38/30)), (self.left, self.top - self.height*8/30))
+        else:
+            self.screen.blit(pygame.transform.scale(
+                self.sprite, (self.width, self.height)), (self.left, self.top))
+        if self.map.grided:
+            self.grid()
+
+    def display_water(self):
+        draw_polygon_alpha(self.screen, (0, 0, 255, 85),
+                                   self.get_points_polygone())
+
+    def display_around(self):
+        
+        if (self.y+1<39 and self.map.get_cell(self.x,self.y+1).type_empty != ("dirt" or "water") and self.map.get_cell(self.x,self.y+1).type != "path"):
+            self.map.get_cell(self.x,self.y+1).display()
+            if(self.map.get_cell(self.x,self.y+1).get_water() and self.map.get_welled() and self.map.get_cell(self.x,self.y+1).type != "well"):
+                self.map.get_cell(self.x,self.y+1).display_water()
+            self.map.get_cell(self.x,self.y+1).display_around()
+        if (self.x+1<39 and self.map.get_cell(self.x+1, self.y).type_empty != ("dirt" or "water") and self.map.get_cell(self.x+1, self.y).type != "path"):
+            self.map.get_cell(self.x+1, self.y).display()
+            if(self.map.get_cell(self.x+1, self.y).get_water() and self.map.get_welled() and self.map.get_cell(self.x+1, self.y).type != "well"):
+                self.map.get_cell(self.x+1, self.y).display_water()
+            self.map.get_cell(self.x+1, self.y).display_around()
+        if (self.x+1<39 and self.y+1<39 and self.map.get_cell(self.x+1, self.y+1).type_empty != ("dirt" or "water") and self.map.get_cell(self.x+1, self.y+1).type != "path"):
+            self.map.get_cell(self.x+1, self.y+1).display()
+            if(self.map.get_cell(self.x+1, self.y+1).get_water() and self.map.get_welled() and self.map.get_cell(self.x+1, self.y+1).type != "well"):
+                self.map.get_cell(self.x+1, self.y+1).display_water()
+            self.map.get_cell(self.x+1, self.y+1).display_around()
+
+    def handle_zoom(self, zoom_in):
+        if zoom_in:
+            self.height *= 1.04
+            self.width *= 1.04
+        else:
+            self.height /= 1.04
+            self.width /= 1.04
+        self.init_screen_coordonates()
+        self.display()
+
+    def handle_move(self, move, m):
+        if move == "up":
+            self.top += 15 * m
+        if move == "down":
+            self.top -= 15 * m
+        if move == "right":
+            self.left -= 15 * m
+        if move == "left":
+            self.left += 15 * m
+        # self.display()
 
     def is_hovered(self, pos):
         # Initialize the number of intersections to 0
@@ -62,29 +130,49 @@ class Cell: #Une case de la map
                     intersections += 1
         # If the number of intersections is odd, the point is inside the polygon
         return intersections % 2 == 1
-        
-        
 
-    def handle_hover_button(self, pos):
-        is_hovered = self.is_hovered(pos)
-        if is_hovered and not self.hovered:
-            self.hovered = True
-            draw_polygon_alpha(self.screen, (0, 0, 0, 85), self.get_points_polygone())
-        if not is_hovered and self.hovered:
-            self.hovered = False
-            self.display()
-            self.grid()
+    def handle_hover_button(self):
+        #is_hovered = self.is_hovered(pos)
+        # if is_hovered and not self.hovered:
+        #self.hovered = True
+        if (self.map.get_housed()):
+            house_sprite = pygame.image.load(
+                    "game_screen/game_screen_sprites/house_0.png")
+            self.screen.blit(pygame.transform.scale(
+                    house_sprite, (self.width, self.height)), (self.left, self.top))
+            if self.isBuildable():
+                draw_polygon_alpha(self.screen, (0, 0, 0, 85),
+                                   self.get_points_polygone())
+            else:
+                draw_polygon_alpha(self.screen, (255, 0, 0, 85),
+                                   self.get_points_polygone())
+        elif self.map.get_road_button_activated() and not self.isBuildable():
+            draw_polygon_alpha(self.screen, (255, 0, 0, 85),
+                               self.get_points_polygone())
+        else:
+            draw_polygon_alpha(self.screen, (0, 0, 0, 85),
+                               self.get_points_polygone())
+        # if not is_hovered and self.hovered:
+        #     self.hovered = False
+        #     self.display()
+        #     self.grid()
+
+    # def handle_click_cell(self, pos):
+    #     if self.is_hovered(pos) and isinstance(self, Empty) and self.map.road_button_activated:
+    #         self.map.set_cell_array(self.x, self.y, Path(self.x, self.y,
+    #                                                      self.height, self.width, self.screen, self.map))
+    #         self.map.get_cell(self.x, self.y).handle_sprites()
 
     def get_points_polygone(self):
         return ((self.left + self.width / 2, self.top), (self.left, self.top + self.height / 2),
-        (self.left + self.width/2, self.top + self.height), (self.left + self.width, self.top + self.height / 2))
+                (self.left + self.width/2, self.top + self.height), (self.left + self.width, self.top + self.height / 2))
 
     def get_points_rectangle(self):
         return (self.left, self.top, self.left + self.width, self.top + self.height)
 
     def get_size(self):
         return (self.width, self.height)
-    
+
     def get_pos(self):
         return (self.left, self.top)
 
@@ -94,37 +182,232 @@ class Cell: #Une case de la map
     def set_hover(self, hover):
         self.hover = hover
 
-
-    def inMap(self, x,y):
-        return (0 <= x and x <= self.map.size-1 and 0 <= y and y <= self.map.size-1)
+    # Return an cell array which match with the class type (ex: Path, Prefecture (not a string)) in argument
+    def check_cell_around(self, type):
+        path = []
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if abs(i) != abs(j) and self.map.inMap(self.x + i, self.y + j):
+                    if isinstance(self.map.get_cell(self.x + i, self.y + j), type):
+                        path.append(self.map.get_cell(self.x + i, self.y + j))
+        return path
 
     def build(self, type):
-        if self.map.array[self.x][self.y].type_of_void == "dirt":
+        if isinstance(self, Empty) and self.type_empty != "dirt":
+            print("This cell is already taken")
+        else:
             match type:
                 case "path":
-                    self.map.array[self.x][self.y] = Path(self.x, self.y, self.map)
-                #case "house":
-                #    self.map.array[self.x][self.y] = House(self.x, self.y, self.map)
-                #case "fountain":
-                #    self.map.array[self.x][self.y] = Fountain(self.x, self.y, self.map)
-                #case "prefecture":
-                #    self.map.array[self.x][self.y] = Prefecture(self.x, self.y, self.map)
-                #case "engineer post":
-                #    self.map.array[self.x][self.y] = EngineerPost(self.x, self.y, self.map)
+                    self.map.set_cell_array(self.x, self.y, Path(
+                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                    self.map.get_cell(self.x, self.y).handle_sprites()
+                    self.map.get_cell(self.x, self.y).display()
+                    self.map.wallet -= 4
+                case "house":
+                    self.map.set_cell_array(self.x, self.y, House(
+                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                    self.map.wallet -= 10
+                case "well":
+                    self.map.set_cell_array(self.x, self.y, Well(
+                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                    self.map.wallet -= 5
+                case "prefecture":
+                    self.map.set_cell_array(self.x, self.y, Prefecture(
+                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                    self.map.wallet -= 30
+                case "engineer post":
+                    self.map.set_cell_array(self.x, self.y, EngineerPost(
+                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                    self.map.wallet -= 30
+            for i in range(-2, 3):
+                for j in range(-2, 3):
+                    if(37>self.x>3 and 37>self.y>3 and self.map.get_cell(self.x+i, self.y+j).type == "well"):
+                        self.map.get_cell(self.x,self.y).set_water(True)
 
     def grid(self):
-        (top, left, bot, right) = self.get_points_polygone()
-        self.x_screen = (self.WIDTH_SCREEN/2 - self.WIDTH_SCREEN/12) + self.width*self.x/2 - self.width*self.y/2
-        self.y_screen = self.HEIGHT_SCREEN/6 + self.x * self.height/2 + self.y * self.height/2
-        pygame.draw.line(self.screen, (0, 0, 0), top, right, 1)
-        pygame.draw.line(self.screen, (0, 0, 0), right, bot, 1)
-        pygame.draw.line(self.screen, (0, 0, 0), bot, left, 1)
-        pygame.draw.line(self.screen, (0, 0, 0), left, top, 1)
+        if self.map.get_grided():
+            pygame.draw.polygon(self.screen, (25, 25, 25),
+                                self.get_points_polygone(), 2)
+        else:
+            self.display()
+
+    def clear(self):
+        if not isinstance(self, Empty) and self.type_empty != "rock" and self.type_empty != "water":
+            self.type_empty = "dirt"
+            self.map.set_cell_array(self.x, self.y, Empty(
+                self.x, self.y, self.height, self.width, self.screen, self.map))
+            self.map.wallet -= 2
+
+    def set_type(self, type):
+        self.type = type
+
+    def set_water(self, bool):
+        self.water = bool
+
+    def get_water(self):
+        return self.water
+
+
+sprite_hori = pygame.image.load(
+    "game_screen/game_screen_sprites/road_straight_hori.png")
+sprite_verti = pygame.image.load(
+    "game_screen/game_screen_sprites/road_straight_verti.png")
+sprite_all_turn = pygame.image.load(
+    "game_screen/game_screen_sprites/road_turn_all.png")
+sprite_turn_bot_left = pygame.image.load(
+    "game_screen/game_screen_sprites/road_turn_bot_left.png")
+sprite_turn_bot_right = pygame.image.load(
+    "game_screen/game_screen_sprites/road_turn_bot_right.png")
+sprite_turn_hori_bot = pygame.image.load(
+    "game_screen/game_screen_sprites/road_turn_hori_bot.png")
+sprite_turn_hori_top = pygame.image.load(
+    "game_screen/game_screen_sprites/road_turn_hori_top.png")
+sprite_turn_left_top = pygame.image.load(
+    "game_screen/game_screen_sprites/road_turn_left_top.png")
+sprite_turn_right_top = pygame.image.load(
+    "game_screen/game_screen_sprites/road_turn_right_top.png")
+sprite_turn_verti_left = pygame.image.load(
+    "game_screen/game_screen_sprites/road_turn_verti_left.png")
+sprite_turn_verti_right = pygame.image.load(
+    "game_screen/game_screen_sprites/road_turn_verti_right.png")
+
 
 class Path(Cell):
-    def __init__(self, x, y, my_current_map, my_path_level=0):
-        super().__init__(x, y, my_current_map, 1)
-        self.path_level = my_path_level
+    def __init__(self, x, y, height, width, screen, map, path_level=0):
+        super().__init__(x, y, height, width, screen, map)
+        self.sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/road_straight_verti.png")
+        self.level = path_level
+        self.handle_sprites()
+        self.display()
+        self.grid()
+        self.type = "path"
+
+    def handle_sprites(self, r=0):
+        if r < 2:
+            # Check if the road is in all turns
+            if self.check_surrondings([1, 1, 1, 1]):
+                self.set_sprite(sprite_all_turn)
+                self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
+                self.grid()
+                return
+            # Check if the road is a turn bottom to left
+            if self.check_surrondings([1, 0, 1, 0]):
+                self.set_sprite(sprite_turn_bot_left)
+                self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
+                self.grid()
+                return
+            # Check if the road is a turn bottom to right
+            if self.check_surrondings([0, 0, 1, 1]):
+                self.set_sprite(sprite_turn_bot_right)
+                self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
+                self.grid()
+                return
+            # Check if the road is a turn horizontal to bottom
+            if self.check_surrondings([1, 0, 1, 1]):
+                self.set_sprite(sprite_turn_hori_bot)
+                self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
+                self.grid()
+
+                return
+            # Check if the road is a turn horizontal to top
+            if self.check_surrondings([1, 1, 0, 1]):
+                self.set_sprite(sprite_turn_hori_top)
+                self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
+                self.grid()
+
+                return
+            # Check if the road is a turn letf to top
+            if self.check_surrondings([1, 1, 0, 0]):
+                self.set_sprite(sprite_turn_left_top)
+                self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
+                self.grid()
+                return
+            # Check if the road is a turn right to top
+            if self.check_surrondings([0, 1, 0, 1]):
+                self.set_sprite(sprite_turn_right_top)
+                self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
+                self.grid()
+
+                return
+            # Check if the road is a turn vertical to left
+            if self.check_surrondings([1, 1, 1, 0]):
+                self.set_sprite(sprite_turn_verti_left)
+                self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
+                self.grid()
+
+                return
+            # Check if the road is a turn vertical to right
+            if self.check_surrondings([0, 1, 1, 1]):
+                self.set_sprite(sprite_turn_verti_right)
+                self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
+                self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
+                self.grid()
+
+                return
+
+            # Check horizontal road
+            if self.check_surrondings([2, 0, 0, 1]):
+                self.set_sprite(sprite_hori)
+                self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
+                if isinstance(self.map.get_cell(self.x - 1, self.y), Path):
+                    self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
+                self.grid()
+                return
+            if self.check_surrondings([1, 0, 0, 2]):
+                self.set_sprite(sprite_hori)
+                self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
+                if isinstance(self.map.get_cell(self.x + 1, self.y), Path):
+                    self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
+                self.grid()
+                return
+            # Check vertical road
+            if self.check_surrondings([0, 2, 1, 0]):
+                self.set_sprite(sprite_verti)
+                self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
+                if isinstance(self.map.get_cell(self.x, self.y - 1), Path):
+                    self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
+                self.grid()
+                return
+            if self.check_surrondings([0, 1, 2, 0]):
+                self.set_sprite(sprite_verti)
+                self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
+                if isinstance(self.map.get_cell(self.x, self.y + 1), Path):
+                    self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
+                self.grid()
+                return
+
+    def check_surrondings(self, check):
+        i = 0
+        for dx in range(-1, 2):
+            for dy in range(-1, 2):
+                if abs(dx) != abs(dy):
+                    if check[i] != 2 and isinstance(self.map.get_cell(self.x + dx, self.y + dy), Path) != check[i]:
+                        return False
+                    i += 1
+        return True
+
+    def set_sprite(self, sprite):
+        self.sprite = sprite
+        self.display()
+
+    def __str__(self):
+        return f"Chemin { self.level}"
+
 
 class Empty(Cell):
     def __init__(self, x, y, height, width, screen, map, type_empty="dirt"):
@@ -132,7 +415,7 @@ class Empty(Cell):
         self.type_empty = type_empty #"dirt", "trees"
         self.type = "empty"
 
-        tree_or_dirt_list = ["tree", "dirt"]
+        tree_or_dirt_list = ["tree", "dirt", "dirt"]
         rock_or_dirt_list = ["rock", "dirt"]
         
         #place the trees
@@ -221,68 +504,112 @@ class Empty(Cell):
         self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_empty + "_" + str(aleatoire) + ".png")
 
         self.display()
-        self.grid()
+
+    def __str__(self):
+        return self.type_empty
 
     def clear(self):
-        if self.type_of_void == "tree":
-            self.type_of_void = "dirt"
-            # draw function
+        if self.type_empty == "tree":
+            self.type_empty = "dirt"
+            self.map.wallet -= 2
+
+    def canBuild(self):
+        return self.type_empty == "dirt"
 
 
-class Building(Cell) : #un fils de cellule (pas encore sûr de l'utilité)
-    def __init__(self, x, y, my_current_map, my_type_of_building, my_state):
-        super().__init__(x, y, my_current_map, 2)
-        self.type_of_cell = 2
-        self.type_of_building = my_type_of_building  #le type de batiments (house, fountain, ...) : ? 
-        self.state = my_state #état (détruit ou pas) 
+class Building(Cell):  # un fils de cellule (pas encore sûr de l'utilité)
+    def __init__(self, x, y, height, width, screen, my_map):
+        super().__init__(x, y, height, width, screen, my_map)
+        self.map.buildings.append(self)
+        self.destroyed = False
+
+
+    def destroy(self):
+        self.destroyed = True
+
+
+class House(Building):  # la maison fils de building (?)
+    def __init__(self, x, y, height, width, screen, my_map, level=0, nb_occupants=0):
+        super().__init__(x, y, height, width, screen, my_map)
+        self.level = level  # niveau de la maison : int
+        self.nb_occupants = nb_occupants  # nombre d'occupants: int
+        # nombre max d'occupant (dépend du niveau de la maison) : int
+        self.max_occupants = 5
+        self.unemployedCount = 0
+        self.migrant = Migrant(self)
+        self.risk = RiskEvent("fire", self)
+        # Temporary
+        self.sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/house_" + str(self.level) + ".png")
+        self.type = "house"
+        self.display()
+
+    def __str__(self):
+        return f"House { self.level}"
+
+    def nextLevel(self):
+        self.level += 1
+        match self.level:
+            case 1:
+                self.max_occupants = 7
+            case 2:
+                self.max_occupants = 9
+
+
+class Well(Building):
+    def __init__(self, x, y, height, width, screen, my_map):
+        super().__init__(x, y, height, width, screen, my_map)
+        #le risque est la en stand by
+        self.risk = RiskEvent("collapse", self)
+        for i in range(-2, 3):
+            for j in range(-2, 3):
+                if (37>self.x>3, 37>self.y>3):
+                    self.map.get_cell(self.x+i, self.y+j).water = True
+                    checkedCell = self.map.get_cell(self.x+i, self.y+i)
+                    if isinstance(checkedCell, House) and checkedCell.level == 1 and checkedCell.max_occupants == checkedCell.nb_occupants:
+                        checkedCell.nextLevel
+
+        self.sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/well.png")
+        self.type = "well"
+
+    def __str__(self):
+        return "Puit"
+
+
+class Prefecture(Building):
+    def __init__(self, x, y, height, width, screen, my_map):
+        super().__init__(x, y, height, width, screen, my_map)
+        self.labor_advisor = LaborAdvisor(self)
         self.employees = 0
-        match my_type_of_building :
-            case "prefecture" :
-                self.required_employees = 6
-            case "engineer post" : 
-                self.required_employees = 5
-            case _: 
-                self.required_employees = None
-    
-    def destroy(self) : 
-        self.state = "destroyed"
+        self.prefect = Prefect(self)
+        self.requiredEmployees = 5
+        self.risk = RiskEvent("collapse", self)
+        self.sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/prefecture.png")
+        self.type="prefecture"
+
+    def __str__(self):
+        return f"Prefecture { self.employees}"
+
+    def patrol(self):
+        self.prefect.leave_building()
+
 
 class EngineerPost(Building):
-    def __init__(self, x, y, my_current_map):
-        super().__init__(x, y, my_current_map, "engineer post", True)
-        self.labor_advisor = LaborAdvisor(self.x, self.y, self.map.array[self.x][self.y], self)
+    def __init__(self, x, y, height, width, screen, my_map):
+        super().__init__(x, y, height, width, screen, my_map)
+        self.labor_advisor = LaborAdvisor(self)
         self.employees = 0
+        self.engineer = Engineer(self)
+        self.requiredEmployees = 5
+        self.risk = RiskEvent("fire", self)
+        self.sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/engineerpost.png")
+        self.type="engineer post"
 
-class Fountain(Building) :
-    def __init__(self, x, y, my_current_map) : 
-        super().__init__(x, y, my_current_map, "fountain", True)
-    
-    def check_house(self) : 
-        for i in range(-2, 3):
-            for j in range(-2, 3):
-                cell = self.map.array[self.x+i][self.y+j]
-                if cell.type_of_cell == 2:
-                    if cell.type_of_building == "house":
-                        cell.water = True
+    def __str__(self):
+        return "Engineer Post"
 
-class House(Building) : #la maison fils de building (?)
-    def __init__(self, x, y, my_current_map, level=0, nb_occupants=0) :
-        super().__init__(x, y, my_current_map, "house", True)
-        self.level = level #niveau de la maison : int
-        self.nb_occupants = nb_occupants #nombre d'occupants: int
-        self.max_occupants = 5 #nombre max d'occupant (dépend du niveau de la maison) : int
-    
-    def check_fountain(self):
-        for i in range(-2, 3):
-            for j in range(-2, 3):
-                cell = self.map.array[self.x+i][self.y+j]
-                if cell.type_of_cell == 2:
-                    if cell.type_of_building == "fountain":
-                        self.water = True
-
-class Prefecture(Building) :
-    def __init__(self, x, y, my_current_map):
-        super().__init__(x, y, my_current_map, "prefecture", True)
-        self.labor_advisor = LaborAdvisor(self.x, self.y, self.map.array[self.x][self.y], self)
-        self.employees = 0
-        self.prefect = Prefect(self.x, self.y, self.map.array[self.x][self.y], self)
+    def patrol(self):
+        self.engineer.leave_building()
