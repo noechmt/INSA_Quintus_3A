@@ -158,7 +158,7 @@ def game_screen():
                             map.get_cell(i.x, i.y).build("well")
                             for k in range(-2, 3):
                                 for j in range(-2, 3):
-                                    if (39>x+k>0, 39>y+j>0):
+                                    if (39>=x+k>=0 and 39>=y+j>=0):
                                         map.get_cell(i.x+k, i.y+j).display()
                         map.get_cell(i.x, i.y).display()
                     selection["cells"].clear()
