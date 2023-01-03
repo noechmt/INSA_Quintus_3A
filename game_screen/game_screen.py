@@ -96,7 +96,7 @@ def game_screen():
                 if event.button == 1:
                     if map.inMap(x, y) and not selection["is_active"]:
                         selection["start"] = (x, y)
-                        selection["cells"].add(map.get_cell(x, y))
+                        selection["cells"].add((x, y))
                         selection["is_active"] = True
 
                 # spawn the grid if is clicked
@@ -139,35 +139,36 @@ def game_screen():
             if event.type == pygame.MOUSEBUTTONUP:
                 if selection["is_active"]:
                     for i in selection["cells"]:
+                        selected_cell = map.get_cell(i[0], i[1])
                         if map.get_shoveled():
-                            i.clear()
-                        elif map.get_housed() and i.isBuildable():
-                            i.build("house")
-                        elif map.get_road_button_activated() and i.isBuildable():
-                            i.build("path")
-                        elif map.get_prefectured() and i.isBuildable():
-                            i.build("prefecture")
-                        elif map.get_engineered() and i.isBuildable():
-                            i.build("engineer post")
-                        elif map.get_welled() and i.isBuildable():
-                            i.build("well")
+                            selected_cell.clear()
+                        elif map.get_housed() and selected_cell.isBuildable():
+                            selected_cell.build("house")
+                        elif map.get_road_button_activated() and selected_cell.isBuildable():
+                            selected_cell.build("path")
+                        elif map.get_prefectured() and selected_cell.isBuildable():
+                            selected_cell.build("prefecture")
+                        elif map.get_engineered() and selected_cell.isBuildable():
+                            selected_cell.build("engineer post")
+                        elif map.get_welled() and selected_cell.isBuildable():
+                            selected_cell.build("well")
                         else:
-                            i.display()
+                            selected_cell.display()
                     selection["cells"].clear()
                     selection["is_active"] = False
 
             if event.type == pygame.MOUSEMOTION:
                 # Display previous cell without hover
                 if hovered_cell:
-                    hovered_cell.display()
+                    map.get_cell(hovered_cell[0], hovered_cell[1]).display()
                 if map.inMap(x, y) and pos[0] <= width_wo_panel and not selection["is_active"]:
-                    hovered_cell = map.get_cell(x, y)
-                    hovered_cell.handle_hover_button()
+                    hovered_cell = (x, y)
+                    map.get_cell(x,y).handle_hover_button()
 
                 # Selection : fill the set with hovered cell
                 if map.inMap(x, y) and selection["is_active"]:
                     for i in selection["cells"]:
-                        i.display()
+                        map.get_cell(i[0], i[1]).display()
                     selection["cells"].clear()
                     range_x = range(
                         selection["start"][0], x+1, 1) if selection["start"][0] <= x else range(selection["start"][0], x-1, -1)
@@ -175,7 +176,7 @@ def game_screen():
                         selection["start"][1], y+1, 1) if selection["start"][1] <= y else range(selection["start"][1], y-1, -1)
                     for i in range_x:
                         for j in range_y:
-                            selection["cells"].add(map.get_cell(i, j))
+                            selection["cells"].add((i, j))
                             map.get_cell(i, j).handle_hover_button()
 
                 panel.get_grid_button().handle_hover_button(pos, SCREEN)

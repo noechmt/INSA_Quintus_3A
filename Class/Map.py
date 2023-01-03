@@ -103,7 +103,7 @@ class Map:  # Un ensemble de cellule
         self.house_button_activated = False
         self.shovel_button_activated = False
         self.prefecture_button_activated = False
-        self.engineerpost_button_activated = True
+        self.engineerpost_button_activated = False
         self.well_button_activated = False
 
     def handle_zoom(self, zoom_in):
