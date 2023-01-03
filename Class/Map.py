@@ -1,5 +1,6 @@
 import numpy as np
 import math as m
+import random as rd
 
 from Class.Cell import *
 
@@ -16,6 +17,9 @@ class Map:  # Un ensemble de cellule
         self.array = [[Empty(j, i, self.height_land, self.width_land, self.screen, self) for i in range(
             size)] for j in range(size)]  # tableau de cellule (voir classe cellule) : list
         self.walkers = []
+        self.migrantQueue = []
+        self.laborAdvisorQueue = []
+        self.buildings = []
         self.spawn_cell = self.array[39][19]
         self.init_path()
         self.wallet = 3000
@@ -47,6 +51,17 @@ class Map:  # Un ensemble de cellule
                     s += f"{str(self.getCell(i,j)):^20}"
             s += "\n"
         return s
+
+    def display_water_zone(self):
+        if(self.get_welled()):
+            for i in range(40):
+                for j in range(40):
+                    if(self.array[i][j].get_water()):
+                        self.array[i][j].display()
+                        self.array[i][j].display_water()
+                    if(self.array[i][j].type == "well"):
+                        self.array[i][j].display()
+
 
     def handle_road_button(self):
         self.road_button_activated = True
@@ -101,7 +116,7 @@ class Map:  # Un ensemble de cellule
         self.house_button_activated = False
         self.shovel_button_activated = False
         self.prefecture_button_activated = False
-        self.engineerpost_button_activated = True
+        self.engineerpost_button_activated = False
         self.well_button_activated = False
 
     def handle_zoom(self, zoom_in):
@@ -131,11 +146,39 @@ class Map:  # Un ensemble de cellule
         return (0 <= x and x <= self.size-1 and 0 <= y and y <= self.size-1)
 
     def update_walkers(self):
+
+        waitfornext = False
+        if len(self.migrantQueue) != 0 :
+            for i in self.migrantQueue :
+                if (rd.randint(0, 9) == 9 and not waitfornext) or i.spawnCount == 20:
+                    self.walkers.append(i)
+                    self.migrantQueue.remove(i)
+                    i.screen.blit(pygame.transform.scale(i.walker_sprites["top"], 
+                    (i.currentCell.width, i.currentCell.height)), (i.currentCell.left, i.currentCell.top))
+                    waitfornext = True
+                else : i.spawnCount += 1   
+
+
+        if len(self.laborAdvisorQueue) != 0 :
+            for i in self.laborAdvisorQueue : 
+                if any(house.nb_occupants != 0 for house in self.buildings if isinstance(house, House)): i.leave_building()
+
         for i in self.walkers:
             i.move()
             i.display()
             if not isinstance(i, Migrant):
                 i.previousCell.display()
+
+
+        for i in self.buildings :
+            if not i.risk.happened : i.risk.riskIncrease()
+
+    def update_fire(self) : 
+        for i in self.buildings :
+            if i.risk.happened and i.risk.type == "fire":
+                i.risk.burn()
+
+
 
     def set_cell_array(self, x, y, cell):
         self.array[x][y] = cell
@@ -168,8 +211,10 @@ class Map:  # Un ensemble de cellule
         print(np.array([[(self.array[i][j].type_of_cell)
               for i in range(self.size)] for j in range(self.size)]))
 
-    def dispay_map(self):
-        print("Ceci est une map :)")
+    def display_map(self):
+        for i in range(40):
+            for j in range(40):
+                self.array[i][j].display()
 
     def set_grided(self, g):
         self.grided = g

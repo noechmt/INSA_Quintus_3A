@@ -15,3 +15,10 @@ if __name__ == "__main__":
         game_screen()
     pygame.quit()
     
+
+
+# TODO
+# risques avec l'overlay
+# prefect -> éteindre le feu 
+# sauvegarde
+# well + water overlay

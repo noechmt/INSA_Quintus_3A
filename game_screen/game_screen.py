@@ -9,6 +9,7 @@ from Class.Panel import Panel
 
 # draw a rectangle with an opacity option
 
+import sys
 
 def draw_rect_alpha(surface, color, rect):
     shape_surf = pygame.Surface(pygame.Rect(rect).size, pygame.SRCALPHA)
@@ -29,7 +30,7 @@ def game_screen():
     pygame.display.set_caption("Quintus III")
     WIDTH_SCREEN, HEIGH_SCREEN = SCREEN.get_size()
     height_land = HEIGH_SCREEN/60
-    width_land = WIDTH_SCREEN*sqrt(2)/80
+    width_land = WIDTH_SCREEN*sqrt(2)/80 
     SIZE = 40
 
     map = Map(SIZE, height_land, width_land, SCREEN)
@@ -38,8 +39,21 @@ def game_screen():
 
     # Dims without left panel
     height_wo_panel = HEIGH_SCREEN
-    width_panel = WIDTH_SCREEN / 7.5
-    width_wo_panel = WIDTH_SCREEN - width_panel
+    width_wo_panel = WIDTH_SCREEN - (WIDTH_SCREEN/7)
+
+    #taskbar
+    color_brown = (70,46,1)
+    bar = pygame.image.load("game_screen/game_screen_sprites/taskbar_background.png")
+    SCREEN.blit(pygame.transform.scale(bar, (WIDTH_SCREEN, HEIGH_SCREEN/32)), (0, 0))
+    taskbarfont = pygame.font.SysFont('courriernew',25) #police, size
+    file_text = taskbarfont.render('File', False, color_brown)
+    options_text = taskbarfont.render('Options', False, color_brown)
+    help_text = taskbarfont.render('Help', False, color_brown)
+    advisors_text = taskbarfont.render('Advisors', False, color_brown)
+    SCREEN.blit(file_text, (WIDTH_SCREEN/60,HEIGH_SCREEN/256))
+    SCREEN.blit(options_text, (WIDTH_SCREEN/16,HEIGH_SCREEN/256))
+    SCREEN.blit(help_text, (WIDTH_SCREEN/7.5, HEIGH_SCREEN/256))
+    SCREEN.blit(advisors_text, (WIDTH_SCREEN/5.5, HEIGH_SCREEN/256))
 
     fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
     run = True
@@ -51,6 +65,7 @@ def game_screen():
     move = 1
 
     walker_update_count = 0
+    fire_upadte_count = 0
     tmpbool = True
     while run:
         pos = pygame.mouse.get_pos()
@@ -74,6 +89,7 @@ def game_screen():
                     panel.display()
             move = 0
         move += 1
+
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
 
@@ -95,7 +111,7 @@ def game_screen():
                 if event.button == 1:
                     if map.inMap(x, y) and not selection["is_active"]:
                         selection["start"] = (x, y)
-                        selection["cells"].add(map.get_cell(x, y))
+                        selection["cells"].add((x, y))
                         selection["is_active"] = True
 
                 # spawn the grid if is clicked
@@ -105,21 +121,27 @@ def game_screen():
                     if (panel.house_button.is_hovered(pos)):
                         panel.set_window("house")
                         map.handle_house_button()
+                        map.display_map()
                     if (panel.shovel_button.is_hovered(pos)):
                         panel.set_window("shovel")
                         map.handle_shovel_button()
+                        map.display_map()
                     if (panel.get_road_button().is_hovered(pos)):
                         panel.set_window("road")
                         map.handle_road_button()
+                        map.display_map()
                     if (panel.prefecture_button.is_hovered(pos)):
                         panel.set_window("prefecture")
                         map.handle_prefecture_button()
+                        map.display_map()
                     if (panel.engineerpost_button.is_hovered(pos)):
                         panel.set_window("engineer post")
                         map.handle_engineerpost_button()
+                        map.display_map()
                     if (panel.well_button.is_hovered(pos)):
                         panel.set_window("well")
                         map.handle_well_button()
+                        map.display_water_zone()
                     # if pos[0] <= width_wo_panel:
                     #     map.handle_click_cells(pos)
                     #     panel.display()
@@ -138,34 +160,42 @@ def game_screen():
             if event.type == pygame.MOUSEBUTTONUP:
                 if selection["is_active"]:
                     for i in selection["cells"]:
+                        selected_cell = map.get_cell(i[0], i[1])
                         if map.get_shoveled():
-                            map.get_cell(i.x, i.y).clear()
-                        elif map.get_housed() and i.isBuildable():
-                            map.get_cell(i.x, i.y).build("house")
-                        elif map.get_road_button_activated() and i.isBuildable():
-                            map.get_cell(i.x, i.y).build("path")
-                        elif map.get_prefectured() and i.isBuildable():
-                            map.get_cell(i.x, i.y).build("prefecture")
-                        elif map.get_engineered() and i.isBuildable():
-                            map.get_cell(i.x, i.y).build("engineer post")
-                        elif map.get_welled() and i.isBuildable():
-                            map.get_cell(i.x, i.y).build("well")
-                        map.get_cell(i.x, i.y).display()
+                            selected_cell.clear()
+                        elif map.get_housed() and selected_cell.isBuildable():
+                            selected_cell.build("house")
+                        elif map.get_road_button_activated() and selected_cell.isBuildable():
+                            selected_cell.build("path")
+                        elif map.get_prefectured() and selected_cell.isBuildable():
+                            selected_cell.build("prefecture")
+                        elif map.get_engineered() and selected_cell.isBuildable():
+                            selected_cell.build("engineer post")
+                        elif map.get_welled() and selected_cell.isBuildable():
+                            selected_cell.build("well")
+                        else:
+                            selected_cell.display()
                     selection["cells"].clear()
                     selection["is_active"] = False
 
             if event.type == pygame.MOUSEMOTION:
                 # Display previous cell without hover
                 if hovered_cell:
+                    hovered_cell = map.get_cell(hovered_coordinates[0], hovered_coordinates[1])
                     hovered_cell.display()
+                    if(hovered_cell.get_water() and map.get_welled() and hovered_cell.type != "well"):
+                        draw_polygon_alpha(SCREEN, (0, 0, 255, 85), hovered_cell.get_points_polygone())
+                    hovered_cell.display_around()
                 if map.inMap(x, y) and pos[0] <= width_wo_panel and not selection["is_active"]:
-                    hovered_cell = map.get_cell(x, y)
+                    hovered_coordinates = (x, y)
+                    hovered_cell = map.get_cell(hovered_coordinates[0], hovered_coordinates[1])
                     hovered_cell.handle_hover_button()
+                    hovered_cell.display_around()
 
                 # Selection : fill the set with hovered cell
                 if map.inMap(x, y) and selection["is_active"]:
                     for i in selection["cells"]:
-                        i.display()
+                        map.get_cell(i[0], i[1]).display()
                     selection["cells"].clear()
                     range_x = range(
                         selection["start"][0], x+1, 1) if selection["start"][0] <= x else range(selection["start"][0], x-1, -1)
@@ -173,7 +203,7 @@ def game_screen():
                         selection["start"][1], y+1, 1) if selection["start"][1] <= y else range(selection["start"][1], y-1, -1)
                     for i in range_x:
                         for j in range_y:
-                            selection["cells"].add(map.get_cell(i, j))
+                            selection["cells"].add((i, j))
                             map.get_cell(i, j).handle_hover_button()
 
                 panel.get_grid_button().handle_hover_button(pos, SCREEN)
@@ -196,16 +226,25 @@ def game_screen():
 
         walker_update_count += 1
         # print(walker_update_count)
-        if walker_update_count == 20:
+        if walker_update_count == 5:
             map.update_walkers()
             # print("break")
             walker_update_count = 0
+
+        fire_upadte_count += 1
+        if fire_upadte_count == 5 :
+            map.update_fire()
+            fire_upadte_count = 0
+        
         # if tmpbool :
         #     map.array[13][29] = Prefecture(13, 29, map.height_land, map.width_land,map.screen, map)
         #     SCREEN.blit(pygame.transform.scale(pygame.image.load("walker_sprites/test/Housng1a_00019.png"), (map.array[13][29].width, map.array[13][29].height)), (map.array[13][29].left, map.array[13][29].top))
         #     map.array[31][19] = EngineerPost(31, 19, map.height_land, map.width_land, map.screen, map)
         #     SCREEN.blit(pygame.transform.scale(pygame.image.load("walker_sprites/test/Housng1a_00019.png"), (map.array[31][19].width, map.array[31][19].height)), (map.array[31][19].left, map.array[31][19].top))
         #     tmpbool = False
+        if len(map.buildings) != 0 :
+            print(map.buildings[0].risk.fireCounter)
+            print(map.buildings[0].risk.happened)
         clock.tick(60)
         fps = (int)(clock.get_fps())
         text_fps = fps_font.render(str(fps), 1, (255, 255, 255))
