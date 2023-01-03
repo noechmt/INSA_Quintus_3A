@@ -178,6 +178,11 @@ class Map:  # Un ensemble de cellule
             if i.risk.happened and i.risk.type == "fire":
                 i.risk.burn()
 
+    def update_collapse(self) : 
+        for i in self.buildings : 
+            if i.risk.happened and i.risk.type == "collapse" : 
+                i.risk.collapse()
+
 
 
     def set_cell_array(self, x, y, cell):
