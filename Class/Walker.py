@@ -78,7 +78,7 @@ class Walker() :
     #if (self.building.employees == self.building.required_employees) :
     def leave_building(self) :
         self.isWandering = True
-        print(self.isWandering)
+        #print(self.isWandering)
         path = self.currentCell.check_cell_around(Cell.Path)
         assert len(path) != 0
         self.cell_assignement(random.choice(path))

@@ -52,16 +52,6 @@ class Map:  # Un ensemble de cellule
             s += "\n"
         return s
 
-    def display_water_zone(self):
-        if(self.get_welled()):
-            for i in range(40):
-                for j in range(40):
-                    if(self.array[i][j].get_water()):
-                        self.array[i][j].display()
-                        self.array[i][j].display_water()
-                    if(self.array[i][j].type == "well"):
-                        self.array[i][j].display()
-
 
     def handle_road_button(self):
         self.road_button_activated = True
@@ -166,8 +156,10 @@ class Map:  # Un ensemble de cellule
         for i in self.walkers:
             i.move()
             i.display()
+            i.currentCell.display_around()
             if not isinstance(i, Migrant):
                 i.previousCell.display()
+                i.previousCell.display_around()
 
 
         for i in self.buildings :

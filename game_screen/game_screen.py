@@ -33,7 +33,6 @@ def game_screen():
     SIZE = 40
 
     map = Map(SIZE, height_land, width_land, SCREEN)
-
     panel = Panel(SCREEN)
 
     # Dims without left panel
@@ -89,7 +88,6 @@ def game_screen():
             SCREEN.blit(text_click, (0, 20))
             text_wallet = fps_font.render(f"{map.wallet}", 1, (255, 255, 255))
             SCREEN.blit(text_wallet, (0, 40))
-
             if event.type == pygame.QUIT:
                 run = False
             # Move up
@@ -127,7 +125,7 @@ def game_screen():
                     if (panel.well_button.is_hovered(pos)):
                         panel.set_window("well")
                         map.handle_well_button()
-                        map.display_water_zone()
+                        map.display_map()
                     # if pos[0] <= width_wo_panel:
                     #     map.handle_click_cells(pos)
                     #     panel.display()
@@ -158,7 +156,10 @@ def game_screen():
                             map.get_cell(i.x, i.y).build("engineer post")
                         elif map.get_welled() and i.isBuildable():
                             map.get_cell(i.x, i.y).build("well")
-                            map.display_water_zone()
+                            for k in range(-2, 3):
+                                for j in range(-2, 3):
+                                    if (39>x+k>0, 39>y+j>0):
+                                        map.get_cell(i.x+k, i.y+j).display()
                         map.get_cell(i.x, i.y).display()
                     selection["cells"].clear()
                     selection["is_active"] = False
@@ -167,8 +168,6 @@ def game_screen():
                 # Display previous cell without hover
                 if hovered_cell:
                     hovered_cell.display()
-                    if(hovered_cell.get_water() and map.get_welled() and hovered_cell.type != "well"):
-                        draw_polygon_alpha(SCREEN, (0, 0, 255, 85), hovered_cell.get_points_polygone())
                     hovered_cell.display_around()
                 if map.inMap(x,y) and pos[0] <= width_wo_panel and not selection["is_active"]:
                     hovered_cell = map.get_cell(x,y)
@@ -223,9 +222,6 @@ def game_screen():
         #     map.array[31][19] = EngineerPost(31, 19, map.height_land, map.width_land, map.screen, map)
         #     SCREEN.blit(pygame.transform.scale(pygame.image.load("walker_sprites/test/Housng1a_00019.png"), (map.array[31][19].width, map.array[31][19].height)), (map.array[31][19].left, map.array[31][19].top))
         #     tmpbool = False
-        if len(map.buildings) != 0 :
-            print(map.buildings[0].risk.fireCounter)
-            print(map.buildings[0].risk.happened)
         clock.tick(60)
         fps = (int)(clock.get_fps())
         text_fps = fps_font.render(str(fps), 1, (255, 255, 255))
