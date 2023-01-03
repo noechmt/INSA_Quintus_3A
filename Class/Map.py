@@ -52,6 +52,17 @@ class Map:  # Un ensemble de cellule
             s += "\n"
         return s
 
+    def display_water_zone(self):
+        if(self.get_welled()):
+            for i in range(40):
+                for j in range(40):
+                    if(self.array[i][j].get_water()):
+                        self.array[i][j].display()
+                        self.array[i][j].display_water()
+                    if(self.array[i][j].type == "well"):
+                        self.array[i][j].display()
+
+
     def handle_road_button(self):
         self.road_button_activated = True
         self.house_button_activated = False
@@ -105,7 +116,7 @@ class Map:  # Un ensemble de cellule
         self.house_button_activated = False
         self.shovel_button_activated = False
         self.prefecture_button_activated = False
-        self.engineerpost_button_activated = True
+        self.engineerpost_button_activated = False
         self.well_button_activated = False
 
     def handle_zoom(self, zoom_in):
@@ -204,81 +215,6 @@ class Map:  # Un ensemble de cellule
         for i in range(40):
             for j in range(40):
                 self.array[i][j].display()
-
-    def display_around(self, x, y):
-        
-        if (x>0 and y<39 and self.array[x-1][y+1].type != "dirt" and self.array[x-1][y+1].type != "path"):
-            self.array[x-1][y+1].display()
-        if (x<39 and y>0 and self.array[x+1][y-1].type != "dirt" and self.array[x+1][y-1].type != "path"):
-            self.array[x+1][y-1].display()
-        if (y<39 and self.array[x][y+1].type != "dirt" and self.array[x][y+1].type != "path"):
-            self.array[x][y+1].display()
-        if (x<39 and self.array[x+1][y].type != "dirt" and self.array[x+1][y].type != "path"):
-            self.array[x+1][y].display()
-        if (x<39 and y<39 and self.array[x+1][y+1].type != "dirt" and self.array[x+1][y+1].type != "path"):
-            self.array[x+1][y+1].display()
-        
-        #juste un prototype qui fonctionne pas mais c'est au cas où
-        """"
-        i = 0
-        j = 0
-        while (x+i<39 and y-j>0 and self.array[x+i][y-i].type != "dirt"):
-            i += 1
-            j = i
-            self.array[x+i][y-j].display()
-            while(j>1):
-                j-=1
-                self.array[x+i][y-j].display()
-        i = 0
-
-        while (y+i<39 and x-j>0 and self.array[x-j][y+i].type != "dirt"):
-            i += 1
-            j = i
-            self.array[x-j][y+i].display()
-            while(j>1):
-                j-=1
-                self.array[x-j][y+i].display()
-        i = 0
-        while (y+i<39 and self.array[x][y+i].type != "dirt"):
-            i += 1
-            j = i
-            while(j>1 and x-j > 0):
-                j-=1
-                self.array[x-j][y+i].display()
-
-            self.array[x][y+i].display()
-
-            j = i
-            
-            while(j>1 and 39 > x+j):
-                j-=1
-                self.array[x+j][y+i].display()
-            
-        i = 0
-        while (x+i<39 and self.array[x+i][y].type != "dirt"):
-            i += 1
-            j = i
-            while(j>1 and y-j > 0):
-                j-=1
-                self.array[x+i][y-j].display()
-
-            self.array[x+i][y].display()
-            j = i
-            while(j>1 and 39>y+j):
-                j-=1
-                self.array[x+i][y+j].display()
-        i = 0
-        while (x+i<39 and y+i<39 and self.array[x+i][y+i].type != "dirt"):
-            i += 1
-            j = i
-            self.array[x+i][y+i].display()
-            while(j>1 and x-j >= 0 and y-j>=0):
-                self.array[x-j][y+i]
-                self.array[x+i][y-j]
-                j-=1
-"""
-
-
 
     def set_grided(self, g):
         self.grided = g

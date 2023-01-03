@@ -59,6 +59,28 @@ class Cell:  # Une case de la map
         if self.map.grided:
             self.grid()
 
+    def display_water(self):
+        draw_polygon_alpha(self.screen, (0, 0, 255, 85),
+                                   self.get_points_polygone())
+
+    def display_around(self):
+        
+        if (self.y+1<39 and self.map.get_cell(self.x,self.y+1).type != "dirt" and self.map.get_cell(self.x,self.y+1).type != "path"):
+            self.map.get_cell(self.x,self.y+1).display()
+            if(self.map.get_cell(self.x,self.y+1).get_water() and self.map.get_welled() and self.map.get_cell(self.x,self.y+1).type != "well"):
+                self.map.get_cell(self.x,self.y+1).display_water()
+            self.map.get_cell(self.x,self.y+1).display_around()
+        if (self.x+1<39 and self.map.get_cell(self.x+1, self.y).type != "dirt" and self.map.get_cell(self.x+1, self.y).type != "path"):
+            self.map.get_cell(self.x+1, self.y).display()
+            if(self.map.get_cell(self.x+1, self.y).get_water() and self.map.get_welled() and self.map.get_cell(self.x+1, self.y).type != "well"):
+                self.map.get_cell(self.x+1, self.y).display_water()
+            self.map.get_cell(self.x+1, self.y).display_around()
+        if (self.x+1<39 and self.y+1<39 and self.map.get_cell(self.x+1, self.y+1).type != "dirt" and self.map.get_cell(self.x+1, self.y+1).type != "path"):
+            self.map.get_cell(self.x+1, self.y+1).display()
+            if(self.map.get_cell(self.x+1, self.y+1).get_water() and self.map.get_welled() and self.map.get_cell(self.x+1, self.y+1).type != "well"):
+                self.map.get_cell(self.x+1, self.y+1).display_water()
+            self.map.get_cell(self.x+1, self.y+1).display_around()
+
     def handle_zoom(self, zoom_in):
         if zoom_in:
             self.height *= 1.04
@@ -191,6 +213,10 @@ class Cell:  # Une case de la map
                     self.map.set_cell_array(self.x, self.y, EngineerPost(
                         self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 30
+            for i in range(-2, 3):
+                for j in range(-2, 3):
+                    if(37>self.x>3 and 37>self.y>3 and self.map.get_cell(self.x+i, self.y+j).type == "well"):
+                        self.map.get_cell(self.x,self.y).set_water(True)
 
     def grid(self):
         if self.map.get_grided():
@@ -208,6 +234,12 @@ class Cell:  # Une case de la map
 
     def set_type(self, type):
         self.type = type
+
+    def set_water(self, bool):
+        self.water = bool
+
+    def get_water(self):
+        return self.water
 
 
 sprite_hori = pygame.image.load(
@@ -435,13 +467,15 @@ class House(Building):  # la maison fils de building (?)
 class Well(Building):
     def __init__(self, x, y, height, width, screen, my_map):
         super().__init__(x, y, height, width, screen, my_map)
-        """for i in range(-2, 3):
+        #le risque est la en stand by
+        self.risk = RiskEvent("collapse", self)
+        for i in range(-2, 3):
             for j in range(-2, 3):
-                if self.inMap(self.x+i, self.y+j):
+                if (37>self.x>3, 37>self.y>3):
                     self.map.get_cell(self.x+i, self.y+j).water = True
                     checkedCell = self.map.get_cell(self.x+i, self.y+i)
                     if isinstance(checkedCell, House) and checkedCell.level == 1 and checkedCell.max_occupants == checkedCell.nb_occupants:
-                        checkedCell.nextLevel"""
+                        checkedCell.nextLevel
 
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/well.png")

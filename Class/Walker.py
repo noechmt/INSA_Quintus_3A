@@ -137,24 +137,28 @@ class Migrant(Walker):
                 self.screen.blit(pygame.transform.scale(self.cart_sprites["right"], (self.currentCell.width, self.currentCell.height)), (self.previousCell.left, self.previousCell.top))
             if 0 < self.previousCell.x < 39 :
                 self.currentCell.map.array[self.previousCell.x -1][self.currentCell.y].display()
+                self.currentCell.map.get_cell(self.previousCell.x-1, self.currentCell.y).display_around()
         elif self.previousCell.x > self.currentCell.x :
             if not self.inBuilding :
                 self.screen.blit(pygame.transform.scale(self.walker_sprites["left"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
                 self.screen.blit(pygame.transform.scale(self.cart_sprites["left"], (self.currentCell.width, self.currentCell.height)), (self.previousCell.left, self.previousCell.top))
             if 0 < self.previousCell.x < 39 :
                 self.currentCell.map.array[self.previousCell.x +1][self.currentCell.y].display()
+                self.currentCell.map.get_cell(self.previousCell.x+1, self.currentCell.y).display_around()
         elif self.previousCell.y < self.currentCell.y :
             if not self.inBuilding :
                 self.screen.blit(pygame.transform.scale(self.walker_sprites["bot"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
                 self.screen.blit(pygame.transform.scale(self.cart_sprites["bot"], (self.currentCell.width, self.currentCell.height)), (self.previousCell.left, self.previousCell.top))
             if 0 < self.previousCell.y < 39 :
                 self.currentCell.map.array[self.currentCell.x][self.previousCell.y -1].display()
+                self.currentCell.map.get_cell(self.currentCell.x, self.previousCell.y-1).display_around()
         elif self.previousCell.y > self.currentCell.y :
             if not self.inBuilding :
                 self.screen.blit(pygame.transform.scale(self.walker_sprites["top"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
                 self.screen.blit(pygame.transform.scale(self.cart_sprites["top"], (self.currentCell.width, self.currentCell.height)), (self.previousCell.left, self.previousCell.top))
             if 0 < self.previousCell.y < 39 :
                 self.currentCell.map.array[self.currentCell.x][self.previousCell.y +1].display()
+                self.currentCell.map.get_cell(self.currentCell.x, self.previousCell.y+1).display_around()
 
         if (len(self.currentCell.check_cell_around(Cell.Path)) > 2 and not (self.previousCell.x == self.path[0].x or self.previousCell.y == self.path[0].y)) or self.building in self.currentCell.check_cell_around(Cell.House):
            for i in self.currentCell.check_cell_around(Cell.Path):
