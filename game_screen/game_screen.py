@@ -41,7 +41,7 @@ def game_screen():
     height_wo_panel = HEIGH_SCREEN
     width_wo_panel = WIDTH_SCREEN - (WIDTH_SCREEN/7)
 
-    #taskbar
+#taskbar
     color_brown = (70,46,1)
     bar = pygame.image.load("game_screen/game_screen_sprites/taskbar_background.png")
     SCREEN.blit(pygame.transform.scale(bar, (WIDTH_SCREEN, HEIGH_SCREEN/32)), (0, 0))
@@ -66,29 +66,29 @@ def game_screen():
 
     walker_update_count = 0
     fire_upadte_count = 0
-    tmpbool = True
+
+
+
+    ##############################
     while run:
         pos = pygame.mouse.get_pos()
-        if move % 10 == 0:
-            if pos[1] <= 60:
-                map.offset_top += 15*(3 - pos[1] / 20)
-                map.handle_move("up", 3 - pos[1] / 20)
+        if pos[1] <= 60:
+            map.offset_top += 5*(3 - pos[1] / 20)
+            map.handle_move("up", 3 - pos[1] / 20)
+            panel.display()
+        if pos[1] >= HEIGH_SCREEN - 60:
+            map.offset_top -= 5*(3 - (HEIGH_SCREEN - pos[1]) / 20)
+            map.handle_move("down", 3 - (HEIGH_SCREEN - pos[1]) / 20)
+            panel.display()
+        if pos[0] <= 60:
+            map.offset_left -= 5*(3 - pos[0] / 20)
+            map.handle_move("left", 3 - pos[0] / 20)
+            panel.display()
+        if pos[0] >= WIDTH_SCREEN - 60:
+            if not panel.get_road_button().is_hovered(pos) and not panel.get_well_button().is_hovered(pos):
+                map.offset_left += 5*(3 - (WIDTH_SCREEN - pos[0]) / 20)
+                map.handle_move("right", 3 - (WIDTH_SCREEN - pos[0]) / 20)
                 panel.display()
-            if pos[1] >= HEIGH_SCREEN - 60:
-                map.offset_top -= 15*(3 - (HEIGH_SCREEN - pos[1]) / 20)
-                map.handle_move("down", 3 - (HEIGH_SCREEN - pos[1]) / 20)
-                panel.display()
-            if pos[0] <= 60:
-                map.offset_left -= 15*(3 - pos[0] / 20)
-                map.handle_move("left", 3 - pos[0] / 20)
-                panel.display()
-            if pos[0] >= WIDTH_SCREEN - 60:
-                if not panel.get_road_button().is_hovered(pos) and not panel.get_well_button().is_hovered(pos):
-                    map.offset_left += 15*(3 - (WIDTH_SCREEN - pos[0]) / 20)
-                    map.handle_move("right", 3 - (WIDTH_SCREEN - pos[0]) / 20)
-                    panel.display()
-            move = 0
-        move += 1
 
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
@@ -103,7 +103,6 @@ def game_screen():
             SCREEN.blit(text_click, (0, 20))
             text_wallet = fps_font.render(f"{map.wallet}", 1, (255, 255, 255))
             SCREEN.blit(text_wallet, (0, 40))
-
             if event.type == pygame.QUIT:
                 run = False
             # Move up
@@ -141,7 +140,7 @@ def game_screen():
                     if (panel.well_button.is_hovered(pos)):
                         panel.set_window("well")
                         map.handle_well_button()
-                        map.display_water_zone()
+                        map.display_map()
                     # if pos[0] <= width_wo_panel:
                     #     map.handle_click_cells(pos)
                     #     panel.display()
@@ -173,6 +172,10 @@ def game_screen():
                             selected_cell.build("engineer post")
                         elif map.get_welled() and selected_cell.isBuildable():
                             selected_cell.build("well")
+                            for k in range(-2, 3):
+                                for j in range(-2, 3):
+                                    if (39>=x+k>=0 and 39>=y+j>=0):
+                                        map.get_cell(i[0]+k, i[1]+j).display()
                         else:
                             selected_cell.display()
                     selection["cells"].clear()
@@ -183,12 +186,11 @@ def game_screen():
                 if hovered_cell:
                     hovered_cell = map.get_cell(hovered_coordinates[0], hovered_coordinates[1])
                     hovered_cell.display()
-                    if(hovered_cell.get_water() and map.get_welled() and hovered_cell.type != "well"):
-                        draw_polygon_alpha(SCREEN, (0, 0, 255, 85), hovered_cell.get_points_polygone())
                     hovered_cell.display_around()
                 if map.inMap(x, y) and pos[0] <= width_wo_panel and not selection["is_active"]:
                     hovered_coordinates = (x, y)
                     hovered_cell = map.get_cell(hovered_coordinates[0], hovered_coordinates[1])
+                    print(hovered_cell.type_empty)
                     hovered_cell.handle_hover_button()
                     hovered_cell.display_around()
 
@@ -234,6 +236,7 @@ def game_screen():
         fire_upadte_count += 1
         if fire_upadte_count == 5 :
             map.update_fire()
+            #map.update_collapse()
             fire_upadte_count = 0
         
         # if tmpbool :
@@ -242,9 +245,6 @@ def game_screen():
         #     map.array[31][19] = EngineerPost(31, 19, map.height_land, map.width_land, map.screen, map)
         #     SCREEN.blit(pygame.transform.scale(pygame.image.load("walker_sprites/test/Housng1a_00019.png"), (map.array[31][19].width, map.array[31][19].height)), (map.array[31][19].left, map.array[31][19].top))
         #     tmpbool = False
-        if len(map.buildings) != 0 :
-            print(map.buildings[0].risk.fireCounter)
-            print(map.buildings[0].risk.happened)
         clock.tick(60)
         fps = (int)(clock.get_fps())
         text_fps = fps_font.render(str(fps), 1, (255, 255, 255))

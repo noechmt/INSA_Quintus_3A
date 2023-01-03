@@ -37,6 +37,7 @@ class Map:  # Un ensemble de cellule
             # On modifie la valeur des cellules pour représenter le chemin dans la matrice
             self.array[self.size-m.floor(self.size/3)][i] = Path(self.size-m.floor(
                 self.size/3), i, self.height_land, self.width_land, self.screen, self)
+        self.display_map()
 
     def __str__(self):
         s = f"Map {self.size}*{self.size}\n"
