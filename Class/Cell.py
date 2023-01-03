@@ -1,6 +1,7 @@
 from Class.Walker import *
 import pygame
 from random import *
+import random
 
 def draw_polygon_alpha(surface, color, points):
     lx, ly = zip(*points)
@@ -21,6 +22,7 @@ class Cell: #Une case de la map
         self.sprite = None
         self.screen = screen
         self.hovered = False
+        self.type = ""
         self.WIDTH_SCREEN, self.HEIGHT_SCREEN = self.screen.get_size()
         self.init_screen_coordonates()
 
@@ -30,6 +32,12 @@ class Cell: #Une case de la map
         self.top = self.HEIGHT_SCREEN/6 + self.x * self.height/2 + self.y * self.height/2
 
     def display(self):
+        if self.type  == "empty_tree":
+            self.screen.blit(pygame.transform.scale(self.sprite,(self.width, self.height*48/30)), (self.left, self.top-self.height*18/30))
+        elif self.type == "empty_rock":
+            self.screen.blit(pygame.transform.scale(self.sprite,(self.width, self.height*35/30)), (self.left, self.top-self.height*5/30))
+        
+
         self.screen.blit(pygame.transform.scale(self.sprite, (self.width, self.height)), (self.left, self.top))
 
     def is_hovered(self, pos):
@@ -95,14 +103,14 @@ class Cell: #Une case de la map
             match type:
                 case "path":
                     self.map.array[self.x][self.y] = Path(self.x, self.y, self.map)
-                case "house":
-                    self.map.array[self.x][self.y] = House(self.x, self.y, self.map)
-                case "fountain":
-                    self.map.array[self.x][self.y] = Fountain(self.x, self.y, self.map)
-                case "prefecture":
-                    self.map.array[self.x][self.y] = Prefecture(self.x, self.y, self.map)
-                case "engineer post":
-                    self.map.array[self.x][self.y] = EngineerPost(self.x, self.y, self.map)
+                #case "house":
+                #    self.map.array[self.x][self.y] = House(self.x, self.y, self.map)
+                #case "fountain":
+                #    self.map.array[self.x][self.y] = Fountain(self.x, self.y, self.map)
+                #case "prefecture":
+                #    self.map.array[self.x][self.y] = Prefecture(self.x, self.y, self.map)
+                #case "engineer post":
+                #    self.map.array[self.x][self.y] = EngineerPost(self.x, self.y, self.map)
 
     def grid(self):
         (top, left, bot, right) = self.get_points_polygone()
@@ -122,6 +130,33 @@ class Empty(Cell):
     def __init__(self, x, y, height, width, screen, map, type_empty="dirt"):
         super().__init__(x, y, height, width, screen, map)
         self.type_empty = type_empty #"dirt", "trees"
+        self.type = "empty"
+
+        tree_or_dirt_list = ["tree", "dirt"]
+        rock_or_dirt_list = ["rock", "dirt"]
+        
+        #place the trees
+        for i in range (40):
+            for j in range (40):
+
+                if (x,y)==(i,j) and (0<i<40 and 0<j<40):
+                    self.type_empty = random.choice(tree_or_dirt_list)
+                    if self.type_empty == "tree":
+                        self.type = "empty_tree"
+                
+        #place the rocks
+        for i in range (40):
+            for j in range (40):
+                
+                if (x,y)==(i,j) and ((27<i<36 and 12<j<16) or (27<i<31 and 15<j<23) or (i>30 and j>25) or (i>35 and j<5)):
+                    self.type_empty = random.choice(rock_or_dirt_list)
+                    if self.type_empty == "rock":
+                        self.type = "empty_rock"
+
+                if (x,y)==(i,j) and (i>35 and j>30):
+                    self.type = "empty_rock"
+                    self.type_empty = "rock"
+
 
     #place the water with conditions for sprites
         #river at the top
@@ -177,15 +212,13 @@ class Empty(Cell):
                 self.type_empty = "water"
             
 
-        #place the rocks
-        #    for j in range (40):
-        #        if (x,y)==(i,j) and ((i>35 and j>30)):
-        #            self.type_empty = "rock"
+        #select the sprites randomly
+        if (self.type_empty == "rock") or (self.type_empty == "tree") or (self.type_empty == "dirt"):
+            aleatoire = randint(1,4)
+        else :
+            aleatoire = randint(1,2)
 
-            if (x,y)==(35,35):
-                self.type_empty = "tree"
-
-        self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_empty + "_" + str(randint(1,2)) + ".png")
+        self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_empty + "_" + str(aleatoire) + ".png")
 
         self.display()
         self.grid()
