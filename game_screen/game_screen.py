@@ -52,7 +52,10 @@ def game_screen():
 
     walker_update_count = 0
     fire_upadte_count = 0
-    tmpbool = True
+
+
+
+    ##############################
     while run:
         pos = pygame.mouse.get_pos()
         if move % 10 == 0:
@@ -220,17 +223,9 @@ def game_screen():
         fire_upadte_count += 1
         if fire_upadte_count == 5 :
             map.update_fire()
+            map.update_collapse()
             fire_upadte_count = 0
         
-        # if tmpbool :
-        #     map.array[13][29] = Prefecture(13, 29, map.height_land, map.width_land,map.screen, map)
-        #     SCREEN.blit(pygame.transform.scale(pygame.image.load("walker_sprites/test/Housng1a_00019.png"), (map.array[13][29].width, map.array[13][29].height)), (map.array[13][29].left, map.array[13][29].top))
-        #     map.array[31][19] = EngineerPost(31, 19, map.height_land, map.width_land, map.screen, map)
-        #     SCREEN.blit(pygame.transform.scale(pygame.image.load("walker_sprites/test/Housng1a_00019.png"), (map.array[31][19].width, map.array[31][19].height)), (map.array[31][19].left, map.array[31][19].top))
-        #     tmpbool = False
-        if len(map.buildings) != 0 :
-            print(map.buildings[0].risk.fireCounter)
-            print(map.buildings[0].risk.happened)
         clock.tick(60)
         fps = (int)(clock.get_fps())
         text_fps = fps_font.render(str(fps), 1, (255, 255, 255))
