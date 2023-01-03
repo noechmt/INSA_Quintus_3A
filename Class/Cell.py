@@ -27,6 +27,7 @@ class Cell:  # Une case de la map
         self.sprite = ""
         self.screen = screen
         self.hovered = False
+        self.type_empty = None
         self.grided = False
         self.house_mode = False
         self.WIDTH_SCREEN, self.HEIGHT_SCREEN = self.screen.get_size()
@@ -58,6 +59,28 @@ class Cell:  # Une case de la map
         if self.map.grided:
             self.grid()
 
+    def display_water(self):
+        draw_polygon_alpha(self.screen, (0, 0, 255, 85),
+                                   self.get_points_polygone())
+
+    def display_around(self):
+        
+        if (self.y+1<39 and self.map.get_cell(self.x,self.y+1).type != "dirt" and self.map.get_cell(self.x,self.y+1).type != "path"):
+            self.map.get_cell(self.x,self.y+1).display()
+            if(self.map.get_cell(self.x,self.y+1).get_water() and self.map.get_welled() and self.map.get_cell(self.x,self.y+1).type != "well"):
+                self.map.get_cell(self.x,self.y+1).display_water()
+            self.map.get_cell(self.x,self.y+1).display_around()
+        if (self.x+1<39 and self.map.get_cell(self.x+1, self.y).type != "dirt" and self.map.get_cell(self.x+1, self.y).type != "path"):
+            self.map.get_cell(self.x+1, self.y).display()
+            if(self.map.get_cell(self.x+1, self.y).get_water() and self.map.get_welled() and self.map.get_cell(self.x+1, self.y).type != "well"):
+                self.map.get_cell(self.x+1, self.y).display_water()
+            self.map.get_cell(self.x+1, self.y).display_around()
+        if (self.x+1<39 and self.y+1<39 and self.map.get_cell(self.x+1, self.y+1).type != "dirt" and self.map.get_cell(self.x+1, self.y+1).type != "path"):
+            self.map.get_cell(self.x+1, self.y+1).display()
+            if(self.map.get_cell(self.x+1, self.y+1).get_water() and self.map.get_welled() and self.map.get_cell(self.x+1, self.y+1).type != "well"):
+                self.map.get_cell(self.x+1, self.y+1).display_water()
+            self.map.get_cell(self.x+1, self.y+1).display_around()
+
     def handle_zoom(self, zoom_in):
         if zoom_in:
             self.height *= 1.04
@@ -77,7 +100,7 @@ class Cell:  # Une case de la map
             self.left -= 15 * m
         if move == "left":
             self.left += 15 * m
-        self.display()
+        # self.display()
 
     def is_hovered(self, pos):
         # Initialize the number of intersections to 0
@@ -172,6 +195,7 @@ class Cell:  # Une case de la map
                     self.map.set_cell_array(self.x, self.y, Path(
                         self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.get_cell(self.x, self.y).handle_sprites()
+                    self.map.get_cell(self.x, self.y).display()
                     self.map.wallet -= 4
                 case "house":
                     self.map.set_cell_array(self.x, self.y, House(
@@ -189,6 +213,10 @@ class Cell:  # Une case de la map
                     self.map.set_cell_array(self.x, self.y, EngineerPost(
                         self.x, self.y, self.height, self.width, self.screen, self.map))
                     self.map.wallet -= 30
+            for i in range(-2, 3):
+                for j in range(-2, 3):
+                    if(37>self.x>3 and 37>self.y>3 and self.map.get_cell(self.x+i, self.y+j).type == "well"):
+                        self.map.get_cell(self.x,self.y).set_water(True)
 
     def grid(self):
         if self.map.get_grided():
@@ -198,12 +226,20 @@ class Cell:  # Une case de la map
             self.display()
 
     def clear(self):
-        if not (isinstance(self, Empty) and (self.type_empty == "rock" or self.type_empty == "water")):
+        if not isinstance(self, Empty) and self.type_empty != "rock" and self.type_empty != "water":
             self.type_empty = "dirt"
+            self.map.set_cell_array(self.x, self.y, Empty(
+                self.x, self.y, self.height, self.width, self.screen, self.map))
             self.map.wallet -= 2
 
     def set_type(self, type):
         self.type = type
+
+    def set_water(self, bool):
+        self.water = bool
+
+    def get_water(self):
+        return self.water
 
 
 sprite_hori = pygame.image.load(
@@ -392,10 +428,12 @@ class Empty(Cell):
 class Building(Cell):  # un fils de cellule (pas encore sûr de l'utilité)
     def __init__(self, x, y, height, width, screen, my_map):
         super().__init__(x, y, height, width, screen, my_map)
-        self.state = "build"  # état (détruit ou pas)
+        self.map.buildings.append(self)
+        self.destroyed = False
+
 
     def destroy(self):
-        self.state = "destroyed"
+        self.destroyed = True
 
 
 class House(Building):  # la maison fils de building (?)
@@ -407,7 +445,7 @@ class House(Building):  # la maison fils de building (?)
         self.max_occupants = 5
         self.unemployedCount = 0
         self.migrant = Migrant(self)
-        self.fire = RiskEvent("fire")
+        self.risk = RiskEvent("fire", self)
         # Temporary
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/house_" + str(self.level) + ".png")
@@ -429,13 +467,15 @@ class House(Building):  # la maison fils de building (?)
 class Well(Building):
     def __init__(self, x, y, height, width, screen, my_map):
         super().__init__(x, y, height, width, screen, my_map)
-        """for i in range(-2, 3):
+        #le risque est la en stand by
+        self.risk = RiskEvent("collapse", self)
+        for i in range(-2, 3):
             for j in range(-2, 3):
-                if self.inMap(self.x+i, self.y+j):
+                if (37>self.x>3, 37>self.y>3):
                     self.map.get_cell(self.x+i, self.y+j).water = True
                     checkedCell = self.map.get_cell(self.x+i, self.y+i)
                     if isinstance(checkedCell, House) and checkedCell.level == 1 and checkedCell.max_occupants == checkedCell.nb_occupants:
-                        checkedCell.nextLevel"""
+                        checkedCell.nextLevel
 
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/well.png")
@@ -452,7 +492,7 @@ class Prefecture(Building):
         self.employees = 0
         self.prefect = Prefect(self)
         self.requiredEmployees = 5
-        self.risk = RiskEvent("fire")
+        self.risk = RiskEvent("collapse", self)
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/prefecture.png")
         self.type="prefecture"
@@ -471,7 +511,7 @@ class EngineerPost(Building):
         self.employees = 0
         self.engineer = Engineer(self)
         self.requiredEmployees = 5
-        self.risk = RiskEvent("collapse")
+        self.risk = RiskEvent("fire", self)
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/engineerpost.png")
         self.type="engineer post"

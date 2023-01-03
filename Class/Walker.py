@@ -137,24 +137,28 @@ class Migrant(Walker):
                 self.screen.blit(pygame.transform.scale(self.cart_sprites["right"], (self.currentCell.width, self.currentCell.height)), (self.previousCell.left, self.previousCell.top))
             if 0 < self.previousCell.x < 39 :
                 self.currentCell.map.array[self.previousCell.x -1][self.currentCell.y].display()
+                self.currentCell.map.get_cell(self.previousCell.x-1, self.currentCell.y).display_around()
         elif self.previousCell.x > self.currentCell.x :
             if not self.inBuilding :
                 self.screen.blit(pygame.transform.scale(self.walker_sprites["left"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
                 self.screen.blit(pygame.transform.scale(self.cart_sprites["left"], (self.currentCell.width, self.currentCell.height)), (self.previousCell.left, self.previousCell.top))
             if 0 < self.previousCell.x < 39 :
                 self.currentCell.map.array[self.previousCell.x +1][self.currentCell.y].display()
+                self.currentCell.map.get_cell(self.previousCell.x+1, self.currentCell.y).display_around()
         elif self.previousCell.y < self.currentCell.y :
             if not self.inBuilding :
                 self.screen.blit(pygame.transform.scale(self.walker_sprites["bot"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
                 self.screen.blit(pygame.transform.scale(self.cart_sprites["bot"], (self.currentCell.width, self.currentCell.height)), (self.previousCell.left, self.previousCell.top))
             if 0 < self.previousCell.y < 39 :
                 self.currentCell.map.array[self.currentCell.x][self.previousCell.y -1].display()
+                self.currentCell.map.get_cell(self.currentCell.x, self.previousCell.y-1).display_around()
         elif self.previousCell.y > self.currentCell.y :
             if not self.inBuilding :
                 self.screen.blit(pygame.transform.scale(self.walker_sprites["top"], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
                 self.screen.blit(pygame.transform.scale(self.cart_sprites["top"], (self.currentCell.width, self.currentCell.height)), (self.previousCell.left, self.previousCell.top))
             if 0 < self.previousCell.y < 39 :
                 self.currentCell.map.array[self.currentCell.x][self.previousCell.y +1].display()
+                self.currentCell.map.get_cell(self.currentCell.x, self.previousCell.y+1).display_around()
 
         if (len(self.currentCell.check_cell_around(Cell.Path)) > 2 and not (self.previousCell.x == self.path[0].x or self.previousCell.y == self.path[0].y)) or self.building in self.currentCell.check_cell_around(Cell.House):
            for i in self.currentCell.check_cell_around(Cell.Path):
@@ -180,14 +184,17 @@ class Migrant(Walker):
 class LaborAdvisor(Walker) : 
     def __init__(self, building):
         super().__init__("labor advisor", building, True)
-        self.leave_building()
+        # self.leave_building()
+        self.building.map.laborAdvisorQueue.append(self)
         self.walker_sprites = dict((k,[0,0]) for k in ["top","bot","left","right"])
         for i in self.walker_sprites :
             for j in range(2) : 
                 self.walker_sprites[i][j] = pygame.image.load("walker_sprites/LA_sprites/LA_" + i + "_" + str(j) + ".png")    
         # self.walker_sprites = dict((k,pygame.image.load("walker_sprites/LA_sprites/LA_" + k + ".png")) for k in ["top","bot","left","right"])
         
-
+    def leave_building(self):
+        super().leave_building()
+        self.currentCell.map.laborAdvisorQueue.remove(self)
 
     def __str__(self):
         return "Labor Advisor"
@@ -243,6 +250,7 @@ class Prefect(Walker) :
             if self.ttl == 0:
                 if len(self.path) == 0: self.path_finding(self.currentCell, self.building)
                 self.movePathFinding()
+                self.reset_fire_risk()
                 if self.currentCell == self.current_building : self.ttl = 50
             else:
                 super().move()
@@ -252,9 +260,9 @@ class Prefect(Walker) :
     def reset_fire_risk(self):
         cell = self.currentCell.check_cell_around(Cell.Building)
         for i in cell:
-            if not isinstance(i, Cell.Prefecture):
-                #Method that can reset the risk / timer
-                pass
+            if not isinstance(i, Cell.Prefecture) and not isinstance(i, Cell.Well) and not i.risk.happened :
+                i.risk.resetEvent()
+                
 
 class Engineer(Walker):
     def __init__(self, engineerPost):

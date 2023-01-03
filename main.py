@@ -18,6 +18,7 @@ if __name__ == "__main__":
 
 
 # TODO
-# risques avece l'overlay
+# risques avec l'overlay
 # prefect -> éteindre le feu 
 # sauvegarde
+# well + water overlay
