@@ -41,33 +41,13 @@ class Walker() :
 
     def __str__(self) -> str:
         pass
+
     def path_finding(self, start, end):
-        # Create a graph
-        G = nx.Graph()
-
-        # Loop through the map to add edges to the graph
-        for l in self.currentCell.map.array:
-            for i in l:
-                #print(i.x, i.y, type (i))
-                #Check if the cell is a path
-                if isinstance(i, Cell.Path):
-                    #Get an array of all neighbor path
-                    cell_around = i.check_cell_around(Cell.Path)
-                    #Loop through this array
-                    for j in cell_around:
-                        #print("Add edge from "+str((i.x, i.y))+" to "+str((j.x, j.y)))
-                        G.add_edge(i, j)
-
-                #Check if the cell is a house
-                if isinstance(i, Cell.House) or isinstance(i, Cell.EngineerPost) or isinstance(i, Cell.Prefecture):
-                    cell_around = i.check_cell_around(Cell.Path)
-                    for j in cell_around:
-                        #print("Add edge from "+str((i.x, i.y))+" to "+str((j.x, j.y)))
-                        G.add_edge(i, j)
-
-        #Calculate with the dijkstra algorithm the shortest path
         print("Path finding to reach", end, "from", start)
-        self.path = nx.dijkstra_path(G, start, end)
+        try:
+            self.path = nx.dijkstra_path(self.building.map.path_graph, start, end)
+        except:
+            self.path = []
         self.isWandering = False
 
     def cell_assignement(self, new_cell) : #si la position est différente des coordonnées de la cellule, on change currentCell
@@ -171,8 +151,8 @@ class Migrant(Walker):
     def move(self):
         if not self.inBuilding:
             if len(self.path) == 0:
-                self.path_finding(self.currentCell, self.building)
-            if len(self.path) == 1:
+                pass
+            elif len(self.path) == 1:
                 self.enter_building()
                 self.building.nb_occupants += 5
                 self.building.unemployedCount += 5

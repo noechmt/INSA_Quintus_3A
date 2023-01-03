@@ -1,6 +1,7 @@
 import numpy as np
 import math as m
 import random as rd
+import networkx as nx
 
 from Class.Cell import *
 
@@ -20,6 +21,7 @@ class Map:  # Un ensemble de cellule
         self.migrantQueue = []
         self.laborAdvisorQueue = []
         self.buildings = []
+        self.path_graph = nx.DiGraph()
         self.spawn_cell = self.array[39][19]
         self.init_path()
         self.wallet = 3000
@@ -121,7 +123,7 @@ class Map:  # Un ensemble de cellule
 
     def handle_zoom(self, zoom_in):
         self.screen.fill((0, 0, 0))
-        self.offset_left, self.offset_top = (0, 0)
+        #self.offset_left, self.offset_top = (0, 0)
         if zoom_in:
             self.height_land *= 1.04
             self.width_land *= 1.04
@@ -148,14 +150,17 @@ class Map:  # Un ensemble de cellule
     def update_walkers(self):
 
         waitfornext = False
-        if len(self.migrantQueue) != 0 :
+        if len(self.migrantQueue) != 0:
             for i in self.migrantQueue :
-                if (rd.randint(0, 9) == 9 and not waitfornext) or i.spawnCount == 20:
+                if i.spawnCount%60 == randint(0,59): i.path_finding(i.currentCell, i.building)
+                if len(i.path) != 0 and ((rd.randint(0, 9) == 9 and not waitfornext) or i.spawnCount == 20):
                     self.walkers.append(i)
                     self.migrantQueue.remove(i)
                     i.screen.blit(pygame.transform.scale(i.walker_sprites["top"], 
                     (i.currentCell.width, i.currentCell.height)), (i.currentCell.left, i.currentCell.top))
                     waitfornext = True
+                elif i.spawnCount == 100:
+                    i.building.clear()
                 else : i.spawnCount += 1   
 
 

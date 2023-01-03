@@ -93,13 +93,13 @@ class Cell:  # Une case de la map
 
     def handle_move(self, move, m):
         if move == "up":
-            self.top += 15 * m
+            self.top += 5 * m
         if move == "down":
-            self.top -= 15 * m
+            self.top -= 5 * m
         if move == "right":
-            self.left -= 15 * m
+            self.left -= 5 * m
         if move == "left":
-            self.left += 15 * m
+            self.left += 5 * m
         # self.display()
 
     def is_hovered(self, pos):
@@ -227,9 +227,31 @@ class Cell:  # Une case de la map
 
     def clear(self):
         if not isinstance(self, Empty) and self.type_empty != "rock" and self.type_empty != "water":
+            if isinstance(self, Building):
+                self.map.buildings.remove(self)
+            for i in self.map.walkers:
+                if i.building == self: 
+                    self.map.walkers.remove(i)
+                    i.currentCell.display()
+                    if isinstance(self, House): i.previousCell.display()
+            for i in self.map.migrantQueue:
+                if i.building == self: 
+                    self.map.migrantQueue.remove(i)
+                    i.currentCell.display()
+            for i in self.map.laborAdvisorQueue:
+                if i.building == self:
+                    self.map.laborAdvisorQueue.remove(i)
+                    i.currentCell.display()
             self.type_empty = "dirt"
             self.map.set_cell_array(self.x, self.y, Empty(
                 self.x, self.y, self.height, self.width, self.screen, self.map))
+            arr = self.check_cell_around(Cell)
+            for i in arr :
+                if not isinstance(i, Building) : i.display()
+                for j in i.check_cell_around(Cell) :
+                    if j.x < self.x + 2 and j.y < self.y + 2 : 
+                        if not isinstance(j, Building) : #and not (j in [i.map.array[i.x-1][i.y], i.map.array[i.x - 1][i.y - 1]]) and (isinstance(i, Cell.Prefecture) or isinstance(i, Cell.EngineerPost)): 
+                            j.display()
             self.map.wallet -= 2
 
     def set_type(self, type):
@@ -276,6 +298,18 @@ class Path(Cell):
         self.display()
         self.grid()
         self.type = "path"
+        #Get an array of all neighbor path
+        cell_around = self.check_cell_around(Path)
+        #Loop through this array
+        for i in cell_around:
+            print("Add edge from "+str((self.x, self.y))+" to "+str((i.x, i.y)))
+            self.map.path_graph.add_edge(self, i)
+            print("Add edge from "+str((i.x, i.y))+" to "+str((self.x, self.y)))
+            self.map.path_graph.add_edge(i, self)
+
+        cell_around = self.check_cell_around(House)
+        for j in cell_around:
+            self.map.path_graph.add_edge(self, j)
 
     def handle_sprites(self, r=0):
         if r < 2:
@@ -444,6 +478,10 @@ class House(Building):  # la maison fils de building (?)
         # nombre max d'occupant (dépend du niveau de la maison) : int
         self.max_occupants = 5
         self.unemployedCount = 0
+        cell_around = self.check_cell_around(Path)
+        for j in cell_around:
+            print("Add edge from "+str((self.x, self.y))+" to "+str((j.x, j.y)))
+            self.map.path_graph.add_edge(j, self)
         self.migrant = Migrant(self)
         self.risk = RiskEvent("fire", self)
         # Temporary

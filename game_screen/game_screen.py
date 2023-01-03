@@ -55,26 +55,23 @@ def game_screen():
     tmpbool = True
     while run:
         pos = pygame.mouse.get_pos()
-        if move % 10 == 0:
-            if pos[1] <= 60:
-                map.offset_top += 15*(3 - pos[1] / 20)
-                map.handle_move("up", 3 - pos[1] / 20)
+        if pos[1] <= 60:
+            map.offset_top += 5*(3 - pos[1] / 20)
+            map.handle_move("up", 3 - pos[1] / 20)
+            panel.display()
+        if pos[1] >= HEIGH_SCREEN - 60:
+            map.offset_top -= 5*(3 - (HEIGH_SCREEN - pos[1]) / 20)
+            map.handle_move("down", 3 - (HEIGH_SCREEN - pos[1]) / 20)
+            panel.display()
+        if pos[0] <= 60:
+            map.offset_left -= 5*(3 - pos[0] / 20)
+            map.handle_move("left", 3 - pos[0] / 20)
+            panel.display()
+        if pos[0] >= WIDTH_SCREEN - 60:
+            if not panel.get_road_button().is_hovered(pos) and not panel.get_well_button().is_hovered(pos):
+                map.offset_left += 5*(3 - (WIDTH_SCREEN - pos[0]) / 20)
+                map.handle_move("right", 3 - (WIDTH_SCREEN - pos[0]) / 20)
                 panel.display()
-            if pos[1] >= HEIGH_SCREEN - 60:
-                map.offset_top -= 15*(3 - (HEIGH_SCREEN - pos[1]) / 20)
-                map.handle_move("down", 3 - (HEIGH_SCREEN - pos[1]) / 20)
-                panel.display()
-            if pos[0] <= 60:
-                map.offset_left -= 15*(3 - pos[0] / 20)
-                map.handle_move("left", 3 - pos[0] / 20)
-                panel.display()
-            if pos[0] >= WIDTH_SCREEN - 60:
-                if not panel.get_road_button().is_hovered(pos) and not panel.get_well_button().is_hovered(pos):
-                    map.offset_left += 15*(3 - (WIDTH_SCREEN - pos[0]) / 20)
-                    map.handle_move("right", 3 - (WIDTH_SCREEN - pos[0]) / 20)
-                    panel.display()
-            move = 0
-        move += 1
 
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
@@ -228,9 +225,9 @@ def game_screen():
         #     map.array[31][19] = EngineerPost(31, 19, map.height_land, map.width_land, map.screen, map)
         #     SCREEN.blit(pygame.transform.scale(pygame.image.load("walker_sprites/test/Housng1a_00019.png"), (map.array[31][19].width, map.array[31][19].height)), (map.array[31][19].left, map.array[31][19].top))
         #     tmpbool = False
-        if len(map.buildings) != 0 :
-            print(map.buildings[0].risk.fireCounter)
-            print(map.buildings[0].risk.happened)
+        # if len(map.buildings) != 0 :
+        #     print(map.buildings[0].risk.fireCounter)
+        #     print(map.buildings[0].risk.happened)
         clock.tick(60)
         fps = (int)(clock.get_fps())
         text_fps = fps_font.render(str(fps), 1, (255, 255, 255))
