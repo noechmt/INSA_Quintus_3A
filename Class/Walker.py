@@ -150,16 +150,14 @@ class Migrant(Walker):
 
     def move(self):
         if not self.inBuilding:
-            if len(self.path) == 0:
-                pass
-            elif len(self.path) == 1:
+            if len(self.path) == 1:
                 self.enter_building()
                 self.building.nextLevel()
                 self.building.nb_occupants += 5
                 self.building.unemployedCount += 5
                 if self.building.nb_occupants == self.building.max_occupants and self.building.water:
                     self.building.nextLevel()
-            else:
+            elif len(self.path) != 0:
                 self.movePathFinding()
 
 class LaborAdvisor(Walker) : 

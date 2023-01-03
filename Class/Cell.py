@@ -93,13 +93,13 @@ class Cell:  # Une case de la map
 
     def handle_move(self, move, m):
         if move == "up":
-            self.top += 5 * m
+            self.top += 10 * m
         if move == "down":
-            self.top -= 5 * m
+            self.top -= 10 * m
         if move == "right":
-            self.left -= 5 * m
+            self.left -= 10 * m
         if move == "left":
-            self.left += 5 * m
+            self.left += 10 * m
         # self.display()
 
     def is_hovered(self, pos):
@@ -454,6 +454,7 @@ class Empty(Cell):
         if self.type_empty == "tree":
             self.type_empty = "dirt"
             self.map.wallet -= 2
+        self.display()
 
     def canBuild(self):
         return self.type_empty == "dirt"
@@ -464,7 +465,10 @@ class Building(Cell):  # un fils de cellule (pas encore sûr de l'utilité)
         super().__init__(x, y, height, width, screen, my_map)
         self.map.buildings.append(self)
         self.destroyed = False
-
+        cell_around = self.check_cell_around(Path)
+        for j in cell_around:
+            print("Add edge from "+str((self.x, self.y))+" to "+str((j.x, j.y)))
+            self.map.path_graph.add_edge(j, self)
 
     def destroy(self):
         self.destroyed = True
@@ -478,10 +482,6 @@ class House(Building):  # la maison fils de building (?)
         # nombre max d'occupant (dépend du niveau de la maison) : int
         self.max_occupants = 5
         self.unemployedCount = 0
-        cell_around = self.check_cell_around(Path)
-        for j in cell_around:
-            print("Add edge from "+str((self.x, self.y))+" to "+str((j.x, j.y)))
-            self.map.path_graph.add_edge(j, self)
         self.migrant = Migrant(self)
         self.risk = RiskEvent("fire", self)
         # Temporary

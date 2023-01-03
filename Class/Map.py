@@ -1,7 +1,9 @@
+from concurrent.futures import thread
 import numpy as np
 import math as m
 import random as rd
 import networkx as nx
+import _thread as thread
 
 from Class.Cell import *
 
@@ -148,21 +150,24 @@ class Map:  # Un ensemble de cellule
         return (0 <= x and x <= self.size-1 and 0 <= y and y <= self.size-1)
 
     def update_walkers(self):
-
         waitfornext = False
+
+        def threading_update(i):
+            nonlocal waitfornext
+            if len(i.path) ==0: i.path_finding(i.currentCell, i.building)
+            if len(i.path) != 0 and ((rd.randint(0, 9) == 9 and not waitfornext) or i.spawnCount == 20):
+                self.walkers.append(i)
+                self.migrantQueue.remove(i)
+                i.screen.blit(pygame.transform.scale(i.walker_sprites["top"], 
+                (i.currentCell.width, i.currentCell.height)), (i.currentCell.left, i.currentCell.top))
+                waitfornext = True
+            elif i.spawnCount == 100:
+                i.building.clear()
+            else : i.spawnCount += 1   
+
         if len(self.migrantQueue) != 0:
             for i in self.migrantQueue :
-                if i.spawnCount%60 == randint(0,59): i.path_finding(i.currentCell, i.building)
-                if len(i.path) != 0 and ((rd.randint(0, 9) == 9 and not waitfornext) or i.spawnCount == 20):
-                    self.walkers.append(i)
-                    self.migrantQueue.remove(i)
-                    i.screen.blit(pygame.transform.scale(i.walker_sprites["top"], 
-                    (i.currentCell.width, i.currentCell.height)), (i.currentCell.left, i.currentCell.top))
-                    waitfornext = True
-                elif i.spawnCount == 100:
-                    i.building.clear()
-                else : i.spawnCount += 1   
-
+                thread.start_new_thread(threading_update, (i,))
 
         if len(self.laborAdvisorQueue) != 0 :
             for i in self.laborAdvisorQueue : 
@@ -178,15 +183,23 @@ class Map:  # Un ensemble de cellule
         for i in self.buildings :
             if not i.risk.happened : i.risk.riskIncrease()
 
-    def update_fire(self) : 
-        for i in self.buildings :
+    def update_fire(self) :
+
+        def threading_update(i):
             if i.risk.happened and i.risk.type == "fire":
                 i.risk.burn()
 
+        for i in self.buildings :
+            thread.start_new_thread(threading_update, (i,))
+
     def update_collapse(self) : 
-        for i in self.buildings : 
+
+        def threading_update(i):
             if i.risk.happened and i.risk.type == "collapse" : 
                 i.risk.collapse()
+
+        for i in self.buildings : 
+            thread.start_new_thread(threading_update, (i,))
 
 
 
