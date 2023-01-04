@@ -69,7 +69,7 @@ class Panel():
                                           self.width_screen/48, self.height_screen/40, self.engineerpost_button_sprite)
         self.well_button = Button(187*self.width_screen/192, 0.25*self.height_screen+3*self.height_screen/80,
                                   self.width_screen/48, self.height_screen/40, self.well_button_sprite)
-
+                                  
     def display(self):
         for i in range(2):
             for j in range(9):

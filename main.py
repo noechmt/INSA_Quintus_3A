@@ -13,8 +13,8 @@ os.system(str(sys.executable) + " -m pip install -r requirements.txt")
 if __name__ == "__main__":      
     if (title_screen()):
         game_screen()
-    pygame.quit()
-    
+    pygame.quit()   
+
 
 
 # TODO

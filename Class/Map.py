@@ -1,6 +1,9 @@
+from concurrent.futures import thread
 import numpy as np
 import math as m
 import random as rd
+import networkx as nx
+import _thread as thread
 
 from Class.Cell import *
 
@@ -20,6 +23,7 @@ class Map:  # Un ensemble de cellule
         self.migrantQueue = []
         self.laborAdvisorQueue = []
         self.buildings = []
+        self.path_graph = nx.DiGraph()
         self.spawn_cell = self.array[39][19]
         self.init_path()
         self.wallet = 3000
@@ -51,16 +55,6 @@ class Map:  # Un ensemble de cellule
                     s += f"{str(self.getCell(i,j)):^20}"
             s += "\n"
         return s
-
-    def display_water_zone(self):
-        if(self.get_welled()):
-            for i in range(40):
-                for j in range(40):
-                    if(self.array[i][j].get_water()):
-                        self.array[i][j].display()
-                        self.array[i][j].display_water()
-                    if(self.array[i][j].type == "well"):
-                        self.array[i][j].display()
 
 
     def handle_road_button(self):
@@ -121,7 +115,7 @@ class Map:  # Un ensemble de cellule
 
     def handle_zoom(self, zoom_in):
         self.screen.fill((0, 0, 0))
-        self.offset_left, self.offset_top = (0, 0)
+        #self.offset_left, self.offset_top = (0, 0)
         if zoom_in:
             self.height_land *= 1.04
             self.width_land *= 1.04
@@ -146,18 +140,24 @@ class Map:  # Un ensemble de cellule
         return (0 <= x and x <= self.size-1 and 0 <= y and y <= self.size-1)
 
     def update_walkers(self):
-
         waitfornext = False
-        if len(self.migrantQueue) != 0 :
-            for i in self.migrantQueue :
-                if (rd.randint(0, 9) == 9 and not waitfornext) or i.spawnCount == 20:
-                    self.walkers.append(i)
-                    self.migrantQueue.remove(i)
-                    i.screen.blit(pygame.transform.scale(i.walker_sprites["top"], 
-                    (i.currentCell.width, i.currentCell.height)), (i.currentCell.left, i.currentCell.top))
-                    waitfornext = True
-                else : i.spawnCount += 1   
 
+        def threading_update(i):
+            nonlocal waitfornext
+            if len(i.path) ==0: i.path_finding(i.currentCell, i.building)
+            if len(i.path) != 0 and ((rd.randint(0, 9) == 9 and not waitfornext) or i.spawnCount == 20):
+                self.walkers.append(i)
+                self.migrantQueue.remove(i)
+                i.screen.blit(pygame.transform.scale(i.walker_sprites["top"], 
+                (i.currentCell.width, i.currentCell.height)), (i.currentCell.left, i.currentCell.top))
+                waitfornext = True
+            elif i.spawnCount == 100:
+                i.building.clear()
+            else : i.spawnCount += 1   
+
+        if len(self.migrantQueue) != 0:
+            for i in self.migrantQueue :
+                thread.start_new_thread(threading_update, (i,))
 
         if len(self.laborAdvisorQueue) != 0 :
             for i in self.laborAdvisorQueue : 
@@ -166,22 +166,32 @@ class Map:  # Un ensemble de cellule
         for i in self.walkers:
             i.move()
             i.display()
+            i.currentCell.display_around()
             if not isinstance(i, Migrant):
                 i.previousCell.display()
+                i.previousCell.display_around()
 
 
         for i in self.buildings :
             if not i.risk.happened : i.risk.riskIncrease()
 
-    def update_fire(self) : 
-        for i in self.buildings :
+    def update_fire(self) :
+
+        def threading_update(i):
             if i.risk.happened and i.risk.type == "fire":
                 i.risk.burn()
 
+        for i in self.buildings :
+            thread.start_new_thread(threading_update, (i,))
+
     def update_collapse(self) : 
-        for i in self.buildings : 
+
+        def threading_update(i):
             if i.risk.happened and i.risk.type == "collapse" : 
                 i.risk.collapse()
+
+        for i in self.buildings : 
+            thread.start_new_thread(threading_update, (i,))
 
 
 
