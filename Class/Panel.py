@@ -165,3 +165,9 @@ class Panel():
 
     def get_well_button(self):
         return self.well_button
+
+    def get_up_button(self):
+        return self.up_button
+
+    def get_down_button(self):
+        return self.down_button

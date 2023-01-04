@@ -29,7 +29,7 @@ def game_screen():
     pygame.display.set_caption("Quintus III")
     WIDTH_SCREEN, HEIGH_SCREEN = SCREEN.get_size()
     height_land = HEIGH_SCREEN/60
-    width_land = WIDTH_SCREEN*sqrt(2)/80 
+    width_land = WIDTH_SCREEN*sqrt(2)/80
     SIZE = 40
 
     map = Map(SIZE, height_land, width_land, SCREEN)
@@ -44,6 +44,13 @@ def game_screen():
     run = True
     clock = pygame.time.Clock()
 
+    speed = 1
+    speed_left = 187*WIDTH_SCREEN/192
+    speed_top = 0.25*HEIGH_SCREEN+12.5*HEIGH_SCREEN/80
+    speed_counter_text = fps_font.render(
+        f"{speed * 100:.0f}%", 1, (255, 255, 255))
+    SCREEN.blit(speed_counter_text, (speed_left, speed_top))
+
     selection = {"is_active": False, "start": tuple, "cells": set()}
     hovered_cell = None
     zoom = 1
@@ -51,8 +58,6 @@ def game_screen():
 
     walker_update_count = 0
     fire_upadte_count = 0
-
-
 
     ##############################
     while run:
@@ -126,6 +131,23 @@ def game_screen():
                         panel.set_window("well")
                         map.handle_well_button()
                         map.display_map()
+                    if (panel.up_button.is_hovered(pos)):
+                        if (speed < 3):
+                            speed += 0.2
+                            panel.display()
+                            speed_counter_text = fps_font.render(
+                                f"{speed * 100:.0f}%", 1, (255, 255, 255))
+                            SCREEN.blit(speed_counter_text,
+                                        (speed_left, speed_top))
+                    if (panel.down_button.is_hovered(pos)):
+                        if (speed > 0.4):
+                            speed -= 0.2
+                            panel.display()
+                            speed_counter_text = fps_font.render(
+                                f"{speed * 100:.0f}%", 1, (255, 255, 255))
+                            SCREEN.blit(speed_counter_text,
+                                        (speed_left, speed_top))
+
                     # if pos[0] <= width_wo_panel:
                     #     map.handle_click_cells(pos)
                     #     panel.display()
@@ -159,7 +181,7 @@ def game_screen():
                             selected_cell.build("well")
                             for k in range(-2, 3):
                                 for j in range(-2, 3):
-                                    if (39>=x+k>=0 and 39>=y+j>=0):
+                                    if (39 >= x+k >= 0 and 39 >= y+j >= 0):
                                         map.get_cell(i[0]+k, i[1]+j).display()
                         else:
                             selected_cell.display()
@@ -169,12 +191,14 @@ def game_screen():
             if event.type == pygame.MOUSEMOTION:
                 # Display previous cell without hover
                 if hovered_cell:
-                    hovered_cell = map.get_cell(hovered_coordinates[0], hovered_coordinates[1])
+                    hovered_cell = map.get_cell(
+                        hovered_coordinates[0], hovered_coordinates[1])
                     hovered_cell.display()
                     hovered_cell.display_around()
                 if map.inMap(x, y) and pos[0] <= width_wo_panel and not selection["is_active"]:
                     hovered_coordinates = (x, y)
-                    hovered_cell = map.get_cell(hovered_coordinates[0], hovered_coordinates[1])
+                    hovered_cell = map.get_cell(
+                        hovered_coordinates[0], hovered_coordinates[1])
                     hovered_cell.handle_hover_button()
                     hovered_cell.display_around()
 
@@ -199,6 +223,8 @@ def game_screen():
                 panel.get_prefecture_button().handle_hover_button(pos, SCREEN)
                 panel.get_engineerpost_button().handle_hover_button(pos, SCREEN)
                 panel.get_well_button().handle_hover_button(pos, SCREEN)
+                panel.get_up_button().handle_hover_button(pos, SCREEN)
+                panel.get_down_button().handle_hover_button(pos, SCREEN)
 
             if event.type == pygame.KEYDOWN:
                 if pygame.key.get_pressed()[pygame.K_ESCAPE]:
@@ -212,17 +238,19 @@ def game_screen():
 
         walker_update_count += 1
         # print(walker_update_count)
-        if walker_update_count == 5:
+        update_speed = 10 / (speed)
+        if walker_update_count >= update_speed:
+            print(walker_update_count)
             map.update_walkers()
             # print("break")
             walker_update_count = 0
 
         fire_upadte_count += 1
-        if fire_upadte_count == 5 :
+        if fire_upadte_count >= update_speed:
             map.update_fire()
             map.update_collapse()
             fire_upadte_count = 0
-        
+
         # if tmpbool :
         #     map.array[13][29] = Prefecture(13, 29, map.height_land, map.width_land,map.screen, map)
         #     SCREEN.blit(pygame.transform.scale(pygame.image.load("walker_sprites/test/Housng1a_00019.png"), (map.array[13][29].width, map.array[13][29].height)), (map.array[13][29].left, map.array[13][29].top))
