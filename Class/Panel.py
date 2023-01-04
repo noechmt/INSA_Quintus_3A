@@ -53,6 +53,10 @@ class Panel():
             "game_screen/game_screen_sprites/paneling_engineerpost_button.png")
         self.well_button_sprite = pygame.image.load(
             "game_screen/game_screen_sprites/paneling_well_button.png")
+        self.button_up_sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/paneling_up.png")
+        self.button_down_sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/paneling_down.png")
 
     def init_buttons(self):
         self.grid_button = Button(177*self.width_screen/192, 0.125*self.height_screen,
@@ -69,7 +73,11 @@ class Panel():
                                           self.width_screen/48, self.height_screen/40, self.engineerpost_button_sprite)
         self.well_button = Button(187*self.width_screen/192, 0.25*self.height_screen+3*self.height_screen/80,
                                   self.width_screen/48, self.height_screen/40, self.well_button_sprite)
-                                  
+        self.up_button = Button(
+            177*self.width_screen/192, 0.25*self.height_screen+12*self.height_screen/80, self.width_screen/48, self.height_screen/40, self.button_up_sprite)
+        self.down_button = Button(
+            177*self.width_screen/192 + 1.1*self.width_screen/48, 0.25*self.height_screen+12*self.height_screen/80, self.width_screen/48, self.height_screen/40, self.button_down_sprite)
+
     def display(self):
         for i in range(2):
             for j in range(9):
@@ -115,6 +123,9 @@ class Panel():
 
         self.screen.blit(pygame.transform.scale(self.bottom, (self.width_screen/12,
                                                               self.height_screen/10)), (((11/12)*self.width_screen), (0.9*self.height_screen)))
+
+        self.up_button.draw(self.screen)
+        self.down_button.draw(self.screen)
 
     def set_window(self, choice):
         if choice == "road":
