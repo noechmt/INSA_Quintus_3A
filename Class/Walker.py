@@ -43,7 +43,7 @@ class Walker() :
         pass
 
     def path_finding(self, start, end):
-        print("Path finding to reach", end, "from", start)
+        #print("Path finding to reach", end, "from", start)
         try:
             self.path = nx.dijkstra_path(self.building.map.path_graph, start, end)
         except:

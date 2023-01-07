@@ -497,9 +497,9 @@ class House(Building):  # la maison fils de building (?)
             "game_screen/game_screen_sprites/house_" + str(self.level) + ".png")
         self.display()
         match self.level:
-            case 1:
-                self.max_occupants = 7
             case 2:
+                self.max_occupants = 7
+            case 3:
                 self.max_occupants = 9
 
 
@@ -514,7 +514,7 @@ class Well(Building):
                     self.map.get_cell(self.x+i, self.y+j).water = True
                     checkedCell = self.map.get_cell(self.x+i, self.y+j)
                     if isinstance(checkedCell, House) and checkedCell.level == 1 and checkedCell.max_occupants == checkedCell.nb_occupants:
-                        checkedCell.nextLevel
+                        checkedCell.nextLevel()
 
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/well.png")

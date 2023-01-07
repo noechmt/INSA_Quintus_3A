@@ -163,20 +163,26 @@ def game_screen():
                                         map.get_cell(i[0]+k, i[1]+j).display()
                         else:
                             selected_cell.display()
+                    map.buildings.sort(key=lambda i: (i.x, i.y))
+                    print([(i.x,i.y) for i in map.buildings])
                     selection["cells"].clear()
                     selection["is_active"] = False
 
             if event.type == pygame.MOUSEMOTION:
                 # Display previous cell without hover
-                if hovered_cell:
+                if hovered_cell and hovered_coordinates != (x, y):
                     hovered_cell = map.get_cell(hovered_coordinates[0], hovered_coordinates[1])
                     hovered_cell.display()
-                    hovered_cell.display_around()
+                    if isinstance(hovered_cell, Building) or len(hovered_cell.check_cell_around(Building)) != 0:
+                        for i in map.buildings:
+                            if i.type != "ruin":
+                                i.display()
+                    #hovered_cell.display_around()
                 if map.inMap(x, y) and pos[0] <= width_wo_panel and not selection["is_active"]:
                     hovered_coordinates = (x, y)
                     hovered_cell = map.get_cell(hovered_coordinates[0], hovered_coordinates[1])
                     hovered_cell.handle_hover_button()
-                    hovered_cell.display_around()
+                    #hovered_cell.display_around()
 
                 # Selection : fill the set with hovered cell
                 if map.inMap(x, y) and selection["is_active"]:
