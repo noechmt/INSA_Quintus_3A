@@ -44,7 +44,9 @@ def game_screen():
     run = True
     clock = pygame.time.Clock()
 
-    speed = 1
+    speeds = [0.000000001, 0.4, 0.6, 0.8, 1, 1.25, 1.5, 2, 3, 5]
+    speed_index = 4
+    speed = speeds[speed_index]
     speed_left = 187*WIDTH_SCREEN/192
     speed_top = 0.25*HEIGH_SCREEN+12.5*HEIGH_SCREEN/80
     speed_counter_text = fps_font.render(
@@ -66,19 +68,31 @@ def game_screen():
             map.offset_top += 10*(3 - pos[1] / 20)
             map.handle_move("up", 3 - pos[1] / 20)
             panel.display()
+            speed_counter_text = fps_font.render(
+                f"{speed * 100:.0f}%", 1, (255, 255, 255))
+            SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         if pos[1] >= HEIGH_SCREEN - 60:
             map.offset_top -= 10*(3 - (HEIGH_SCREEN - pos[1]) / 20)
             map.handle_move("down", 3 - (HEIGH_SCREEN - pos[1]) / 20)
             panel.display()
+            speed_counter_text = fps_font.render(
+                f"{speed * 100:.0f}%", 1, (255, 255, 255))
+            SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         if pos[0] <= 60:
             map.offset_left -= 10*(3 - pos[0] / 20)
             map.handle_move("left", 3 - pos[0] / 20)
             panel.display()
+            speed_counter_text = fps_font.render(
+                f"{speed * 100:.0f}%", 1, (255, 255, 255))
+            SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         if pos[0] >= WIDTH_SCREEN - 60:
             if not panel.get_road_button().is_hovered(pos) and not panel.get_well_button().is_hovered(pos):
                 map.offset_left += 10*(3 - (WIDTH_SCREEN - pos[0]) / 20)
                 map.handle_move("right", 3 - (WIDTH_SCREEN - pos[0]) / 20)
                 panel.display()
+                speed_counter_text = fps_font.render(
+                    f"{speed * 100:.0f}%", 1, (255, 255, 255))
+                SCREEN.blit(speed_counter_text, (speed_left, speed_top))
 
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
@@ -107,6 +121,10 @@ def game_screen():
                     if (panel.get_grid_button().is_hovered(pos)):
                         map.grid_map()
                         panel.display()
+                        speed_counter_text = fps_font.render(
+                            f"{speed * 100:.0f}%", 1, (255, 255, 255))
+                        SCREEN.blit(speed_counter_text,
+                                    (speed_left, speed_top))
                     if (panel.house_button.is_hovered(pos)):
                         panel.set_window("house")
                         map.handle_house_button()
@@ -132,16 +150,18 @@ def game_screen():
                         map.handle_well_button()
                         map.display_map()
                     if (panel.up_button.is_hovered(pos)):
-                        if (speed < 3):
-                            speed += 0.2
+                        if speed_index < 9:
+                            speed_index += 1
+                            speed = speeds[speed_index]
                             panel.display()
                             speed_counter_text = fps_font.render(
                                 f"{speed * 100:.0f}%", 1, (255, 255, 255))
                             SCREEN.blit(speed_counter_text,
                                         (speed_left, speed_top))
                     if (panel.down_button.is_hovered(pos)):
-                        if (speed > 0.4):
-                            speed -= 0.2
+                        if (speed_index > 1):
+                            speed_index -= 1
+                            speed = speeds[speed_index]
                             panel.display()
                             speed_counter_text = fps_font.render(
                                 f"{speed * 100:.0f}%", 1, (255, 255, 255))
@@ -157,11 +177,19 @@ def game_screen():
                         zoom += 0.01
                         map.handle_zoom(1)
                         panel.display()
+                        speed_counter_text = fps_font.render(
+                            f"{speed * 100:.0f}%", 1, (255, 255, 255))
+                        SCREEN.blit(speed_counter_text,
+                                    (speed_left, speed_top))
                 if event.button == 5:
                     if zoom >= 0.95:
                         zoom -= 0.01
                         map.handle_zoom(0)
                         panel.display()
+                        speed_counter_text = fps_font.render(
+                            f"{speed * 100:.0f}%", 1, (255, 255, 255))
+                        SCREEN.blit(speed_counter_text,
+                                    (speed_left, speed_top))
 
             if event.type == pygame.MOUSEBUTTONUP:
                 if selection["is_active"]:
