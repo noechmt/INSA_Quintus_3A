@@ -57,6 +57,10 @@ class Panel():
             "game_screen/game_screen_sprites/paneling_up.png")
         self.button_down_sprite = pygame.image.load(
             "game_screen/game_screen_sprites/paneling_down.png")
+        self.button_played_sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/paneling_played.png")
+        self.button_paused_sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/paneling_paused.png")
 
     def init_buttons(self):
         self.grid_button = Button(177*self.width_screen/192, 0.125*self.height_screen,
@@ -77,6 +81,8 @@ class Panel():
             177*self.width_screen/192, 0.25*self.height_screen+12*self.height_screen/80, self.width_screen/48, self.height_screen/40, self.button_up_sprite)
         self.down_button = Button(
             177*self.width_screen/192 + 1.1*self.width_screen/48, 0.25*self.height_screen+12*self.height_screen/80, self.width_screen/48, self.height_screen/40, self.button_down_sprite)
+        self.pause_button = Button(177*self.width_screen/192 + 0.55*self.width_screen/48, 0.25*self.height_screen +
+                                   15*self.height_screen/80, self.width_screen/48, self.height_screen/40, self.button_played_sprite)
 
     def display(self):
         for i in range(2):
@@ -126,6 +132,7 @@ class Panel():
 
         self.up_button.draw(self.screen)
         self.down_button.draw(self.screen)
+        self.pause_button.draw(self.screen)
 
     def set_window(self, choice):
         if choice == "road":
@@ -171,3 +178,6 @@ class Panel():
 
     def get_down_button(self):
         return self.down_button
+
+    def get_pause_button(self):
+        return self.pause_button

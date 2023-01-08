@@ -253,6 +253,7 @@ def game_screen():
                 panel.get_well_button().handle_hover_button(pos, SCREEN)
                 panel.get_up_button().handle_hover_button(pos, SCREEN)
                 panel.get_down_button().handle_hover_button(pos, SCREEN)
+                panel.get_pause_button().handle_hover_button(pos, SCREEN)
 
             if event.type == pygame.KEYDOWN:
                 if pygame.key.get_pressed()[pygame.K_ESCAPE]:
