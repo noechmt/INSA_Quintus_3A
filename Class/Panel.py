@@ -152,6 +152,12 @@ class Panel():
         self.screen.blit(pygame.transform.scale(self.window_current, (self.width_screen /
                                                                       12-10, self.height_screen/17)), (11*self.width_screen/12+5, 0.18*self.height_screen))
 
+    def set_paused_button(self):
+        self.pause_button.change_image(self.button_paused_sprite)
+
+    def set_played_button(self):
+        self.pause_button.change_image(self.button_played_sprite)
+
     def get_grid_button(self):
         return self.grid_button
 

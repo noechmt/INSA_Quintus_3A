@@ -47,11 +47,12 @@ def game_screen():
     speeds = [0.000000001, 0.4, 0.6, 0.8, 1, 1.25, 1.5, 2, 3, 5]
     speed_index = 4
     speed = speeds[speed_index]
-    speed_left = 187*WIDTH_SCREEN/192
+    speed_left = 186.5*WIDTH_SCREEN/192
     speed_top = 0.25*HEIGH_SCREEN+12.5*HEIGH_SCREEN/80
     speed_counter_text = fps_font.render(
         f"{speed * 100:.0f}%", 1, (255, 255, 255))
     SCREEN.blit(speed_counter_text, (speed_left, speed_top))
+    paused = 0
 
     selection = {"is_active": False, "start": tuple, "cells": set()}
     hovered_cell = None
@@ -153,6 +154,7 @@ def game_screen():
                         if speed_index < 9:
                             speed_index += 1
                             speed = speeds[speed_index]
+                            panel.set_played_button()
                             panel.display()
                             speed_counter_text = fps_font.render(
                                 f"{speed * 100:.0f}%", 1, (255, 255, 255))
@@ -162,16 +164,32 @@ def game_screen():
                         if (speed_index > 1):
                             speed_index -= 1
                             speed = speeds[speed_index]
+                            panel.set_played_button()
+                            panel.display()
+                            speed_counter_text = fps_font.render(
+                                f"{speed * 100:.0f}%", 1, (255, 255, 255))
+                            SCREEN.blit(speed_counter_text,
+                                        (speed_left, speed_top))
+                    if (panel.get_pause_button().is_hovered(pos)):
+                        if paused == 0:
+                            paused = 1
+                            speed = speeds[0]
+                            panel.set_paused_button()
+                            panel.display()
+                            speed_counter_text = fps_font.render(
+                                f"{speed * 100:.0f}%", 1, (255, 255, 255))
+                            SCREEN.blit(speed_counter_text,
+                                        (speed_left, speed_top))
+                        else:
+                            paused = 0
+                            speed = speeds[speed_index]
+                            panel.set_played_button()
                             panel.display()
                             speed_counter_text = fps_font.render(
                                 f"{speed * 100:.0f}%", 1, (255, 255, 255))
                             SCREEN.blit(speed_counter_text,
                                         (speed_left, speed_top))
 
-                    # if pos[0] <= width_wo_panel:
-                    #     map.handle_click_cells(pos)
-                    #     panel.display()
-                # Zoom in
                 if event.button == 4:
                     if zoom <= 1.25:
                         zoom += 0.01
