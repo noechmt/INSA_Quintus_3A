@@ -295,6 +295,7 @@ class Path(Cell):
         cell_around = self.check_cell_around(Path)
         # Loop through this array
         for i in cell_around:
+            self.map.path_graph.add_edge(self, i)
             self.map.path_graph.add_edge(i, self)
 
         cell_around = self.check_cell_around(House)
