@@ -25,6 +25,7 @@ class Cell:  # Une case de la map
         self.type = ""
         self.water = False
         self.sprite = ""
+        self.aleatoire = 0
         self.screen = screen
         self.hovered = False
         self.type_empty = None
@@ -44,9 +45,20 @@ class Cell:  # Une case de la map
             self.height/2 + self.y * self.height/2 + self.map.offset_top
 
     def display(self):
-        if self.type  == "empty_tree":
-            self.screen.blit(pygame.transform.scale(self.sprite,(self.width, self.height*48/30)), (self.left, self.top-self.height*18/30))
-        elif self.type == "empty_rock":
+        if self.type_empty  == "tree":
+            if self.aleatoire == 1:
+                self.screen.blit(pygame.transform.scale(
+            self.sprite, (self.width, self.height*42/30)), (self.left, self.top - self.height*12/30))
+            elif self.aleatoire == 2:
+                self.screen.blit(pygame.transform.scale(
+            self.sprite, (self.width, self.height*41/30)), (self.left, self.top - self.height*11/30))
+            elif self.aleatoire == 3:
+                self.screen.blit(pygame.transform.scale(
+            self.sprite, (self.width, self.height*44/30)), (self.left, self.top - self.height*14/30))
+            elif self.aleatoire == 4:
+                self.screen.blit(pygame.transform.scale(
+            self.sprite, (self.width, self.height*45/30)), (self.left, self.top - self.height*15/30))
+        elif self.type_empty == "rock":
             self.screen.blit(pygame.transform.scale(self.sprite,(self.width, self.height*35/30)), (self.left, self.top-self.height*5/30))
         
 
@@ -72,16 +84,24 @@ class Cell:  # Une case de la map
                                     self.get_points_polygone())
 
     def display_around(self):
-        
-        if (self.y+1<39 and self.map.get_cell(self.x,self.y+1).type_empty in ("tree", "rock") and self.map.get_cell(self.x,self.y+1).type != "path"):
-            self.map.get_cell(self.x,self.y+1).display()
-            self.map.get_cell(self.x,self.y+1).display_around()
-        if (self.x+1<39 and self.map.get_cell(self.x+1, self.y).type_empty in ("tree", "rock") and self.map.get_cell(self.x+1, self.y).type != "path"):
-            self.map.get_cell(self.x+1, self.y).display()
-            self.map.get_cell(self.x+1, self.y).display_around()
-        if (self.x+1<39 and self.y+1<39 and self.map.get_cell(self.x+1, self.y+1).type_empty in ("tree", "rock") and self.map.get_cell(self.x+1, self.y+1).type != "path"):
-            self.map.get_cell(self.x+1, self.y+1).display()
-            self.map.get_cell(self.x+1, self.y+1).display_around()
+        if (self.y+1<40 and (self.map.get_cell(self.x,self.y+1).type_empty != "dirt") and self.map.get_cell(self.x,self.y+1).type != "path"):
+            if(self.map.get_cell(self.x,self.y+1).type_empty != "water"):
+                self.map.get_cell(self.x,self.y+1).display()
+                if(self.map.get_cell(self.x,self.y+1).get_water() and self.map.get_welled() and self.map.get_cell(self.x,self.y+1).type != "well"):
+                    self.map.get_cell(self.x,self.y+1).display_water()
+                self.map.get_cell(self.x,self.y+1).display_around()
+        if (self.x+1<40 and self.map.get_cell(self.x+1, self.y).type_empty != "dirt" and self.map.get_cell(self.x+1, self.y).type != "path"):
+            if(self.map.get_cell(self.x+1,self.y).type_empty != "water"):
+                self.map.get_cell(self.x+1, self.y).display()
+                if(self.map.get_cell(self.x+1, self.y).get_water() and self.map.get_welled() and self.map.get_cell(self.x+1, self.y).type != "well"):
+                    self.map.get_cell(self.x+1, self.y).display_water()
+                self.map.get_cell(self.x+1, self.y).display_around()
+        if (self.x+1<40 and self.y+1<40 and self.map.get_cell(self.x+1, self.y+1).type_empty != "dirt" and self.map.get_cell(self.x+1, self.y+1).type != "path"):
+            if(self.map.get_cell(self.x+1,self.y+1).type_empty != "water"):
+                self.map.get_cell(self.x+1, self.y+1).display()
+                if(self.map.get_cell(self.x+1, self.y+1).get_water() and self.map.get_welled() and self.map.get_cell(self.x+1, self.y+1).type != "well"):
+                    self.map.get_cell(self.x+1, self.y+1).display_water()
+                self.map.get_cell(self.x+1, self.y+1).display_around()
 
     def handle_zoom(self, zoom_in):
         if zoom_in:
@@ -164,7 +184,12 @@ class Cell:  # Une case de la map
 
     def set_hover(self, hover):
         self.hover = hover
-        
+
+    def set_aleatoire(self, ent):
+        self.aleatoire = ent
+
+    def get_aleatoire(self):
+        return self.aleatoire
 
     # Return an cell array which match with the class type (ex: Path, Prefecture (not a string)) in argument
     def check_cell_around(self, type):
@@ -433,31 +458,32 @@ class Empty(Cell):
         super().__init__(x, y, height, width, screen, map)
         self.type_empty = type_empty #"dirt", "trees"
         self.type = "empty"
-
         tree_or_dirt_list = ["tree", "dirt", "dirt"]
-        rock_or_dirt_list = ["rock", "dirt"]
+        rock_or_dirt_list = ["rock", "dirt", "dirt", "dirt"]
         
         #place the trees
         for i in range (40):
             for j in range (40):
-
-                if (x,y)==(i,j) and (0<i<40 and 0<j<40):
+                if (x,y)==(i,j):
                     self.type_empty = random.choice(tree_or_dirt_list)
                     if self.type_empty == "tree":
+                        self.type_sprite = "tree"
                         self.type = "empty_tree"
+                    else:
+                        self.type_sprite = "dirt"
                 
         #place the rocks
         for i in range (40):
             for j in range (40):
                 
-                if (x,y)==(i,j) and ((27<i<36 and 12<j<16) or (27<i<31 and 15<j<23) or (i>30 and j>25) or (i>35 and j<5)):
+                if (x,y)==(i,j) and ((27<i<36 and 12<j<16) or (27<i<31 and 15<j<23) or (i>30 and j>25) or (i>35 and j<5) or (i>35 and j>30)):
                     self.type_empty = random.choice(rock_or_dirt_list)
                     if self.type_empty == "rock":
+                        self.type_sprite = "rock"
                         self.type = "empty_rock"
+                    else:
+                        self.type_sprite = "dirt"
 
-                if (x,y)==(i,j) and (i>35 and j>30):
-                    self.type = "empty_rock"
-                    self.type_empty = "rock"
 
 
     #place the water with conditions for sprites
@@ -466,61 +492,79 @@ class Empty(Cell):
             
             #line under the first river  
             if ((x,y) == (i,i+10) and i<5) or ((x,y)==(i,i+14) and 5<i<8) or ((x,y)==(i,i+15) and 8<i<13) or ((x,y)==(i,i+18) and 14<i<17) or ((x,y)==(i,i+20) and 17<i<20):
-                self.type_empty = "watersiderightD"
+                self.type_sprite = "watersiderightD"
+                self.type_empty = "water"
             elif ((x,y) == (i,i+11) and i<5) or ((x,y)==(i,i+15) and 4<i<8) or ((x,y)==(i,i+16) and (7<i<13)) or (x,y)==(13,31) or ((x,y)==(i,i+19) and 13<i<17) or ((x,y)==(i,i+21) and 16<i<19):
-                self.type_empty = "watersiderightW"
+                self.type_sprite = "watersiderightW"
+                self.type_empty = "water"
             elif (x,y) == (5,15) or (x,y) == (8,22) or (x,y)==(13,28) or (x,y)==(14,31) or (x,y)==(17,35):
-                self.type_empty = "watersidecornerA"
+                self.type_sprite = "watersidecornerA"
+                self.type_empty = "water"
             elif ((x,y) == (5, i) and 15<i<20) or (x,y)==(8,23) or (x,y)==(13,29) or (x,y)==(13,30) or (x,y)==(14,32) or (x,y)==(17,36) or (x,y)==(17,37):
-                self.type_empty = "watersideunder"
+                self.type_sprite = "watersideunder"
+                self.type_empty = "water"
             
             #line behind the first river
             elif ((x,y) == (i,i+19) and i<10) or ((x,y)==(i,i+26) and 9<i<14):
-                self.type_empty = "watersideleftW"
+                self.type_sprite = "watersideleftW"
+                self.type_empty = "water"
             elif ((x,y) == (i, i+20) and i<9) or ((x,y)==(i,i+27) and 8<i<13):
-                self.type_empty = "watersideleftD"
+                self.type_sprite = "watersideleftD"
+                self.type_empty = "water"
             elif ((x,y)==(9,i) and 28<i<36):
-                self.type_empty = "watersideupper"
+                self.type_sprite = "watersideupper"
+                self.type_empty = "water"
+
+            elif ((x,y)==(i+31,i) and i<5) or ((x,y)==(i+28,i) and 8<i<12):
+                self.type_sprite = "watersiderightD"
+                self.type_empty = "water"
+            elif ((x,y)==(i+30,i) and i<6) or ((x,y)==(i+27,i) and 8<i<13):
+                self.type_sprite = "watersiderightW"
+                self.type_empty = "water"
+            elif (x,y)==(36,5):
+                self.type_sprite = "watersidecornerA"
+                self.type_empty = "water"
+            elif ((x,y)==(36,i) and 5<i<9):
+                self.type_sprite = "watersideunder"
+                self.type_empty = "water"
+
+            #line behind the second river
+            elif ((x,y)==(i+24,i) and 8<i<16) or ((x,y)==(i+27,i) and i<6):
+                self.type_sprite = "watersideleftD"
+                self.type_empty = "water"
+            elif ((x,y)==(i+25,i) and 8<i<15) or ((x,y)==(i+28,i) and i<6):
+                self.type_sprite = "watersideleftW"
+                self.type_empty = "water"
+            elif ((x,y)==(33,i) and 5<i<9):
+                self.type_sprite = "watersideupper"
+                self.type_empty = "water"
+            
+            #full water in the second river
+            elif ((x,y)==(i+26,i) and 7<i<14) or ((x,y)==(i+27,i) and 6<i<9) or ((x,y)==(i+28,i) and 5<i<9) or ((x,y)==(i+29,i) and i<7):
+                self.type_sprite = "water"
+                self.type_empty = "water"
         
             #full water in the first river
             for j in range (40):
                 if (x,y)==(i,j) and ((i<5 and 11+i<j<19+i) or (4<i<8 and 15+i<j<19+i) or (7<i<10 and 16+i<j<19+i) or (9<i<13 and 16+i<j<26+i) 
                     or (i==13 and 18+i<j<26+i) or (13<i<17 and 19+i<j<26+i) or (i==17 and j==39)):
+                    self.type_sprite = "water"
                     self.type_empty = "water"
+
         
         #river at the bottom
-        for i in range (40):
-
-            #line under the second river
-            if ((x,y)==(i+31,i) and i<5) or ((x,y)==(i+28,i) and 8<i<12):
-                self.type_empty = "watersiderightD"
-            elif ((x,y)==(i+30,i) and i<6) or ((x,y)==(i+27,i) and 8<i<13):
-                self.type_empty = "watersiderightW"
-            elif (x,y)==(36,5):
-                self.type_empty = "watersidecornerA"
-            elif ((x,y)==(36,i) and 5<i<9):
-                self.type_empty = "watersideunder"
-
-            #line behind the second river
-            elif ((x,y)==(i+24,i) and 8<i<16) or ((x,y)==(i+27,i) and i<6):
-                self.type_empty = "watersideleftD"
-            elif ((x,y)==(i+25,i) and 8<i<15) or ((x,y)==(i+28,i) and i<6):
-                self.type_empty = "watersideleftW"
-            elif ((x,y)==(33,i) and 5<i<9):
-                self.type_empty = "watersideupper"
-            
-            #full water in the second river
-            elif ((x,y)==(i+26,i) and 7<i<14) or ((x,y)==(i+27,i) and 6<i<9) or ((x,y)==(i+28,i) and 5<i<9) or ((x,y)==(i+29,i) and i<7):
-                self.type_empty = "water"
+           
             
 
         #select the sprites randomly
-        if (self.type_empty == "rock") or (self.type_empty == "tree") or (self.type_empty == "dirt"):
+        if (self.type_empty == "rock") or (self.type_empty == "tree"):
             aleatoire = randint(1,4)
+        elif (self.type_empty == "dirt"):
+            aleatoire = randint(1, 13)
         else :
             aleatoire = randint(1,2)
-
-        self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_empty + "_" + str(aleatoire) + ".png")
+        super().set_aleatoire(aleatoire)
+        self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(aleatoire) + "_not_up.png")
 
         self.display()
 

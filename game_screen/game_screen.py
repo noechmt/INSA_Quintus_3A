@@ -40,7 +40,7 @@ def game_screen():
     height_wo_panel = HEIGH_SCREEN
     width_wo_panel = WIDTH_SCREEN - (WIDTH_SCREEN/7)
 
-    #taskbar
+#taskbar
     color_brown = (70,46,1)
     bar = pygame.image.load("game_screen/game_screen_sprites/taskbar_background.png")
     SCREEN.blit(pygame.transform.scale(bar, (WIDTH_SCREEN, HEIGH_SCREEN/32)), (0, 0))
@@ -75,6 +75,8 @@ def game_screen():
 
     walker_update_count = 0
     fire_upadte_count = 0
+
+
 
     ##############################
     while run:
@@ -256,17 +258,7 @@ def game_screen():
                     hovered_cell = map.get_cell(
                         hovered_coordinates[0], hovered_coordinates[1])
                     hovered_cell.display()
-                    
-                    if hovered_coordinates != (x, y):
-                        cell_arround = hovered_cell.check_cell_around(Cell)
-                            # for i in map.buildings:
-                            #     if i.type != "ruin":
-                            #         i.display()
-                        for cell in cell_arround:
-                            if isinstance(cell, Building) or isinstance(cell, Empty):
-                                cell.display_around()
-                    #hovered_cell.display_around()
-
+                    hovered_cell.display_around()
                 if map.inMap(x, y) and pos[0] <= width_wo_panel and not selection["is_active"]:
                     hovered_coordinates = (x, y)
                     hovered_cell = map.get_cell(
