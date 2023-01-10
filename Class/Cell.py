@@ -47,13 +47,17 @@ class Cell:  # Une case de la map
     def display(self):
         if self.type_empty  == "tree":
             if self.aleatoire == 1:
-                self.screen.blit(pygame.transform.scale(self.sprite,(self.width, self.height*42/30)), (self.left, self.top-self.height*12/30))
+                self.screen.blit(pygame.transform.scale(
+            self.sprite, (self.width, self.height*42/30)), (self.left, self.top - self.height*12/30))
             elif self.aleatoire == 2:
-                self.screen.blit(pygame.transform.scale(self.sprite,(self.width, self.height*41/30)), (self.left, self.top-self.height*11/30))
+                self.screen.blit(pygame.transform.scale(
+            self.sprite, (self.width, self.height*41/30)), (self.left, self.top - self.height*11/30))
             elif self.aleatoire == 3:
-                self.screen.blit(pygame.transform.scale(self.sprite,(self.width, self.height*44/30)), (self.left, self.top-self.height*14/30))
+                self.screen.blit(pygame.transform.scale(
+            self.sprite, (self.width, self.height*44/30)), (self.left, self.top - self.height*14/30))
             elif self.aleatoire == 4:
-                self.screen.blit(pygame.transform.scale(self.sprite,(self.width, self.height*45/30)), (self.left, self.top-self.height*15/30))
+                self.screen.blit(pygame.transform.scale(
+            self.sprite, (self.width, self.height*45/30)), (self.left, self.top - self.height*15/30))
         elif self.type_empty == "rock":
             self.screen.blit(pygame.transform.scale(self.sprite,(self.width, self.height*35/30)), (self.left, self.top-self.height*5/30))
         
@@ -536,7 +540,7 @@ class Empty(Cell):
         else :
             aleatoire = randint(1,2)
         super().set_aleatoire(aleatoire)
-        self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(aleatoire) + ".png")
+        self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(aleatoire) + "_not_up.png")
 
         self.display()
 
