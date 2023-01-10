@@ -61,7 +61,6 @@ class Cell:  # Une case de la map
         elif self.type_empty == "rock":
             self.screen.blit(pygame.transform.scale(self.sprite,(self.width, self.height*35/30)), (self.left, self.top-self.height*5/30))
         
-
         if(self.type == "well"):
             self.screen.blit(pygame.transform.scale(
             self.sprite, (self.width, self.height*53/30)), (self.left, self.top - self.height*23/30))
@@ -87,20 +86,14 @@ class Cell:  # Une case de la map
         if (self.y+1<40 and (self.map.get_cell(self.x,self.y+1).type_empty != "dirt") and self.map.get_cell(self.x,self.y+1).type != "path"):
             if(self.map.get_cell(self.x,self.y+1).type_empty != "water"):
                 self.map.get_cell(self.x,self.y+1).display()
-                #if(self.map.get_cell(self.x,self.y+1).get_water() and self.map.get_welled() and self.map.get_cell(self.x,self.y+1).type != "well"):
-                    #self.map.get_cell(self.x,self.y+1).display_water()
                 self.map.get_cell(self.x,self.y+1).display_around()
         if (self.x+1<40 and self.map.get_cell(self.x+1, self.y).type_empty != "dirt" and self.map.get_cell(self.x+1, self.y).type != "path"):
             if(self.map.get_cell(self.x+1,self.y).type_empty != "water"):
                 self.map.get_cell(self.x+1, self.y).display()
-                #if(self.map.get_cell(self.x+1, self.y).get_water() and self.map.get_welled() and self.map.get_cell(self.x+1, self.y).type != "well"):
-                    #self.map.get_cell(self.x+1, self.y).display_water()
                 self.map.get_cell(self.x+1, self.y).display_around()
         if (self.x+1<40 and self.y+1<40 and self.map.get_cell(self.x+1, self.y+1).type_empty != "dirt" and self.map.get_cell(self.x+1, self.y+1).type != "path"):
             if(self.map.get_cell(self.x+1,self.y+1).type_empty != "water"):
                 self.map.get_cell(self.x+1, self.y+1).display()
-                #if(self.map.get_cell(self.x+1, self.y+1).get_water() and self.map.get_welled() and self.map.get_cell(self.x+1, self.y+1).type != "well"):
-                    #self.map.get_cell(self.x+1, self.y+1).display_water()
                 self.map.get_cell(self.x+1, self.y+1).display_around()
 
     def handle_zoom(self, zoom_in):
