@@ -25,18 +25,20 @@ class Map:  # Un ensemble de cellule
         self.buildings = []
         self.path_graph = nx.DiGraph()
         self.spawn_cell = self.array[39][19]
-        self.init_path()
+        self.init_map()
         self.wallet = 3000
         self.update_hover = 0
         self.button_activated = {"house": False, "shovel": False, "road": False, "prefecture": False, "engineerpost": False, "well": False}
         self.zoom = 1
 
-    def init_path(self):  # Permet d'initialiser le chemin de terre sur la map.
+    def init_map(self):  # Permet d'initialiser le chemin de terre sur la map.
         for i in range(self.size):
-            # On modifie la valeur des cellules pour représenter le chemin dans la matrice
+                # Initialisation du chemin
             self.array[self.size-m.floor(self.size/3)][i] = Path(self.size-m.floor(
                 self.size/3), i, self.height_land, self.width_land, self.screen, self)
         self.display_map()
+
+
 
     def __str__(self):
         s = f"Map {self.size}*{self.size}\n"
