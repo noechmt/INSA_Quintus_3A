@@ -35,6 +35,9 @@ class Cell:  # Une case de la map
         self.WIDTH_SCREEN, self.HEIGHT_SCREEN = self.screen.get_size()
         self.init_screen_coordonates()
 
+    def update_sprite_size(self):
+        pass
+
     def isBuildable(self):
         return isinstance(self, Empty) and self.type_empty == "dirt"
 
@@ -46,7 +49,8 @@ class Cell:  # Une case de la map
             self.height/2 + self.y * self.height/2 + self.map.offset_top
 
     def display(self):
-        if self.type_empty == "tree":
+        pass
+        """if self.type_empty == "tree":
             if self.aleatoire == 1:
                 self.screen.blit(pygame.transform.scale(
                     self.sprite, (self.width, self.height*42/30)), (self.left, self.top - self.height*12/30))
@@ -78,6 +82,7 @@ class Cell:  # Une case de la map
         if self.map.get_grided():
             self.grid()
         self.display_water()
+"""
 
     def display_water(self):
         if self.water and self.map.get_welled() and self.type != "well":
@@ -106,6 +111,7 @@ class Cell:  # Une case de la map
             self.height /= 1.04
             self.width /= 1.04
         self.init_screen_coordonates()
+        self.update_sprite_size()
         self.display()
 
     def handle_move(self, move, m):
@@ -117,30 +123,6 @@ class Cell:  # Une case de la map
             self.left -= 10 * m
         if move == "left":
             self.left += 10 * m
-        # self.display()
-
-    # def is_hovered(self, pos):
-    #     # Initialize the number of intersections to 0
-    #     intersections = 0
-
-    #     polygon = self.get_points_polygone()
-
-    #     # Iterate over the polygon's sides
-    #     for i in range(len(polygon)):
-    #         # Get the coordinates of the current side
-    #         x1, y1 = polygon[i]
-    #         x2, y2 = polygon[(i + 1) % len(polygon)]
-
-    #         # Check if the line from the point to the edge of the polygon intersects with the current side
-    #         if min(y1, y2) < pos[1] <= max(y1, y2):
-    #             # Calculate the x-coordinate of the intersection
-    #             x = (pos[1] - y1) * (x2 - x1) / (y2 - y1) + x1
-
-    #             # If the x-coordinate of the intersection is greater than the point's x-coordinate, increment the number of intersections
-    #             if x > pos[0]:
-    #                 intersections += 1
-    #     # If the number of intersections is odd, the point is inside the polygon
-    #     return intersections % 2 == 1
 
     def handle_hover_button(self):
         if (self.map.get_housed()):
@@ -304,26 +286,31 @@ sprite_turn_verti_right = pygame.image.load(
 class Path(Cell):
     def __init__(self, x, y, height, width, screen, map, path_level=0):
         super().__init__(x, y, height, width, screen, map)
-        self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/road_straight_verti.png")
+        self.sprite = sprite_verti
+        self.sprite_display = ""
         self.level = path_level
         self.handle_sprites()
-        self.display()
-        self.grid()
+        self.update_sprite_size()
         self.type = "path"
         # Get an array of all neighbor path
         cell_around = self.check_cell_around(Path)
         # Loop through this array
         for i in cell_around:
-            print("Add edge from "+str((self.x, self.y))+" to "+str((i.x, i.y)))
-            self.map.path_graph.add_edge(self, i)
-            print("Add edge from "+str((i.x, i.y)) +
-                  " to "+str((self.x, self.y)))
             self.map.path_graph.add_edge(i, self)
 
         cell_around = self.check_cell_around(House)
         for j in cell_around:
             self.map.path_graph.add_edge(self, j)
+
+    def update_sprite_size(self):
+        self.sprite_display = pygame.transform.scale(
+            self.sprite, (self.width+2*sqrt(2), self.height+2))
+
+    def display(self):
+        self.screen.blit(self.sprite_display, (self.left-sqrt(2), self.top-1))
+        if self.map.get_grided():
+            self.grid()
+        self.display_water()
 
     def handle_sprites(self, r=0):
         if r < 2:
@@ -445,6 +432,7 @@ class Path(Cell):
 
     def set_sprite(self, sprite):
         self.sprite = sprite
+        self.update_sprite_size()
         self.display()
 
     def __str__(self):
@@ -550,10 +538,54 @@ class Empty(Cell):
         super().set_aleatoire(aleatoire)
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(aleatoire) + "_not_up.png")
+        self.sprite_display = ""
+        self.update_sprite_size()
         self.display()
 
     def __str__(self):
         return self.type_empty
+
+    def update_sprite_size(self):
+        if self.type_empty == "tree":
+            if self.aleatoire == 1:
+                self.sprite_display = pygame.transform.scale(
+                    self.sprite, (self.width, self.height*42/30))
+            elif self.aleatoire == 2:
+                self.sprite_display = pygame.transform.scale(
+                    self.sprite, (self.width, self.height*41/30))
+            elif self.aleatoire == 3:
+                self.sprite_display = pygame.transform.scale(
+                    self.sprite, (self.width, self.height*44/30))
+            elif self.aleatoire == 4:
+                self.sprite_display = pygame.transform.scale(
+                    self.sprite, (self.width, self.height*45/30))
+        elif self.type_empty == "rock":
+            self.sprite_display = pygame.transform.scale(
+                self.sprite, (self.width, self.height*35/30))
+        else:
+            self.sprite_display = pygame.transform.scale(
+                self.sprite, (self.width+2*sqrt(2), self.height+2))
+
+    def display(self):
+        if self.type_empty == "tree":
+            if self.aleatoire == 1:
+                self.screen.blit(
+                    self.sprite_display, (self.left, self.top - self.height*12/30))
+            elif self.aleatoire == 2:
+                self.screen.blit(
+                    self.sprite_display, (self.left, self.top - self.height*11/30))
+            elif self.aleatoire == 3:
+                self.screen.blit(
+                    self.sprite_display, (self.left, self.top - self.height*14/30))
+            elif self.aleatoire == 4:
+                self.screen.blit(
+                    self.sprite_display, (self.left, self.top - self.height*15/30))
+        elif self.type_empty == "rock":
+            self.screen.blit(
+                self.sprite_display, (self.left, self.top-self.height*5/30))
+        else:
+            self.screen.blit(self.sprite_display,
+                             (self.left-sqrt(2), self.top-1))
 
     def clear(self):
         if self.type_empty == "tree":
@@ -576,7 +608,6 @@ class Building(Cell):  # un fils de cellule (pas encore sûr de l'utilité)
         self.destroyed = False
         cell_around = self.check_cell_around(Path)
         for j in cell_around:
-            print("Add edge from "+str((self.x, self.y))+" to "+str((j.x, j.y)))
             self.map.path_graph.add_edge(j, self)
 
     def destroy(self):
