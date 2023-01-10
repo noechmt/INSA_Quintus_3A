@@ -9,6 +9,7 @@ from Class.Panel import Panel
 
 # draw a rectangle with an opacity option
 
+import sys
 
 def draw_rect_alpha(surface, color, rect):
     shape_surf = pygame.Surface(pygame.Rect(rect).size, pygame.SRCALPHA)
@@ -37,8 +38,21 @@ def game_screen():
 
     # Dims without left panel
     height_wo_panel = HEIGH_SCREEN
-    width_panel = WIDTH_SCREEN / 7.5
-    width_wo_panel = WIDTH_SCREEN - width_panel
+    width_wo_panel = WIDTH_SCREEN - (WIDTH_SCREEN/7)
+
+    #taskbar
+    color_brown = (70,46,1)
+    bar = pygame.image.load("game_screen/game_screen_sprites/taskbar_background.png")
+    SCREEN.blit(pygame.transform.scale(bar, (WIDTH_SCREEN, HEIGH_SCREEN/32)), (0, 0))
+    taskbarfont = pygame.font.SysFont('courriernew',25) #police, size
+    file_text = taskbarfont.render('File', False, color_brown)
+    options_text = taskbarfont.render('Options', False, color_brown)
+    help_text = taskbarfont.render('Help', False, color_brown)
+    advisors_text = taskbarfont.render('Advisors', False, color_brown)
+    SCREEN.blit(file_text, (WIDTH_SCREEN/60,HEIGH_SCREEN/256))
+    SCREEN.blit(options_text, (WIDTH_SCREEN/16,HEIGH_SCREEN/256))
+    SCREEN.blit(help_text, (WIDTH_SCREEN/7.5, HEIGH_SCREEN/256))
+    SCREEN.blit(advisors_text, (WIDTH_SCREEN/5.5, HEIGH_SCREEN/256))
 
     fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
     run = True
@@ -241,13 +255,16 @@ def game_screen():
                 if hovered_cell:
                     hovered_cell = map.get_cell(
                         hovered_coordinates[0], hovered_coordinates[1])
-                    for i in hovered_cell.check_cell_around(Cell):
-                        i.display()
                     hovered_cell.display()
-                    if hovered_coordinates != (x, y) and (isinstance(hovered_cell, Building) or len(hovered_cell.check_cell_around(Building)) != 0):
-                        for i in map.buildings:
-                            if i.type != "ruin":
-                                i.display()
+                    
+                    if hovered_coordinates != (x, y):
+                        cell_arround = hovered_cell.check_cell_around(Cell)
+                            # for i in map.buildings:
+                            #     if i.type != "ruin":
+                            #         i.display()
+                        for cell in cell_arround:
+                            if isinstance(cell, Building) or isinstance(cell, Empty):
+                                cell.display_around()
                     #hovered_cell.display_around()
 
                 if map.inMap(x, y) and pos[0] <= width_wo_panel and not selection["is_active"]:
