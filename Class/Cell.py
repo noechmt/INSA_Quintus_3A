@@ -2,7 +2,7 @@ from Class.Walker import *
 from Class.RiskEvent import *
 import pygame
 from random import *
-import math
+from math import sqrt
 import random
 
 def draw_polygon_alpha(surface, color, points):
@@ -73,7 +73,7 @@ class Cell:  # Une case de la map
             self.sprite, (self.width, self.height*38/30)), (self.left, self.top - self.height*8/30))
         else:
             self.screen.blit(pygame.transform.scale(
-                self.sprite, (self.width, self.height)), (self.left, self.top))
+                self.sprite, (self.width+2*sqrt(2), self.height+2)), (self.left-sqrt(2), self.top-1))
         if self.map.get_grided():
             self.grid()
         self.display_water()
