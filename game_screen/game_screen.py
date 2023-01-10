@@ -40,20 +40,10 @@ def game_screen():
     height_wo_panel = HEIGH_SCREEN
     width_wo_panel = WIDTH_SCREEN - (WIDTH_SCREEN/7)
 
-#taskbar
+    #taskbar part1
     color_brown = (70,46,1)
     bar = pygame.image.load("game_screen/game_screen_sprites/taskbar_background.png")
-    SCREEN.blit(pygame.transform.scale(bar, (WIDTH_SCREEN, HEIGH_SCREEN/32)), (0, 0))
-    taskbarfont = pygame.font.SysFont('courriernew',25) #police, size
-    file_text = taskbarfont.render('File', False, color_brown)
-    options_text = taskbarfont.render('Options', False, color_brown)
-    help_text = taskbarfont.render('Help', False, color_brown)
-    advisors_text = taskbarfont.render('Advisors', False, color_brown)
-    SCREEN.blit(file_text, (WIDTH_SCREEN/60,HEIGH_SCREEN/256))
-    SCREEN.blit(options_text, (WIDTH_SCREEN/16,HEIGH_SCREEN/256))
-    SCREEN.blit(help_text, (WIDTH_SCREEN/7.5, HEIGH_SCREEN/256))
-    SCREEN.blit(advisors_text, (WIDTH_SCREEN/5.5, HEIGH_SCREEN/256))
-
+    
     fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
     run = True
     clock = pygame.time.Clock()
@@ -110,6 +100,23 @@ def game_screen():
                 speed_counter_text = fps_font.render(
                     f"{speed * 100:.0f}%", 1, (255, 255, 255))
                 SCREEN.blit(speed_counter_text, (speed_left, speed_top))
+        
+        #taskbar part2
+        SCREEN.blit(pygame.transform.scale(bar, (WIDTH_SCREEN, HEIGH_SCREEN/32)), (0, 0))
+        taskbarfont = pygame.font.SysFont('courriernew',25) #police, size
+        file_text = taskbarfont.render('File', False, color_brown)
+        options_text = taskbarfont.render('Options', False, color_brown)
+        help_text = taskbarfont.render('Help', False, color_brown)
+        advisors_text = taskbarfont.render('Advisors', False, color_brown)
+        SCREEN.blit(file_text, (WIDTH_SCREEN/60,HEIGH_SCREEN/256))
+        SCREEN.blit(options_text, (WIDTH_SCREEN/16,HEIGH_SCREEN/256))
+        SCREEN.blit(help_text, (WIDTH_SCREEN/7.5, HEIGH_SCREEN/256))
+        SCREEN.blit(advisors_text, (WIDTH_SCREEN/5.5, HEIGH_SCREEN/256))
+
+        
+
+
+
 
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
