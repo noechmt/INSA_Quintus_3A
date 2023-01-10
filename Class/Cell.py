@@ -4,6 +4,7 @@ import pygame
 from random import *
 from math import sqrt
 import random
+import time
 
 
 def draw_polygon_alpha(surface, color, points):
@@ -104,11 +105,11 @@ class Cell:  # Une case de la map
 
     def handle_zoom(self, zoom_in):
         if zoom_in:
-            self.height *= 1.04
-            self.width *= 1.04
+            self.height *= 1.1
+            self.width *= 1.1
         else:
-            self.height /= 1.04
-            self.width /= 1.04
+            self.height /= 1.1
+            self.width /= 1.1
         self.init_screen_coordonates()
         self.update_sprite_size()
         self.display()

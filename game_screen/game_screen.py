@@ -75,6 +75,7 @@ def game_screen():
     hovered_cell = None
     zoom = 1
     move = 1
+    zoom_update = 0
 
     walker_update_count = 0
     fire_upadte_count = 0
@@ -111,7 +112,7 @@ def game_screen():
                 speed_counter_text = fps_font.render(
                     f"{speed * 100:.0f}%", 1, (255, 255, 255))
                 SCREEN.blit(speed_counter_text, (speed_left, speed_top))
-
+        zoom_update += 1
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
 
@@ -206,25 +207,26 @@ def game_screen():
                                 f"{speed * 100:.0f}%", 1, (255, 255, 255))
                             SCREEN.blit(speed_counter_text,
                                         (speed_left, speed_top))
-
-                if event.button == 4:
-                    if zoom <= 1.25:
-                        zoom += 0.01
-                        map.handle_zoom(1)
-                        panel.display()
-                        speed_counter_text = fps_font.render(
-                            f"{speed * 100:.0f}%", 1, (255, 255, 255))
-                        SCREEN.blit(speed_counter_text,
-                                    (speed_left, speed_top))
-                if event.button == 5:
-                    if zoom >= 0.95:
-                        zoom -= 0.01
-                        map.handle_zoom(0)
-                        panel.display()
-                        speed_counter_text = fps_font.render(
-                            f"{speed * 100:.0f}%", 1, (255, 255, 255))
-                        SCREEN.blit(speed_counter_text,
-                                    (speed_left, speed_top))
+                if zoom_update > 3:
+                    if event.button == 4:
+                        if zoom < 1.7:
+                            zoom += 0.1
+                            map.handle_zoom(1)
+                            panel.display()
+                            speed_counter_text = fps_font.render(
+                                f"{speed * 100:.0f}%", 1, (255, 255, 255))
+                            SCREEN.blit(speed_counter_text,
+                                        (speed_left, speed_top))
+                    if event.button == 5:
+                        if zoom > 0.8:
+                            zoom -= 0.1
+                            map.handle_zoom(0)
+                            panel.display()
+                            speed_counter_text = fps_font.render(
+                                f"{speed * 100:.0f}%", 1, (255, 255, 255))
+                            SCREEN.blit(speed_counter_text,
+                                        (speed_left, speed_top))
+                    zoom_update = 0
 
             if event.type == pygame.MOUSEBUTTONUP:
                 if selection["is_active"]:
