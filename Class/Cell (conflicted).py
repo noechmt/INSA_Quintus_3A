@@ -562,8 +562,8 @@ class Empty(Cell):
             self.sprite = pygame.image.load(
                 "game_screen/game_screen_sprites/" + self.type_sprite + "_0_not_up.png")
             self.map.wallet -= 2
-        self.display()
-        # To-do display around
+            self.display()
+            # To-do display around
 
     def canBuild(self):
         return self.type_empty == "dirt"
