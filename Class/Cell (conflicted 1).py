@@ -49,6 +49,7 @@ class Cell:  # Une case de la map
             self.height/2 + self.y * self.height/2 + self.map.offset_top
 
     def display(self):
+        pass
         """if self.type_empty == "tree":
             if self.aleatoire == 1:
                 self.screen.blit(pygame.transform.scale(
@@ -629,23 +630,11 @@ class House(Building):  # la maison fils de building (?)
         # Temporary
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/house_" + str(self.level) + ".png")
-        self.sprite_display = ""
-        self.update_sprite_size()
         self.type = "house"
         self.display()
 
     def __str__(self):
         return f"House { self.level}"
-
-    def update_sprite_size(self):
-        self.sprite_display = pygame.transform.scale(
-            self.sprite, (self.width+2*sqrt(2), self.height+2))
-
-    def display(self):
-        self.screen.blit(self.sprite_display, (self.left-sqrt(2), self.top-1))
-        if self.map.get_grided():
-            self.grid()
-        self.display_water()
 
     def nextLevel(self):
         self.level += 1
@@ -685,9 +674,6 @@ class Well(Building):
     def display(self):
         self.screen.blit(self.sprite_display,
                          (self.left, self.top - self.height*23/30))
-        if self.map.get_grided():
-            self.grid()
-        self.display_water()
 
     def __str__(self):
         return "Puit"
@@ -703,17 +689,7 @@ class Prefecture(Building):
         self.risk = RiskEvent("collapse", self)
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/prefecture.png")
-        self.sprite_display = ""
-        self.update_sprite_size()
         self.type = "prefecture"
-
-    def update_sprite_size(self):
-        self.sprite_display = pygame.transform.scale(
-            self.sprite, (self.width, self.height*38/30))
-
-    def display(self):
-        self.screen.blit(self.sprite_display,
-                         (self.left, self.top - self.height*8/30))
 
     def __str__(self):
         return f"Prefecture { self.employees}"
@@ -733,19 +709,11 @@ class EngineerPost(Building):
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/engineerpost.png")
         self.sprite_display = ""
-        self.update_sprite_size()
         self.type = "engineer post"
 
     def display(self):
-        self.screen.blit(
-            self.sprite_display, (self.left, self.top - self.height*20/30))
-        if self.map.get_grided():
-            self.grid()
-        self.display_water()
-
-    def update_sprite_size(self):
-        self.sprite_display = pygame.transform.scale(
-            self.sprite, (self.width, self.height*50/30))
+        self.screen.blit(pygame.transform.scale(
+            self.sprite, (self.width, self.height*50/30)), (self.left, self.top - self.height*20/30))
 
     def __str__(self):
         return "Engineer Post"
