@@ -28,12 +28,7 @@ class Map:  # Un ensemble de cellule
         self.init_path()
         self.wallet = 3000
         self.update_hover = 0
-        self.road_button_activated = False
-        self.house_button_activated = False
-        self.shovel_button_activated = False
-        self.prefecture_button_activated = False
-        self.engineerpost_button_activated = False
-        self.well_button_activated = False
+        self.button_activated = {"house": False, "shovel": False, "road": False, "prefecture": False, "engineerpost": False, "well": False}
         self.zoom = 1
 
     def init_path(self):  # Permet d'initialiser le chemin de terre sur la map.
@@ -57,61 +52,12 @@ class Map:  # Un ensemble de cellule
         return s
 
 
-    def handle_road_button(self):
-        self.road_button_activated = True
-        self.house_button_activated = False
-        self.shovel_button_activated = False
-        self.prefecture_button_activated = False
-        self.engineerpost_button_activated = False
-        self.well_button_activated = False
-
-    def handle_house_button(self):
-        self.road_button_activated = False
-        self.house_button_activated = True
-        self.shovel_button_activated = False
-        self.prefecture_button_activated = False
-        self.engineerpost_button_activated = False
-        self.well_button_activated = False
-
-    def handle_shovel_button(self):
-        self.road_button_activated = False
-        self.house_button_activated = False
-        self.shovel_button_activated = True
-        self.prefecture_button_activated = False
-        self.engineerpost_button_activated = False
-        self.well_button_activated = False
-
-    def handle_prefecture_button(self):
-        self.road_button_activated = False
-        self.house_button_activated = False
-        self.shovel_button_activated = False
-        self.prefecture_button_activated = True
-        self.engineerpost_button_activated = False
-        self.well_button_activated = False
-
-    def handle_engineerpost_button(self):
-        self.road_button_activated = False
-        self.house_button_activated = False
-        self.shovel_button_activated = False
-        self.prefecture_button_activated = False
-        self.engineerpost_button_activated = True
-        self.well_button_activated = False
-
-    def handle_well_button(self):
-        self.road_button_activated = False
-        self.house_button_activated = False
-        self.shovel_button_activated = False
-        self.prefecture_button_activated = False
-        self.engineerpost_button_activated = False
-        self.well_button_activated = True
+    def handle_button(self, button):
+        self.button_activated = dict.fromkeys(self.button_activated, False)
+        self.button_activated[button] = True
 
     def handle_esc(self):
-        self.road_button_activated = False
-        self.house_button_activated = False
-        self.shovel_button_activated = False
-        self.prefecture_button_activated = False
-        self.engineerpost_button_activated = False
-        self.well_button_activated = False
+        self.button_activated = dict.fromkeys(self.button_activated, False)
 
     def handle_zoom(self, zoom_in):
         self.screen.fill((0, 0, 0))
@@ -176,23 +122,14 @@ class Map:  # Un ensemble de cellule
             if not i.risk.happened : i.risk.riskIncrease()
 
     def update_fire(self) :
-
-        def threading_update(i):
+        for i in self.buildings :
             if i.risk.happened and i.risk.type == "fire":
                 i.risk.burn()
 
-        for i in self.buildings :
-            thread.start_new_thread(threading_update, (i,))
-
     def update_collapse(self) : 
-
-        def threading_update(i):
+        for i in self.buildings : 
             if i.risk.happened and i.risk.type == "collapse" : 
                 i.risk.collapse()
-
-        for i in self.buildings : 
-            thread.start_new_thread(threading_update, (i,))
-
 
 
     def set_cell_array(self, x, y, cell):
@@ -203,24 +140,6 @@ class Map:  # Un ensemble de cellule
         if (x < 0 or x >= 40) or (y < 0 or y >= 40):
             return None
         return self.array[x][y]
-
-    # def handle_hovered_cell(self, pos):
-    #     # Goal of using update_hover :
-    #     # Pygame uses almost all of the ressources with the graphics
-    #     # And updating the hovering case doesn't need to be at 60 per seconds
-    #     # Only 3, 5, or maybe even is engough
-    #     # It uses way less ressources and doesn't have a visual effect
-    #     self.update_hover += 1
-    #     if (self.update_hover == 10):
-    #         self.update_hover = 0
-    #         for x in range(self.size):
-    #             for y in range(self.size):
-    #                 self.get_cell(x, y).handle_hover_button(pos)
-
-    def handle_click_cells(self, pos):
-        for x in range(self.size):
-            for y in range(self.size):
-                self.get_cell(x, y).handle_click_cell(pos)
 
     def display(self):
         print(np.array([[(self.array[i][j].type_of_cell)
@@ -252,22 +171,22 @@ class Map:  # Un ensemble de cellule
                     self.array[x][y].display()
 
     def get_housed(self):
-        return self.house_button_activated
+        return self.button_activated["house"]
 
     def get_shoveled(self):
-        return self.shovel_button_activated
+        return self.button_activated["shovel"]
 
     def get_road_button_activated(self):
-        return self.road_button_activated
+        return self.button_activated["road"]
 
     def get_prefectured(self):
-        return self.prefecture_button_activated
+        return self.button_activated["prefecture"]
 
     def get_engineered(self):
-        return self.engineerpost_button_activated
+        return self.button_activated["engineerpost"]
 
     def get_welled(self):
-        return self.well_button_activated
+        return self.button_activated["well"]
 
     def get_height_land(self):
         return self.height_land

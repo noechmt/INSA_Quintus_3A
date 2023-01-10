@@ -66,7 +66,6 @@ class Cell:  # Une case de la map
                                     self.get_points_polygone())
 
     def display_around(self):
-        
         if (self.y+1<39 and self.map.get_cell(self.x,self.y+1).type != "dirt" and self.map.get_cell(self.x,self.y+1).type != "path"):
             self.map.get_cell(self.x,self.y+1).display()
             self.map.get_cell(self.x,self.y+1).display_around()
@@ -98,33 +97,30 @@ class Cell:  # Une case de la map
             self.left += 10 * m
         # self.display()
 
-    def is_hovered(self, pos):
-        # Initialize the number of intersections to 0
-        intersections = 0
+    # def is_hovered(self, pos):
+    #     # Initialize the number of intersections to 0
+    #     intersections = 0
 
-        polygon = self.get_points_polygone()
+    #     polygon = self.get_points_polygone()
 
-        # Iterate over the polygon's sides
-        for i in range(len(polygon)):
-            # Get the coordinates of the current side
-            x1, y1 = polygon[i]
-            x2, y2 = polygon[(i + 1) % len(polygon)]
+    #     # Iterate over the polygon's sides
+    #     for i in range(len(polygon)):
+    #         # Get the coordinates of the current side
+    #         x1, y1 = polygon[i]
+    #         x2, y2 = polygon[(i + 1) % len(polygon)]
 
-            # Check if the line from the point to the edge of the polygon intersects with the current side
-            if min(y1, y2) < pos[1] <= max(y1, y2):
-                # Calculate the x-coordinate of the intersection
-                x = (pos[1] - y1) * (x2 - x1) / (y2 - y1) + x1
+    #         # Check if the line from the point to the edge of the polygon intersects with the current side
+    #         if min(y1, y2) < pos[1] <= max(y1, y2):
+    #             # Calculate the x-coordinate of the intersection
+    #             x = (pos[1] - y1) * (x2 - x1) / (y2 - y1) + x1
 
-                # If the x-coordinate of the intersection is greater than the point's x-coordinate, increment the number of intersections
-                if x > pos[0]:
-                    intersections += 1
-        # If the number of intersections is odd, the point is inside the polygon
-        return intersections % 2 == 1
+    #             # If the x-coordinate of the intersection is greater than the point's x-coordinate, increment the number of intersections
+    #             if x > pos[0]:
+    #                 intersections += 1
+    #     # If the number of intersections is odd, the point is inside the polygon
+    #     return intersections % 2 == 1
 
     def handle_hover_button(self):
-        #is_hovered = self.is_hovered(pos)
-        # if is_hovered and not self.hovered:
-        #self.hovered = True
         if (self.map.get_housed()):
             house_sprite = pygame.image.load(
                     "game_screen/game_screen_sprites/house_0.png")
@@ -142,16 +138,6 @@ class Cell:  # Une case de la map
         else:
             draw_polygon_alpha(self.screen, (0, 0, 0, 85),
                                self.get_points_polygone())
-        # if not is_hovered and self.hovered:
-        #     self.hovered = False
-        #     self.display()
-        #     self.grid()
-
-    # def handle_click_cell(self, pos):
-    #     if self.is_hovered(pos) and isinstance(self, Empty) and self.map.road_button_activated:
-    #         self.map.set_cell_array(self.x, self.y, Path(self.x, self.y,
-    #                                                      self.height, self.width, self.screen, self.map))
-    #         self.map.get_cell(self.x, self.y).handle_sprites()
 
     def get_points_polygone(self):
         return ((self.left + self.width / 2, self.top), (self.left, self.top + self.height / 2),

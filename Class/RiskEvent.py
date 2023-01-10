@@ -22,7 +22,7 @@ class RiskEvent():
         else : 
             self.riskCounter += rd.randint(0,1)
 
-        if self.riskCounter >= 2000 :
+        if self.riskCounter >= 200 :
             self.happened = True
             self.building.type = "ruin"
             if self.type == "fire" or self.type == "collapse" : self.building.sprite = pygame.image.load("risks_sprites/house_fire/fire_8.png") # Au cas où il faut changer de sprite pour le collapse
@@ -69,7 +69,7 @@ class RiskEvent():
                 i.type = "ruin"
                 i.sprite = pygame.image.load("risks_sprites/house_fire/fire_8.png")
         
-    def collapse(self) : 
+    def collapse(self) :
         if not self.happened or self.building.destroyed :
             return
         self.building.destroyed = True

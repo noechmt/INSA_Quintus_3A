@@ -29,6 +29,9 @@ class Button():
             screen.blit(text, (self.left + (self.width/2 - text.get_width()/2),
                         self.top + ((self.height/2 - text.get_height()/2))))
 
+    def change_image(self, image):
+        self.image = image
+
     def is_hovered(self, pos):
         # Pos is the mouse position or a tuple of (x,y) coordinates
         if pos[0] > self.left and pos[0] < self.left + self.width:
@@ -62,5 +65,3 @@ class Button():
         if not self.is_hovered(pos) and self.darken:
             self.darken = False
             self.draw(screen)
-
-    
