@@ -41,8 +41,19 @@ def game_screen():
     width_wo_panel = WIDTH_SCREEN - (WIDTH_SCREEN/7)
 
     #taskbar part1
-    color_brown = (70,46,1)
+    color_brown = (47, 27, 12)
+    color_white = (255, 255, 255)
+
     bar = pygame.image.load("game_screen/game_screen_sprites/taskbar_background.png")
+    black_background = pygame.image.load("game_screen/game_screen_sprites/taskbar_black_background.png")
+
+    taskbarfont = pygame.font.SysFont('courriernew',25) #police, size
+    file_text = taskbarfont.render('File', False, color_brown)
+    options_text = taskbarfont.render('Options', False, color_brown)
+    help_text = taskbarfont.render('Help', False, color_brown)
+    advisors_text = taskbarfont.render('Advisors', False, color_brown)
+
+    pop_text = taskbarfont.render('Pop', False, color_white) #a changer
     
     fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
     run = True
@@ -103,17 +114,20 @@ def game_screen():
         
         #taskbar part2
         SCREEN.blit(pygame.transform.scale(bar, (WIDTH_SCREEN, HEIGH_SCREEN/32)), (0, 0))
-        taskbarfont = pygame.font.SysFont('courriernew',25) #police, size
-        file_text = taskbarfont.render('File', False, color_brown)
-        options_text = taskbarfont.render('Options', False, color_brown)
-        help_text = taskbarfont.render('Help', False, color_brown)
-        advisors_text = taskbarfont.render('Advisors', False, color_brown)
-        SCREEN.blit(file_text, (WIDTH_SCREEN/60,HEIGH_SCREEN/256))
-        SCREEN.blit(options_text, (WIDTH_SCREEN/16,HEIGH_SCREEN/256))
-        SCREEN.blit(help_text, (WIDTH_SCREEN/7.5, HEIGH_SCREEN/256))
-        SCREEN.blit(advisors_text, (WIDTH_SCREEN/5.5, HEIGH_SCREEN/256))
-
+        SCREEN.blit(black_background, (WIDTH_SCREEN*35/100, HEIGH_SCREEN/256))
+        SCREEN.blit(black_background, (WIDTH_SCREEN*47/100, HEIGH_SCREEN/256))
+        SCREEN.blit(black_background, (WIDTH_SCREEN*65/100, HEIGH_SCREEN/256))
+        SCREEN.blit(black_background, (WIDTH_SCREEN*85/100, HEIGH_SCREEN/256))
         
+        SCREEN.blit(file_text, (WIDTH_SCREEN*2/100,HEIGH_SCREEN/256))
+        SCREEN.blit(options_text, (WIDTH_SCREEN*6/100,HEIGH_SCREEN/256))
+        SCREEN.blit(help_text, (WIDTH_SCREEN*13/100, HEIGH_SCREEN/256))
+        SCREEN.blit(advisors_text, (WIDTH_SCREEN*18/100, HEIGH_SCREEN/256))
+
+        SCREEN.blit(pop_text, (WIDTH_SCREEN*50/100, HEIGH_SCREEN/250))
+
+
+
 
 
 
