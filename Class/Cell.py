@@ -596,7 +596,7 @@ class Empty(Cell):
             self.type_empty = "dirt"
             self.type_sprite = "dirt"
             self.sprite = pygame.image.load(
-                "game_screen/game_screen_sprites/" + self.type_sprite + "_0.png")
+                "game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(self.aleatoire) + ".png")
             self.map.wallet -= 2
         self.update_sprite_size()
         self.display()
