@@ -30,6 +30,8 @@ class Map:  # Un ensemble de cellule
         self.update_hover = 0
         self.button_activated = {"house": False, "shovel": False, "road": False, "prefecture": False, "engineerpost": False, "well": False}
         self.zoom = 1
+        self.sound_effect = {"extinguish" : pygame.mixer.Sound("audio/water_bucket.wav"),"cooling" : pygame.mixer.Sound("audio/cooling_fizz.wav"),
+                            "break": pygame.mixer.Sound("audio/break.wav")}
 
     def init_path(self):  # Permet d'initialiser le chemin de terre sur la map.
         for i in range(self.size):

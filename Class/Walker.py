@@ -208,6 +208,7 @@ class Prefect(Walker) :
         super().__init__("prefect" , current_prefecture, True)
         self.current_building = current_prefecture
         self.extinguishCounter = 0
+        self.waterCounter = 0
         self.isWorking = False
         self.orientation = None
         # self.walker_sprites = dict((k,pygame.image.load("walker_sprites/prefect_sprites/prefect_" + k + ".png")) for k in ["top","bot","left","right"])
@@ -219,6 +220,8 @@ class Prefect(Walker) :
         for i in self.prefect_working_sprites :
             for j in range(6) : 
                 self.prefect_working_sprites[i][j] = pygame.image.load("walker_sprites/prefect_water_sprites/"+ i +"/prefect_"+ str(j)  +".png")
+        
+        
 
 
     def __str__(self):
@@ -279,9 +282,16 @@ class Prefect(Walker) :
         if self.extinguishCounter < 36 : 
             self.currentCell.display()
             self.screen.blit(pygame.transform.scale(self.prefect_working_sprites[self.orientation][self.extinguishCounter%6], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
-            print("working...")
+            # print("working...")
+            if self.waterCounter > 5 :
+                self.building.map.sound_effect["extinguish"].set_volume(0.2)
+                self.building.map.sound_effect["extinguish"].play()
+                self.waterCounter = 0
+            self.waterCounter += 1
             self.extinguishCounter += 1
         else :
+            self.building.map.sound_effect["cooling"].set_volume(0.2)
+            self.building.map.sound_effect["cooling"].play()
             self.extinguishCounter = 0
             self.current_building.map.buildings[0].risk.fireCounter = 0
             self.current_building.map.buildings[0].destroyed = True

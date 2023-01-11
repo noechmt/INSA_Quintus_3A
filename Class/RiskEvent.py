@@ -53,6 +53,8 @@ class RiskEvent():
             self.building.destroyed = True
             self.building.map.buildings.remove(self.building)
             self.update_sprites_around()
+            self.building.map.sound_effect["cooling"].set_volume(0.2)
+            self.building.map.sound_effect["cooling"].play()
             
         else : 
             self.building.screen.blit(pygame.transform.scale(self.fire_sprites[self.fireCounter%8], (self.building.width, self.building.height)), (self.building.left, self.building.top))
@@ -77,6 +79,8 @@ class RiskEvent():
         self.building.screen.blit(pygame.transform.scale(self.fire_sprites[8], (self.building.width, self.building.height)), (self.building.left, self.building.top))
         
         self.update_sprites_around()
+        self.building.map.sound_effect["break"].set_volume(0.2)
+        self.building.map.sound_effect["break"].play()
         self.building.map.buildings.remove(self.building)
 
     def resetEvent(self) :

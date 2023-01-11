@@ -27,6 +27,12 @@ def game_screen():
     # Re-initialize the window
     SCREEN.fill((0, 0, 0))
 
+    pygame.mixer.init()
+    pygame.mixer.music.load("audio/tunic_ost.wav")
+    pygame.mixer.music.play(-1)
+    # print(pygame.mixer.music.get_volume())
+    pygame.mixer.music.set_volume(0.05)
+
     pygame.display.set_caption("Quintus III")
     WIDTH_SCREEN, HEIGH_SCREEN = SCREEN.get_size()
     height_land = HEIGH_SCREEN/60
