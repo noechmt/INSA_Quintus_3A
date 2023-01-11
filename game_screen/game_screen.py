@@ -84,30 +84,31 @@ def game_screen():
     while run:
         pos = pygame.mouse.get_pos()
         if pos[1] <= 60:
-            map.offset_top += 10*(3 - pos[1] / 20)
-            map.handle_move("up", 3 - pos[1] / 20)
+            map.offset_top += 10*(3 - pos[1] / 20)*zoom
+            map.handle_move("up", (3 - pos[1] / 20)*zoom)
             panel.display()
             speed_counter_text = fps_font.render(
                 f"{speed * 100:.0f}%", 1, (255, 255, 255))
             SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         if pos[1] >= HEIGH_SCREEN - 60:
-            map.offset_top -= 10*(3 - (HEIGH_SCREEN - pos[1]) / 20)
-            map.handle_move("down", 3 - (HEIGH_SCREEN - pos[1]) / 20)
+            map.offset_top -= 10*(3 - (HEIGH_SCREEN - pos[1]) / 20)*zoom
+            map.handle_move("down", (3 - (HEIGH_SCREEN - pos[1]) / 20) * zoom)
             panel.display()
             speed_counter_text = fps_font.render(
                 f"{speed * 100:.0f}%", 1, (255, 255, 255))
             SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         if pos[0] <= 60:
-            map.offset_left -= 10*(3 - pos[0] / 20)
-            map.handle_move("left", 3 - pos[0] / 20)
+            map.offset_left -= 10*(3 - pos[0] / 20)*zoom
+            map.handle_move("left", (3 - pos[0] / 20)*zoom)
             panel.display()
             speed_counter_text = fps_font.render(
                 f"{speed * 100:.0f}%", 1, (255, 255, 255))
             SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         if pos[0] >= WIDTH_SCREEN - 60:
             if not panel.get_road_button().is_hovered(pos) and not panel.get_well_button().is_hovered(pos):
-                map.offset_left += 10*(3 - (WIDTH_SCREEN - pos[0]) / 20)
-                map.handle_move("right", 3 - (WIDTH_SCREEN - pos[0]) / 20)
+                map.offset_left += 10*(3 - (WIDTH_SCREEN - pos[0]) / 20)*zoom
+                map.handle_move(
+                    "right", (3 - (WIDTH_SCREEN - pos[0]) / 20) * zoom)
                 panel.display()
                 speed_counter_text = fps_font.render(
                     f"{speed * 100:.0f}%", 1, (255, 255, 255))

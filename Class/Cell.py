@@ -538,7 +538,7 @@ class Empty(Cell):
             aleatoire = randint(1, 2)
         super().set_aleatoire(aleatoire)
         self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(aleatoire) + "_not_up.png")
+            "game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(aleatoire) + ".png")
         self.sprite_display = ""
         self.update_sprite_size()
         self.display()
@@ -596,7 +596,7 @@ class Empty(Cell):
             self.type_empty = "dirt"
             self.type_sprite = "dirt"
             self.sprite = pygame.image.load(
-                "game_screen/game_screen_sprites/" + self.type_sprite + "_0_not_up.png")
+                "game_screen/game_screen_sprites/" + self.type_sprite + "_0.png")
             self.map.wallet -= 2
         self.display()
         # To-do display around
