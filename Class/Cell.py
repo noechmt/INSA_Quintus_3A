@@ -653,6 +653,7 @@ class House(Building):  # la maison fils de building (?)
         self.level += 1
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/house_" + str(self.level) + ".png")
+        self.update_sprite_size()
         self.display()
         match self.level:
             case 2:
