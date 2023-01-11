@@ -56,10 +56,10 @@ class RiskEvent():
             
         else : 
             self.building.screen.blit(pygame.transform.scale(self.fire_sprites[self.fireCounter%8], (self.building.width, self.building.height)), (self.building.left, self.building.top))
-            self.building.map.array[self.building.x][self.building.y + 1].display()
+            if self.building.y <= 38 and self.building.map.array[self.building.x][self.building.y + 1].type !="ruin": self.building.map.array[self.building.x][self.building.y + 1].display()
             self.fireCounter += 1
             if self.tmpbool :
-                self.update_sprites_around()
+                self.update_sprites_around()   
                 self.tmpbool = False
 
         if self.fireCounter >= 400 : 

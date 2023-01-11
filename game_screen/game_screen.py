@@ -305,7 +305,7 @@ def game_screen():
         # print(walker_update_count)
         update_speed = 10 / (speed)
         if walker_update_count >= update_speed:
-            print(walker_update_count)
+            #print(walker_update_count)
             map.update_walkers()
             # print("break")
             walker_update_count = 0

@@ -112,7 +112,7 @@ class Map:  # Un ensemble de cellule
 
         for i in self.walkers:
             i.move()
-            i.display()
+            if  not isinstance(i, Prefect) or (isinstance(i, Prefect) and not i.isWorking):i.display()
             i.currentCell.display_around()
             if not isinstance(i, Migrant):
                 i.previousCell.display()
