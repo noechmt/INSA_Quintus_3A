@@ -598,6 +598,7 @@ class Empty(Cell):
             self.sprite = pygame.image.load(
                 "game_screen/game_screen_sprites/" + self.type_sprite + "_0.png")
             self.map.wallet -= 2
+        self.update_sprite_size()
         self.display()
         # To-do display around
 
