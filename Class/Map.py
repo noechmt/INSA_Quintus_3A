@@ -81,7 +81,7 @@ class Map:  # Un ensemble de cellule
             for y in range(40):
                 self.get_cell(x, y).handle_move(move, m)
                 self.get_cell(x, y).display()
-        self.display_grid(0)
+        # self.display_grid(0)
 
     # Check if these coordinates are in the map
     def inMap(self, x, y):
@@ -168,7 +168,7 @@ class Map:  # Un ensemble de cellule
         if self.grided:
             for x in range(40):
                 for y in range(40):
-                    self.array[x][y].grid()
+                    self.array[x][y].grid(pushed)
         elif pushed:
             for x in range(40):
                 for y in range(40):
