@@ -165,12 +165,12 @@ class Map:  # Un ensemble de cellule
         if self.overlay == "grid":
             for x in range(40):
                 for y in range(40):
-                    self.array[x][y].grid()
+                    self.array[x][y].display_overlay()
 
         elif self.overlay in ("fire", "collapse"):
             for i in self.buildings:
-                if i.risk and i.risk.type == self.overlay:
-                    
+                i.display_overlay()
+        
         elif pushed:
             for x in range(40):
                 for y in range(40):

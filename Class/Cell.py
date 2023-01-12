@@ -62,7 +62,6 @@ class Cell:  # Une case de la map
         elif self.type_empty == "rock":
             self.screen.blit(pygame.transform.scale(self.sprite,(self.width, self.height*35/30)), (self.left, self.top-self.height*5/30))
         
-
         if(self.type == "well"):
             self.screen.blit(pygame.transform.scale(
             self.sprite, (self.width, self.height*53/30)), (self.left, self.top - self.height*23/30))
@@ -235,8 +234,9 @@ class Cell:  # Une case de la map
                     self.get_points_polygone(), 2)
 
             case "fire", "collapse":
-                sprite = pygame.image.load("risk/overlay/overlay_" + str(m.floor(i.risk.riskCounter*5/i.risk.riskTreshold)) + ".png")
-                self.screen.blit(pygame.transform.scale(sprite, (self.building.width, self.building.height)), (self.building.left, self.building.top)) 
+                if self.risk and self.risk.type == self.overlay:
+                    sprite = pygame.image.load("risk/overlay/overlay_" + str(m.floor(i.risk.riskCounter*5/i.risk.riskTreshold)) + ".png")
+                    self.screen.blit(pygame.transform.scale(sprite, (self.building.width, self.building.height)), (self.building.left, self.building.top)) 
             
             case "water":
                 if self.water and self.map.get_welled() and self.type != "well":
