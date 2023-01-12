@@ -65,11 +65,11 @@ class Map:  # Un ensemble de cellule
         self.screen.fill((0, 0, 0))
         #self.offset_left, self.offset_top = (0, 0)
         if zoom_in:
-            self.height_land *= 1.1
-            self.width_land *= 1.1
+            self.height_land *= 1.05
+            self.width_land *= 1.05
         else:
-            self.height_land /= 1.1
-            self.width_land /= 1.1
+            self.height_land /= 1.05
+            self.width_land /= 1.05
         for x in range(40):
             for y in range(40):
                 self.get_cell(x, y).handle_zoom(zoom_in)

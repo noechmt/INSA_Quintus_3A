@@ -105,24 +105,24 @@ class Cell:  # Une case de la map
 
     def handle_zoom(self, zoom_in):
         if zoom_in:
-            self.height *= 1.1
-            self.width *= 1.1
+            self.height *= 1.05
+            self.width *= 1.05
         else:
-            self.height /= 1.1
-            self.width /= 1.1
+            self.height /= 1.05
+            self.width /= 1.05
         self.init_screen_coordonates()
         self.update_sprite_size()
         self.display()
 
     def handle_move(self, move, m):
         if move == "up":
-            self.top += 10 * m
+            self.top += 5 * m
         if move == "down":
-            self.top -= 10 * m
+            self.top -= 5 * m
         if move == "right":
-            self.left -= 10 * m
+            self.left -= 5 * m
         if move == "left":
-            self.left += 10 * m
+            self.left += 5 * m
 
     def handle_hover_button(self):
         if (self.map.get_housed()):
@@ -258,9 +258,6 @@ class Cell:  # Une case de la map
     def get_water(self):
         return self.water
 
-
-pygame.init()
-SCREEN = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
 sprite_hori = pygame.image.load(
     "game_screen/game_screen_sprites/road_straight_hori.png").convert_alpha()

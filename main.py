@@ -1,4 +1,4 @@
-from game_screen.game_screen import game_screen
+
 from GUI.title_screen import title_screen
 import pygame
 import sys
@@ -12,6 +12,7 @@ os.system(str(sys.executable) + " -m pip install -r requirements.txt")
 
 if __name__ == "__main__":
     if (title_screen()):
+        from game_screen.game_screen import game_screen
         game_screen()
     pygame.quit()
 

@@ -9,8 +9,6 @@ import time
 
 # draw a rectangle with an opacity option
 
-import sys
-
 
 def draw_rect_alpha(surface, color, rect):
     shape_surf = pygame.Surface(pygame.Rect(rect).size, pygame.SRCALPHA)
@@ -85,21 +83,21 @@ def game_screen():
     while run:
         pos = pygame.mouse.get_pos()
         if pos[1] <= 60:
-            map.offset_top += 10*(3 - pos[1] / 20)*zoom
+            map.offset_top += 5*(3 - pos[1] / 20)*zoom
             map.handle_move("up", (3 - pos[1] / 20)*zoom)
             panel.display()
             speed_counter_text = fps_font.render(
                 f"{speed * 100:.0f}%", 1, (255, 255, 255))
             SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         if pos[1] >= HEIGH_SCREEN - 60:
-            map.offset_top -= 10*(3 - (HEIGH_SCREEN - pos[1]) / 20)*zoom
+            map.offset_top -= 5*(3 - (HEIGH_SCREEN - pos[1]) / 20)*zoom
             map.handle_move("down", (3 - (HEIGH_SCREEN - pos[1]) / 20) * zoom)
             panel.display()
             speed_counter_text = fps_font.render(
                 f"{speed * 100:.0f}%", 1, (255, 255, 255))
             SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         if pos[0] <= 60:
-            map.offset_left -= 10*(3 - pos[0] / 20)*zoom
+            map.offset_left -= 5*(3 - pos[0] / 20)*zoom
             map.handle_move("left", (3 - pos[0] / 20)*zoom)
             panel.display()
             speed_counter_text = fps_font.render(
@@ -107,7 +105,7 @@ def game_screen():
             SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         if pos[0] >= WIDTH_SCREEN - 60:
             if not panel.get_road_button().is_hovered(pos) and not panel.get_well_button().is_hovered(pos):
-                map.offset_left += 10*(3 - (WIDTH_SCREEN - pos[0]) / 20)*zoom
+                map.offset_left += 5*(3 - (WIDTH_SCREEN - pos[0]) / 20)*zoom
                 map.handle_move(
                     "right", (3 - (WIDTH_SCREEN - pos[0]) / 20) * zoom)
                 panel.display()
@@ -209,10 +207,10 @@ def game_screen():
                                 f"{speed * 100:.0f}%", 1, (255, 255, 255))
                             SCREEN.blit(speed_counter_text,
                                         (speed_left, speed_top))
-                if zoom_update > 3:
+                if zoom_update > 0:
                     if event.button == 4:
                         if zoom < 1.7:
-                            zoom += 0.1
+                            zoom += 0.05
                             map.handle_zoom(1)
                             panel.display()
                             speed_counter_text = fps_font.render(
@@ -221,7 +219,7 @@ def game_screen():
                                         (speed_left, speed_top))
                     if event.button == 5:
                         if zoom > 0.8:
-                            zoom -= 0.1
+                            zoom -= 0.05
                             map.handle_zoom(0)
                             panel.display()
                             speed_counter_text = fps_font.render(
