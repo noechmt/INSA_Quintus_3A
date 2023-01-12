@@ -77,13 +77,7 @@ class Cell:  # Une case de la map
                 self.sprite, (self.width, self.height)), (self.left, self.top))
         if self.map.get_grided():
             self.grid()
-        self.display_water()
-
-    def display_water(self):
-        if self.water and self.map.get_welled() and self.type != "well":
-            draw_polygon_alpha(self.screen, (0, 0, 255, 85),
-                                    self.get_points_polygone())
-
+        
     def display_around(self):
         if (self.y+1<40 and (self.map.get_cell(self.x,self.y+1).type_empty != "dirt") and self.map.get_cell(self.x,self.y+1).type != "path"):
             if(self.map.get_cell(self.x,self.y+1).type_empty != "water"):
@@ -239,7 +233,15 @@ class Cell:  # Une case de la map
             case "grid":
                 pygame.draw.polygon(self.screen, (25, 25, 25),
                     self.get_points_polygone(), 2)
+
+            case "fire", "collapse":
+                sprite = pygame.image.load("risk/overlay/overlay_" + str(m.floor(i.risk.riskCounter*5/i.risk.riskTreshold)) + ".png")
+                self.screen.blit(pygame.transform.scale(sprite, (self.building.width, self.building.height)), (self.building.left, self.building.top)) 
             
+            case "water":
+                if self.water and self.map.get_welled() and self.type != "well":
+                    draw_polygon_alpha(self.screen, (0, 0, 255, 85),
+                                    self.get_points_polygone())
             case _:
                 self.display()
 

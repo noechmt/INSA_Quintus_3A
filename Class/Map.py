@@ -170,8 +170,7 @@ class Map:  # Un ensemble de cellule
         elif self.overlay in ("fire", "collapse"):
             for i in self.buildings:
                 if i.risk and i.risk.type == self.overlay:
-                    sprite = pygame.image.load("risk/overlay/overlay_" + str(m.floor(i.risk.riskCounter*5/i.risk.riskTreshold)) + ".png")
-                    self.screen.blit(pygame.transform.scale(sprite, (self.building.width, self.building.height)), (self.building.left, self.building.top)) 
+                    
         elif pushed:
             for x in range(40):
                 for y in range(40):
