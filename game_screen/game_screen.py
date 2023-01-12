@@ -6,6 +6,7 @@ from Class.Cell import *
 from Class.Button import Button
 from Class.Map import *
 from Class.Panel import Panel
+import time
 
 # draw a rectangle with an opacity option
 
