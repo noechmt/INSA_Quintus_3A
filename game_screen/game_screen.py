@@ -2,7 +2,6 @@ from select import select
 import pygame
 from math import sqrt
 import numpy as np
-from Class.Cell import *
 from Class.Button import Button
 from Class.Map import *
 from Class.Panel import Panel
@@ -36,6 +35,7 @@ def game_screen():
     SIZE = 40
 
     map = Map(SIZE, height_land, width_land, SCREEN)
+
     panel = Panel(SCREEN)
 
     # Dims without left panel
@@ -49,17 +49,17 @@ def game_screen():
     SCREEN.blit(pygame.transform.scale(
         bar, (WIDTH_SCREEN, HEIGH_SCREEN/32)), (0, 0))
     taskbarfont = pygame.font.SysFont('courriernew', 25)  # police, size
-    file_text = taskbarfont.render('File', False, color_brown)
-    options_text = taskbarfont.render('Options', False, color_brown)
-    help_text = taskbarfont.render('Help', False, color_brown)
-    advisors_text = taskbarfont.render('Advisors', False, color_brown)
+    file_text = taskbarfont.render('File', 0, color_brown)
+    options_text = taskbarfont.render('Options', 0, color_brown)
+    help_text = taskbarfont.render('Help', 0, color_brown)
+    advisors_text = taskbarfont.render('Advisors', 0, color_brown)
     SCREEN.blit(file_text, (WIDTH_SCREEN/60, HEIGH_SCREEN/256))
     SCREEN.blit(options_text, (WIDTH_SCREEN/16, HEIGH_SCREEN/256))
     SCREEN.blit(help_text, (WIDTH_SCREEN/7.5, HEIGH_SCREEN/256))
     SCREEN.blit(advisors_text, (WIDTH_SCREEN/5.5, HEIGH_SCREEN/256))
 
     fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
-    run = True
+    run = 1
     clock = pygame.time.Clock()
 
     speeds = [0.000000001, 0.4, 0.6, 0.8, 1, 1.25, 1.5, 2, 3, 5]
@@ -72,7 +72,7 @@ def game_screen():
     SCREEN.blit(speed_counter_text, (speed_left, speed_top))
     paused = 0
 
-    selection = {"is_active": False, "start": tuple, "cells": set()}
+    selection = {"is_active": 0, "start": tuple, "cells": set()}
     hovered_cell = None
     zoom = 1
     move = 1
@@ -129,14 +129,14 @@ def game_screen():
             text_wallet = fps_font.render(f"{map.wallet}", 1, (255, 255, 255))
             SCREEN.blit(text_wallet, (0, 40))
             if event.type == pygame.QUIT:
-                run = False
+                run = 0
             # Move up
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if map.inMap(x, y) and not selection["is_active"]:
                         selection["start"] = (x, y)
                         selection["cells"].add((x, y))
-                        selection["is_active"] = True
+                        selection["is_active"] = 1
 
                 # spawn the grid if is clicked
                     if (panel.get_grid_button().is_hovered(pos)):
@@ -255,7 +255,7 @@ def game_screen():
                     map.buildings.sort(key=lambda i: (i.x, i.y))
                     print([(i.x, i.y) for i in map.buildings])
                     selection["cells"].clear()
-                    selection["is_active"] = False
+                    selection["is_active"] = 0
 
             if event.type == pygame.MOUSEMOTION:
                 # Display previous cell without hover
@@ -325,7 +325,7 @@ def game_screen():
         #     SCREEN.blit(pygame.transform.scale(pygame.image.load("walker_sprites/test/Housng1a_00019.png"), (map.array[13][29].width, map.array[13][29].height)), (map.array[13][29].left, map.array[13][29].top))
         #     map.array[31][19] = EngineerPost(31, 19, map.height_land, map.width_land, map.screen, map)
         #     SCREEN.blit(pygame.transform.scale(pygame.image.load("walker_sprites/test/Housng1a_00019.png"), (map.array[31][19].width, map.array[31][19].height)), (map.array[31][19].left, map.array[31][19].top))
-        #     tmpbool = False
+        #     tmpbool = 0
         clock.tick(60)
         fps = (int)(clock.get_fps())
         text_fps = fps_font.render(str(fps), 1, (255, 255, 255))
