@@ -309,6 +309,11 @@ def game_screen():
         update_speed = 10 / (speed)
         if walker_update_count >= update_speed:
             map.update_walkers()
+            panel.display()
+            speed_counter_text = fps_font.render(
+                f"{speed * 100:.0f}%", 1, (255, 255, 255))
+            SCREEN.blit(speed_counter_text,
+                        (speed_left, speed_top))
             # print("break")
             walker_update_count = 0
 
@@ -330,4 +335,5 @@ def game_screen():
         pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(
             0, HEIGH_SCREEN - text_fps.get_size()[1], 60, 40))
         SCREEN.blit(text_fps, (0, HEIGH_SCREEN - text_fps.get_size()[1]))
+
         pygame.display.flip()
