@@ -1,3 +1,4 @@
+from email.policy import default
 from Class.Walker import *
 from Class.RiskEvent import *
 import pygame
@@ -233,12 +234,14 @@ class Cell:  # Une case de la map
                     if(37>self.x>3 and 37>self.y>3 and self.map.get_cell(self.x+i, self.y+j).type == "well"):
                         self.map.get_cell(self.x,self.y).set_water(True)
 
-    def grid(self):
-        if self.map.get_grided():
-            pygame.draw.polygon(self.screen, (25, 25, 25),
-                                self.get_points_polygone(), 2)
-        else:
-            self.display()
+    def display_overlay(self):
+        match self.map.get_overlay():
+            case "grid":
+                pygame.draw.polygon(self.screen, (25, 25, 25),
+                    self.get_points_polygone(), 2)
+            
+            case _:
+                self.display()
 
 
     def clear(self):

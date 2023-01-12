@@ -16,7 +16,7 @@ class Map:  # Un ensemble de cellule
         self.offset_top = 0
         self.offset_left = 0
         self.screen = screen
-        self.grided = False
+        self.overlay = ""
         self.array = [[Empty(j, i, self.height_land, self.width_land, self.screen, self) for i in range(
             size)] for j in range(size)]  # tableau de cellule (voir classe cellule) : list
         self.walkers = []
@@ -151,25 +151,32 @@ class Map:  # Un ensemble de cellule
             for j in range(40):
                 self.array[i][j].display()
 
-    def set_grided(self, g):
-        self.grided = g
+    def get_overlay(self):
+        return self.overlay
 
-    def get_grided(self):
-        return self.grided
+    def check_overlay(self, overlay):
+        return self.overlay == overlay
 
-    def grid_map(self):
+    def set_overlay(self, overlay):
         self.grided = not self.grided
         self.display_grid()
 
-    def display_grid(self, pushed=1):
-        if self.grided:
+    def display_overlay(self, pushed=1):
+        if self.overlay == "grid":
             for x in range(40):
                 for y in range(40):
                     self.array[x][y].grid()
+
+        elif self.overlay in ("fire", "collapse"):
+            for i in self.buildings:
+                if i.risk and i.risk.type == self.overlay:
+                    sprite = pygame.image.load("risk/overlay/overlay_" + str(m.floor(i.risk.riskCounter*5/i.risk.riskTreshold)) + ".png")
+                    self.screen.blit(pygame.transform.scale(sprite, (self.building.width, self.building.height)), (self.building.left, self.building.top)) 
         elif pushed:
             for x in range(40):
                 for y in range(40):
                     self.array[x][y].display()
+
 
     def get_housed(self):
         return self.button_activated["house"]

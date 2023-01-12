@@ -3,6 +3,9 @@ import random as rd
 import pygame
 
 class RiskEvent():
+
+    riskTreshold = 200
+
     def __init__(self, eType, building) : 
         self.riskCounter = 0
         self.happened = False
@@ -22,7 +25,7 @@ class RiskEvent():
         else : 
             self.riskCounter += rd.randint(0,1)
 
-        if self.riskCounter >= 200 :
+        if self.riskCounter >= self.riskTreshold :
             self.happened = True
             self.building.type = "ruin"
             if self.type == "fire" or self.type == "collapse" : self.building.sprite = pygame.image.load("risks_sprites/house_fire/fire_8.png") # Au cas où il faut changer de sprite pour le collapse
