@@ -550,6 +550,9 @@ class Empty(Cell):
         super().set_aleatoire(aleatoire)
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(aleatoire) + "_not_up.png")
+        # if(self.type_empty == "rock") : 
+        #     self.sprite = pygame.image.load(
+        #         "game_screen/game_screen_sprites/rock_5_not_up.png")
         self.display()
 
     def __str__(self):

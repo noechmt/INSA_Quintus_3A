@@ -9,7 +9,7 @@ class RiskEvent():
         self.type = eType
         self.tmpbool = True
         self.fireCounter = 0
-        self.fire_sprites = dict((k, pygame.image.load("risks_sprites/house_fire/fire_" + str(k) + ".png")) for k in range(0,9))
+        self.fire_sprites = dict((k, pygame.image.load("risks_sprites/house_fire/fire_" + str(k) + ".png")) for k in range(0,10))
         self.building = building
         
 
@@ -48,7 +48,7 @@ class RiskEvent():
             return 
         if self.fireCounter >= 500 : 
             self.building.screen.blit(pygame.transform.scale(pygame.image.load("game_screen/game_screen_sprites/dirt_0.png"), (self.building.width, self.building.height)), (self.building.left, self.building.top))
-            self.building.screen.blit(pygame.transform.scale(self.fire_sprites[8], (self.building.width, self.building.height)), (self.building.left, self.building.top))
+            self.building.screen.blit(pygame.transform.scale(self.fire_sprites[9], (self.building.width, self.building.height)), (self.building.left, self.building.top))
             self.fireCounter = 0
             self.building.destroyed = True
             # self.building.map.buildings.remove(self.building)
