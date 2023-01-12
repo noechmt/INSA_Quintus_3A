@@ -302,11 +302,30 @@ def game_screen():
                     panel.set_window("none")
                     map.handle_esc()
 
+                if pygame.key.get_pressed()[pygame.K_p] :
+                    volume = pygame.mixer.music.get_volume()
+                    pygame.mixer.music.set_volume(volume +0.05)  
+                    print("tunic", pygame.mixer.music.get_volume())
+                    for i in map.sound_effect :
+                        volume = map.sound_effect[i].get_volume()
+                        map.sound_effect[i].set_volume(volume +0.05)
+                        print(map.sound_effect[i].get_volume(), i, "+")
+
+                if pygame.key.get_pressed()[pygame.K_m] :
+                    volume = pygame.mixer.music.get_volume()
+                    pygame.mixer.music.set_volume(volume -0.05) 
+                    print("tunic", pygame.mixer.music.get_volume())
+                    for i in map.sound_effect :
+                        volume = map.sound_effect[i].get_volume()
+                        map.sound_effect[i].set_volume(volume -0.05)
+                        print(map.sound_effect[i].get_volume(), i, "-")
+
                 # grid_button.handle_hover_button(pos, SCREEN)
                 # home_button.handle_hover_button(pos, SCREEN)
                 # shovel_button.handle_hover_button(pos, SCREEN)
                 # road_button.handle_hover_button(pos, SCREEN)
 
+    
         walker_update_count += 1
         # print(walker_update_count)
         update_speed = 10 / (speed)
@@ -321,6 +340,7 @@ def game_screen():
             map.update_fire()
             map.update_collapse()
             fire_upadte_count = 0
+
 
         # if tmpbool :
         #     map.array[13][29] = Prefecture(13, 29, map.height_land, map.width_land,map.screen, map)

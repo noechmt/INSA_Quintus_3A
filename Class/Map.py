@@ -32,6 +32,10 @@ class Map:  # Un ensemble de cellule
         self.zoom = 1
         self.sound_effect = {"extinguish" : pygame.mixer.Sound("audio/water_bucket.wav"),"cooling" : pygame.mixer.Sound("audio/cooling_fizz.wav"),
                             "break": pygame.mixer.Sound("audio/break.wav")}
+        
+        self.sound_effect["break"].set_volume(0.1)
+        self.sound_effect["cooling"].set_volume(0.1)
+        self.sound_effect["extinguish"].set_volume(0.1)
 
     def init_map(self):  # Permet d'initialiser le chemin de terre sur la map.
         for i in range(self.size):

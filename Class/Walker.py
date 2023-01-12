@@ -284,13 +284,12 @@ class Prefect(Walker) :
             self.screen.blit(pygame.transform.scale(self.prefect_working_sprites[self.orientation][self.extinguishCounter%6], (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
             # print("working...")
             if self.waterCounter > 5 :
-                self.building.map.sound_effect["extinguish"].set_volume(0.2)
                 self.building.map.sound_effect["extinguish"].play()
                 self.waterCounter = 0
             self.waterCounter += 1
             self.extinguishCounter += 1
         else :
-            self.building.map.sound_effect["cooling"].set_volume(0.2)
+            
             self.building.map.sound_effect["cooling"].play()
             self.extinguishCounter = 0
             self.current_building.map.buildings[0].risk.fireCounter = 0
