@@ -47,8 +47,11 @@ class RiskEvent():
         if not self.happened or self.building.destroyed :
             return 
         if self.fireCounter >= 500 : 
-            self.building.screen.blit(pygame.transform.scale(pygame.image.load("game_screen/game_screen_sprites/dirt_0.png"), (self.building.width, self.building.height)), (self.building.left, self.building.top))
-            self.building.screen.blit(pygame.transform.scale(self.fire_sprites[9], (self.building.width, self.building.height)), (self.building.left, self.building.top))
+            # self.building.screen.blit(pygame.transform.scale(pygame.image.load("game_screen/game_screen_sprites/dirt_0.png"), (self.building.width, self.building.height)), (self.building.left, self.building.top))
+            if self.building.sprite != pygame.image.load("risks_sprites/house_fire/fire_9.png") : 
+                # self.building.screen.blit(pygame.transform.scale(self.fire_sprites[9], (self.building.width, self.building.height)), (self.building.left, self.building.top))
+                self.building.sprite = pygame.image.load("risks_sprites/house_fire/fire_9.png")
+                self.building.display()
             self.fireCounter = 0
             self.building.destroyed = True
             # self.building.map.buildings.remove(self.building)
@@ -57,8 +60,11 @@ class RiskEvent():
             self.building.map.sound_effect["cooling"].play()
             
         else : 
-            self.building.screen.blit(pygame.transform.scale(self.fire_sprites[self.fireCounter%8], (self.building.width, self.building.height)), (self.building.left, self.building.top))
-            if self.building.y <= 38 and self.building.map.array[self.building.x][self.building.y + 1].type !="ruin": self.building.map.array[self.building.x][self.building.y + 1].display()
+            self.building.sprite = self.fire_sprites[self.fireCounter%8]
+            self.building.display()
+            # self.building.screen.blit(pygame.transform.scale(self.fire_sprites[self.fireCounter%8], (self.building.width, self.building.height)), (self.building.left, self.building.top))
+            if self.building.y <= 38 and self.building.map.array[self.building.x][self.building.y + 1].type !="ruin": 
+                self.building.map.array[self.building.x][self.building.y + 1].display()
             self.fireCounter += 1
             if self.tmpbool :
                 self.update_sprites_around()   
@@ -69,7 +75,7 @@ class RiskEvent():
             for i in arr :
                 i.risk.happened = True
                 i.type = "ruin"
-                i.sprite = pygame.image.load("risks_sprites/house_fire/fire_8.png")
+                i.sprite = pygame.image.load("risks_sprites/house_fire/fire_9.png")
         
     def collapse(self) :
         if not self.happened or self.building.destroyed :
