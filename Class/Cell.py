@@ -3,8 +3,10 @@ from Class.Walker import *
 from Class.RiskEvent import *
 import pygame
 from random import *
-import math
+from math import sqrt, floor
 import random
+import time
+
 
 def draw_polygon_alpha(surface, color, points):
     lx, ly = zip(*points)
@@ -30,10 +32,12 @@ class Cell:  # Une case de la map
         self.screen = screen
         self.hovered = False
         self.type_empty = None
-        self.grided = False
         self.house_mode = False
         self.WIDTH_SCREEN, self.HEIGHT_SCREEN = self.screen.get_size()
         self.init_screen_coordonates()
+
+    def update_sprite_size(self):
+        pass
 
     def isBuildable(self):
         return isinstance(self, Empty) and self.type_empty == "dirt"
@@ -46,65 +50,60 @@ class Cell:  # Une case de la map
             self.height/2 + self.y * self.height/2 + self.map.offset_top
 
     def display(self):
-        if self.type_empty  == "tree":
+        """if self.type_empty == "tree":
             if self.aleatoire == 1:
                 self.screen.blit(pygame.transform.scale(
-            self.sprite, (self.width, self.height*42/30)), (self.left, self.top - self.height*12/30))
+                    self.sprite, (self.width, self.height*42/30)), (self.left, self.top - self.height*12/30))
             elif self.aleatoire == 2:
                 self.screen.blit(pygame.transform.scale(
-            self.sprite, (self.width, self.height*41/30)), (self.left, self.top - self.height*11/30))
+                    self.sprite, (self.width, self.height*41/30)), (self.left, self.top - self.height*11/30))
             elif self.aleatoire == 3:
                 self.screen.blit(pygame.transform.scale(
-            self.sprite, (self.width, self.height*44/30)), (self.left, self.top - self.height*14/30))
+                    self.sprite, (self.width, self.height*44/30)), (self.left, self.top - self.height*14/30))
             elif self.aleatoire == 4:
                 self.screen.blit(pygame.transform.scale(
-            self.sprite, (self.width, self.height*45/30)), (self.left, self.top - self.height*15/30))
+                    self.sprite, (self.width, self.height*45/30)), (self.left, self.top - self.height*15/30))
         elif self.type_empty == "rock":
-            self.screen.blit(pygame.transform.scale(self.sprite,(self.width, self.height*35/30)), (self.left, self.top-self.height*5/30))
-        
-        if(self.type == "well"):
             self.screen.blit(pygame.transform.scale(
-            self.sprite, (self.width, self.height*53/30)), (self.left, self.top - self.height*23/30))
-        elif(self.type == "engineer post"):
+                self.sprite, (self.width, self.height*35/30)), (self.left, self.top-self.height*5/30))
+
+        if (self.type == "well"):
             self.screen.blit(pygame.transform.scale(
-            self.sprite, (self.width, self.height*50/30)), (self.left, self.top - self.height*20/30))
-        elif(self.type == "prefecture"):
+                self.sprite, (self.width, self.height*53/30)), (self.left, self.top - self.height*23/30))
+        elif (self.type == "engineer post"):
             self.screen.blit(pygame.transform.scale(
-            self.sprite, (self.width, self.height*38/30)), (self.left, self.top - self.height*8/30))
+                self.sprite, (self.width, self.height*50/30)), (self.left, self.top - self.height*20/30))
+        elif (self.type == "prefecture"):
+            self.screen.blit(pygame.transform.scale(
+                self.sprite, (self.width, self.height*38/30)), (self.left, self.top - self.height*8/30))
         else:
             self.screen.blit(pygame.transform.scale(
-                self.sprite, (self.width, self.height)), (self.left, self.top))
-        if self.map.get_grided():
-            self.grid()
+                self.sprite, (self.width+2*sqrt(2), self.height+2)), (self.left-sqrt(2), self.top-1))
+        """
         
     def display_around(self):
-        if (self.y+1<40 and (self.map.get_cell(self.x,self.y+1).type_empty != "dirt") and self.map.get_cell(self.x,self.y+1).type != "path"):
-            if(self.map.get_cell(self.x,self.y+1).type_empty != "water"):
-                self.map.get_cell(self.x,self.y+1).display()
-                if(self.map.get_cell(self.x,self.y+1).get_water() and self.map.get_welled() and self.map.get_cell(self.x,self.y+1).type != "well"):
-                    self.map.get_cell(self.x,self.y+1).display_water()
-                self.map.get_cell(self.x,self.y+1).display_around()
-        if (self.x+1<40 and self.map.get_cell(self.x+1, self.y).type_empty != "dirt" and self.map.get_cell(self.x+1, self.y).type != "path"):
-            if(self.map.get_cell(self.x+1,self.y).type_empty != "water"):
+        if (self.y+1 < 40 and (self.map.get_cell(self.x, self.y+1).type_empty != "dirt") and self.map.get_cell(self.x, self.y+1).type != "path"):
+            if (self.map.get_cell(self.x, self.y+1).type_empty != "water"):
+                self.map.get_cell(self.x, self.y+1).display()
+                self.map.get_cell(self.x, self.y+1).display_around()
+        if (self.x+1 < 40 and self.map.get_cell(self.x+1, self.y).type_empty != "dirt" and self.map.get_cell(self.x+1, self.y).type != "path"):
+            if (self.map.get_cell(self.x+1, self.y).type_empty != "water"):
                 self.map.get_cell(self.x+1, self.y).display()
-                if(self.map.get_cell(self.x+1, self.y).get_water() and self.map.get_welled() and self.map.get_cell(self.x+1, self.y).type != "well"):
-                    self.map.get_cell(self.x+1, self.y).display_water()
                 self.map.get_cell(self.x+1, self.y).display_around()
-        if (self.x+1<40 and self.y+1<40 and self.map.get_cell(self.x+1, self.y+1).type_empty != "dirt" and self.map.get_cell(self.x+1, self.y+1).type != "path"):
-            if(self.map.get_cell(self.x+1,self.y+1).type_empty != "water"):
+        if (self.x+1 < 40 and self.y+1 < 40 and self.map.get_cell(self.x+1, self.y+1).type_empty != "dirt" and self.map.get_cell(self.x+1, self.y+1).type != "path"):
+            if (self.map.get_cell(self.x+1, self.y+1).type_empty != "water"):
                 self.map.get_cell(self.x+1, self.y+1).display()
-                if(self.map.get_cell(self.x+1, self.y+1).get_water() and self.map.get_welled() and self.map.get_cell(self.x+1, self.y+1).type != "well"):
-                    self.map.get_cell(self.x+1, self.y+1).display_water()
                 self.map.get_cell(self.x+1, self.y+1).display_around()
 
     def handle_zoom(self, zoom_in):
         if zoom_in:
-            self.height *= 1.04
-            self.width *= 1.04
+            self.height *= 1.1
+            self.width *= 1.1
         else:
-            self.height /= 1.04
-            self.width /= 1.04
+            self.height /= 1.1
+            self.width /= 1.1
         self.init_screen_coordonates()
+        self.update_sprite_size()
         self.display()
 
     def handle_move(self, move, m):
@@ -116,37 +115,13 @@ class Cell:  # Une case de la map
             self.left -= 10 * m
         if move == "left":
             self.left += 10 * m
-        # self.display()
-
-    # def is_hovered(self, pos):
-    #     # Initialize the number of intersections to 0
-    #     intersections = 0
-
-    #     polygon = self.get_points_polygone()
-
-    #     # Iterate over the polygon's sides
-    #     for i in range(len(polygon)):
-    #         # Get the coordinates of the current side
-    #         x1, y1 = polygon[i]
-    #         x2, y2 = polygon[(i + 1) % len(polygon)]
-
-    #         # Check if the line from the point to the edge of the polygon intersects with the current side
-    #         if min(y1, y2) < pos[1] <= max(y1, y2):
-    #             # Calculate the x-coordinate of the intersection
-    #             x = (pos[1] - y1) * (x2 - x1) / (y2 - y1) + x1
-
-    #             # If the x-coordinate of the intersection is greater than the point's x-coordinate, increment the number of intersections
-    #             if x > pos[0]:
-    #                 intersections += 1
-    #     # If the number of intersections is odd, the point is inside the polygon
-    #     return intersections % 2 == 1
 
     def handle_hover_button(self):
         if (self.map.get_housed()):
             house_sprite = pygame.image.load(
-                    "game_screen/game_screen_sprites/house_0.png")
+                "game_screen/game_screen_sprites/house_0.png")
             self.screen.blit(pygame.transform.scale(
-                    house_sprite, (self.width, self.height)), (self.left, self.top))
+                house_sprite, (self.width, self.height)), (self.left, self.top))
             if self.isBuildable():
                 draw_polygon_alpha(self.screen, (0, 0, 0, 85),
                                    self.get_points_polygone())
@@ -224,39 +199,38 @@ class Cell:  # Une case de la map
                     self.map.wallet -= 30
             for i in range(-2, 3):
                 for j in range(-2, 3):
-                    if(37>self.x>3 and 37>self.y>3 and self.map.get_cell(self.x+i, self.y+j).type == "well"):
-                        self.map.get_cell(self.x,self.y).set_water(True)
+                    if (37 > self.x > 3 and 37 > self.y > 3 and self.map.get_cell(self.x+i, self.y+j).type == "well"):
+                        self.map.get_cell(self.x, self.y).set_water(True)
 
     def display_overlay(self):
-        match self.map.get_overlay():
+        overlay = self.map.overlay
+        match overlay:
             case "grid":
                 pygame.draw.polygon(self.screen, (25, 25, 25),
                     self.get_points_polygone(), 2)
 
-            case "fire", "collapse":
-                if self.risk and self.risk.type == self.overlay:
-                    sprite = pygame.image.load("risk/overlay/overlay_" + str(m.floor(i.risk.riskCounter*5/i.risk.riskTreshold)) + ".png")
-                    self.screen.blit(pygame.transform.scale(sprite, (self.building.width, self.building.height)), (self.building.left, self.building.top)) 
+            case "fire" | "collapse":
+                if isinstance(self, Building) and self.risk.type == self.map.overlay and self.risk.riskCounter < self.risk.riskTreshold:
+                    sprite = pygame.image.load("risks_sprites/overlay/overlay_" + str(floor(self.risk.riskCounter*5/self.risk.riskTreshold)) + ".png")
+                    self.screen.blit(pygame.transform.scale(sprite, (self.width, self.height)), (self.left, self.top)) 
             
             case "water":
                 if self.water and self.map.get_welled() and self.type != "well":
                     draw_polygon_alpha(self.screen, (0, 0, 255, 85),
                                     self.get_points_polygone())
-            case _:
-                self.display()
-
 
     def clear(self):
         if not isinstance(self, Empty) and self.type_empty != "rock" and self.type_empty != "water":
             if isinstance(self, Building):
                 self.map.buildings.remove(self)
             for i in self.map.walkers:
-                if i.building == self: 
+                if i.building == self:
                     self.map.walkers.remove(i)
                     i.currentCell.display()
-                    if isinstance(self, House): i.previousCell.display()
+                    if isinstance(self, House):
+                        i.previousCell.display()
             for i in self.map.migrantQueue:
-                if i.building == self: 
+                if i.building == self:
                     self.map.migrantQueue.remove(i)
                     i.currentCell.display()
             for i in self.map.laborAdvisorQueue:
@@ -267,11 +241,13 @@ class Cell:  # Une case de la map
             self.map.set_cell_array(self.x, self.y, Empty(
                 self.x, self.y, self.height, self.width, self.screen, self.map))
             arr = self.check_cell_around(Cell)
-            for i in arr :
-                if not isinstance(i, Building) : i.display()
-                for j in i.check_cell_around(Cell) :
-                    if j.x < self.x + 2 and j.y < self.y + 2 : 
-                        if not isinstance(j, Building) : #and not (j in [i.map.array[i.x-1][i.y], i.map.array[i.x - 1][i.y - 1]]) and (isinstance(i, Cell.Prefecture) or isinstance(i, Cell.EngineerPost)): 
+            for i in arr:
+                if not isinstance(i, Building):
+                    i.display()
+                for j in i.check_cell_around(Cell):
+                    if j.x < self.x + 2 and j.y < self.y + 2:
+                        # and not (j in [i.map.array[i.x-1][i.y], i.map.array[i.x - 1][i.y - 1]]) and (isinstance(i, Cell.Prefecture) or isinstance(i, Cell.EngineerPost)):
+                        if not isinstance(j, Building):
                             j.display()
             self.map.wallet -= 2
 
@@ -312,25 +288,34 @@ sprite_turn_verti_right = pygame.image.load(
 class Path(Cell):
     def __init__(self, x, y, height, width, screen, map, path_level=0):
         super().__init__(x, y, height, width, screen, map)
-        self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/road_straight_verti.png")
+        self.sprite = sprite_verti
+        self.sprite_display = ""
         self.level = path_level
         self.handle_sprites()
-        self.display()
-        self.grid()
+        self.update_sprite_size()
         self.type = "path"
-        #Get an array of all neighbor path
+        # Get an array of all neighbor path
         cell_around = self.check_cell_around(Path)
-        #Loop through this array
+        # Loop through this array
         for i in cell_around:
-            print("Add edge from "+str((self.x, self.y))+" to "+str((i.x, i.y)))
             self.map.path_graph.add_edge(self, i)
-            print("Add edge from "+str((i.x, i.y))+" to "+str((self.x, self.y)))
             self.map.path_graph.add_edge(i, self)
 
-        cell_around = self.check_cell_around(House)
-        for j in cell_around:
+        house_around = self.check_cell_around(House)
+        for j in house_around:
             self.map.path_graph.add_edge(self, j)
+            house_around_house = j.check_cell_around(House)
+            for k in house_around_house:
+                self.map.path_graph.add_edge(self, k, weight=2000)
+            
+
+    def update_sprite_size(self):
+        self.sprite_display = pygame.transform.scale(
+            self.sprite, (self.width+2*sqrt(2), self.height+2))
+
+    def display(self):
+        self.screen.blit(self.sprite_display, (self.left-sqrt(2), self.top-1))
+        self.display_overlay()
 
     def handle_sprites(self, r=0):
         if r < 2:
@@ -341,21 +326,21 @@ class Path(Cell):
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                self.grid()
+                
                 return
             # Check if the road is a turn bottom to left
             if self.check_surrondings([1, 0, 1, 0]):
                 self.set_sprite(sprite_turn_bot_left)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                self.grid()
+                
                 return
             # Check if the road is a turn bottom to right
             if self.check_surrondings([0, 0, 1, 1]):
                 self.set_sprite(sprite_turn_bot_right)
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                self.grid()
+                
                 return
             # Check if the road is a turn horizontal to bottom
             if self.check_surrondings([1, 0, 1, 1]):
@@ -363,7 +348,7 @@ class Path(Cell):
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                self.grid()
+                
 
                 return
             # Check if the road is a turn horizontal to top
@@ -372,7 +357,7 @@ class Path(Cell):
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
-                self.grid()
+                
 
                 return
             # Check if the road is a turn letf to top
@@ -380,14 +365,14 @@ class Path(Cell):
                 self.set_sprite(sprite_turn_left_top)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
-                self.grid()
+                
                 return
             # Check if the road is a turn right to top
             if self.check_surrondings([0, 1, 0, 1]):
                 self.set_sprite(sprite_turn_right_top)
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
-                self.grid()
+                
 
                 return
             # Check if the road is a turn vertical to left
@@ -396,7 +381,7 @@ class Path(Cell):
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                self.grid()
+                
 
                 return
             # Check if the road is a turn vertical to right
@@ -405,7 +390,7 @@ class Path(Cell):
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                self.grid()
+                
 
                 return
 
@@ -415,14 +400,14 @@ class Path(Cell):
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x - 1, self.y), Path):
                     self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
-                self.grid()
+                
                 return
             if self.check_surrondings([1, 0, 0, 2]):
                 self.set_sprite(sprite_hori)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x + 1, self.y), Path):
                     self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
-                self.grid()
+                
                 return
             # Check vertical road
             if self.check_surrondings([0, 2, 1, 0]):
@@ -430,14 +415,14 @@ class Path(Cell):
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x, self.y - 1), Path):
                     self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
-                self.grid()
+                
                 return
             if self.check_surrondings([0, 1, 2, 0]):
                 self.set_sprite(sprite_verti)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x, self.y + 1), Path):
                     self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                self.grid()
+                
                 return
 
     def check_surrondings(self, check):
@@ -452,6 +437,7 @@ class Path(Cell):
 
     def set_sprite(self, sprite):
         self.sprite = sprite
+        self.update_sprite_size()
         self.display()
 
     def __str__(self):
@@ -461,126 +447,162 @@ class Path(Cell):
 class Empty(Cell):
     def __init__(self, x, y, height, width, screen, map, type_empty="dirt"):
         super().__init__(x, y, height, width, screen, map)
-        self.type_empty = type_empty #"dirt", "trees"
+        self.type_empty = type_empty  # "dirt", "trees"
         self.type = "empty"
         tree_or_dirt_list = ["tree", "dirt", "dirt"]
         rock_or_dirt_list = ["rock", "dirt", "dirt", "dirt"]
-        
-        #place the trees
-        for i in range (40):
-            for j in range (40):
-                if (x,y)==(i,j):
-                    self.type_empty = random.choice(tree_or_dirt_list)
-                    if self.type_empty == "tree":
-                        self.type_sprite = "tree"
-                        self.type = "empty_tree"
-                    else:
-                        self.type_sprite = "dirt"
-                
-        #place the rocks
-        for i in range (40):
-            for j in range (40):
-                
-                if (x,y)==(i,j) and ((27<i<36 and 12<j<16) or (27<i<31 and 15<j<23) or (i>30 and j>25) or (i>35 and j<5) or (i>35 and j>30)):
-                    self.type_empty = random.choice(rock_or_dirt_list)
-                    if self.type_empty == "rock":
-                        self.type_sprite = "rock"
-                        self.type = "empty_rock"
-                    else:
-                        self.type_sprite = "dirt"
 
+        # place the trees
+        self.type_empty = random.choice(tree_or_dirt_list)
+        if self.type_empty == "tree":
+            self.type_sprite = "tree"
+            self.type = "empty_tree"
+        else:
+            self.type_sprite = "dirt"
 
+        # place the rocks
+        if ((27 < x < 36 and 12 < y < 16) or (27 < x < 31 and 15 < y < 23) or (x > 30 and y > 25) or (x > 35 and y < 5) or (x > 35 and y > 30)):
+            self.type_empty = random.choice(rock_or_dirt_list)
+            if self.type_empty == "rock":
+                self.type_sprite = "rock"
+                self.type = "empty_rock"
+            else:
+                self.type_sprite = "dirt"
 
-    #place the water with conditions for sprites
-        #river at the top
-        for i in range (40):
-            
-            #line under the first river  
-            if ((x,y) == (i,i+10) and i<5) or ((x,y)==(i,i+14) and 5<i<8) or ((x,y)==(i,i+15) and 8<i<13) or ((x,y)==(i,i+18) and 14<i<17) or ((x,y)==(i,i+20) and 17<i<20):
-                self.type_sprite = "watersiderightD"
-                self.type_empty = "water"
-            elif ((x,y) == (i,i+11) and i<5) or ((x,y)==(i,i+15) and 4<i<8) or ((x,y)==(i,i+16) and (7<i<13)) or (x,y)==(13,31) or ((x,y)==(i,i+19) and 13<i<17) or ((x,y)==(i,i+21) and 16<i<19):
-                self.type_sprite = "watersiderightW"
-                self.type_empty = "water"
-            elif (x,y) == (5,15) or (x,y) == (8,22) or (x,y)==(13,28) or (x,y)==(14,31) or (x,y)==(17,35):
-                self.type_sprite = "watersidecornerA"
-                self.type_empty = "water"
-            elif ((x,y) == (5, i) and 15<i<20) or (x,y)==(8,23) or (x,y)==(13,29) or (x,y)==(13,30) or (x,y)==(14,32) or (x,y)==(17,36) or (x,y)==(17,37):
-                self.type_sprite = "watersideunder"
-                self.type_empty = "water"
-            
-            #line behind the first river
-            elif ((x,y) == (i,i+19) and i<10) or ((x,y)==(i,i+26) and 9<i<14):
-                self.type_sprite = "watersideleftW"
-                self.type_empty = "water"
-            elif ((x,y) == (i, i+20) and i<9) or ((x,y)==(i,i+27) and 8<i<13):
-                self.type_sprite = "watersideleftD"
-                self.type_empty = "water"
-            elif ((x,y)==(9,i) and 28<i<36):
-                self.type_sprite = "watersideupper"
-                self.type_empty = "water"
+    # place the water with conditions for sprites
+        # river at the top
+            # line under the first river
+        if (y == x+10 and x < 5) or (y == x+14 and 5 < x < 8) or (y == x+15 and 8 < x < 13) or (y == x+18 and 14 < x < 17) or (y == x+20 and 17 < x < 20):
+            self.type_sprite = "watersiderightD"
+            self.type_empty = "water"
+        elif (y == x+11 and x < 5) or (y == x+15 and 4 < x < 8) or (y == x+16 and (7 < x < 13)) or (x, y) == (13, 31) or (y == x+19 and 13 < x < 17) or (y == x+21 and 16 < x < 19):
+            self.type_sprite = "watersiderightW"
+            self.type_empty = "water"
+        elif (x, y) == (5, 15) or (x, y) == (8, 22) or (x, y) == (13, 28) or (x, y) == (14, 31) or (x, y) == (17, 35):
+            self.type_sprite = "watersidecornerA"
+            self.type_empty = "water"
+        elif ((x, y) == (5, x) and 15 < x < 20) or (x, y) == (8, 23) or (x, y) == (13, 29) or (x, y) == (13, 30) or (x, y) == (14, 32) or (x, y) == (17, 36) or (x, y) == (17, 37):
+            self.type_sprite = "watersideunder"
+            self.type_empty = "water"
 
-            elif ((x,y)==(i+31,i) and i<5) or ((x,y)==(i+28,i) and 8<i<12):
-                self.type_sprite = "watersiderightD"
-                self.type_empty = "water"
-            elif ((x,y)==(i+30,i) and i<6) or ((x,y)==(i+27,i) and 8<i<13):
-                self.type_sprite = "watersiderightW"
-                self.type_empty = "water"
-            elif (x,y)==(36,5):
-                self.type_sprite = "watersidecornerA"
-                self.type_empty = "water"
-            elif ((x,y)==(36,i) and 5<i<9):
-                self.type_sprite = "watersideunder"
-                self.type_empty = "water"
+        # line behind the first river
+        elif (y == x+19 and x < 10) or (y == x+26 and 9 < x < 14):
+            self.type_sprite = "watersideleftW"
+            self.type_empty = "water"
+        elif (y == x+20 and x < 9) or (y == x+27 and 8 < x < 13):
+            self.type_sprite = "watersideleftD"
+            self.type_empty = "water"
+        elif (x == 9 and 28 < y < 36):
+            self.type_sprite = "watersideupper"
+            self.type_empty = "water"
 
-            #line behind the second river
-            elif ((x,y)==(i+24,i) and 8<i<16) or ((x,y)==(i+27,i) and i<6):
-                self.type_sprite = "watersideleftD"
-                self.type_empty = "water"
-            elif ((x,y)==(i+25,i) and 8<i<15) or ((x,y)==(i+28,i) and i<6):
-                self.type_sprite = "watersideleftW"
-                self.type_empty = "water"
-            elif ((x,y)==(33,i) and 5<i<9):
-                self.type_sprite = "watersideupper"
-                self.type_empty = "water"
-            
-            #full water in the second river
-            elif ((x,y)==(i+26,i) and 7<i<14) or ((x,y)==(i+27,i) and 6<i<9) or ((x,y)==(i+28,i) and 5<i<9) or ((x,y)==(i+29,i) and i<7):
-                self.type_sprite = "water"
-                self.type_empty = "water"
-        
-            #full water in the first river
-            for j in range (40):
-                if (x,y)==(i,j) and ((i<5 and 11+i<j<19+i) or (4<i<8 and 15+i<j<19+i) or (7<i<10 and 16+i<j<19+i) or (9<i<13 and 16+i<j<26+i) 
-                    or (i==13 and 18+i<j<26+i) or (13<i<17 and 19+i<j<26+i) or (i==17 and j==39)):
-                    self.type_sprite = "water"
-                    self.type_empty = "water"
+        elif ((x == y+31 and y < 5) or (x == y+28 and 8 < y < 12)):
+            self.type_sprite = "watersiderightD"
+            self.type_empty = "water"
+        elif ((x == y+30 and y < 6) or (x == y+27 and 8 < y < 13)):
+            self.type_sprite = "watersiderightW"
+            self.type_empty = "water"
+        elif (x, y) == (36, 5):
+            self.type_sprite = "watersidecornerA"
+            self.type_empty = "water"
+        elif ((x == 5 and 15 < y < 20) or (x == 36 and 5 < y < 9)):
+            self.type_sprite = "watersideunder"
+            self.type_empty = "water"
 
-        
-        #river at the bottom
-           
-            
+        # line behind the second river
+        elif ((x == y+24 and 8 < y < 16) or (x == y+27 and y < 6)):
+            self.type_sprite = "watersideleftD"
+            self.type_empty = "water"
+        elif ((x == y+25 and 8 < y < 15) or (x == y+28 and y < 6)):
+            self.type_sprite = "watersideleftW"
+            self.type_empty = "water"
+        elif ((x == 33 and 5 < y < 9)):
+            self.type_sprite = "watersideupper"
+            self.type_empty = "water"
 
-        #select the sprites randomly
+        # full water in the second river
+        elif ((x == y+26 and 7 < y < 14) or (x == y+27 and 6 < y < 9) or (x == y+28 and 5 < y < 9) or (x == y+29 and y < 7)):
+            self.type_sprite = "water"
+            self.type_empty = "water"
+
+        # full water in the first river
+        if ((x < 5 and 11+x < y < 19+x) or (4 < x < 8 and 15+x < y < 19+x) or (7 < x < 10 and 16+x < y < 19+x) or (9 < x < 13 and 16+x < y < 26+x)
+                or (x == 13 and 18+x < y < 26+x) or (13 < x < 17 and 19+x < y < 26+x) or (x == 17 and y == 39)):
+            self.type_sprite = "water"
+            self.type_empty = "water"
+
+        # rxver at the bottom
+
+        # select the sprites randomly
         if (self.type_empty == "rock") or (self.type_empty == "tree"):
-            aleatoire = randint(1,4)
+            aleatoire = randint(1, 4)
         elif (self.type_empty == "dirt"):
             aleatoire = randint(1, 13)
-        else :
-            aleatoire = randint(1,2)
+        else:
+            aleatoire = randint(1, 2)
         super().set_aleatoire(aleatoire)
-        self.sprite = pygame.image.load("game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(aleatoire) + "_not_up.png")
-
+        self.sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(aleatoire) + ".png")
+        self.sprite_display = ""
+        self.update_sprite_size()
         self.display()
 
     def __str__(self):
         return self.type_empty
 
+    def update_sprite_size(self):
+        if self.type_empty == "tree":
+            if self.aleatoire == 1:
+                self.sprite_display = pygame.transform.scale(
+                    self.sprite, (self.width, self.height*42/30))
+            elif self.aleatoire == 2:
+                self.sprite_display = pygame.transform.scale(
+                    self.sprite, (self.width, self.height*41/30))
+            elif self.aleatoire == 3:
+                self.sprite_display = pygame.transform.scale(
+                    self.sprite, (self.width, self.height*44/30))
+            elif self.aleatoire == 4:
+                self.sprite_display = pygame.transform.scale(
+                    self.sprite, (self.width, self.height*45/30))
+        elif self.type_empty == "rock":
+            self.sprite_display = pygame.transform.scale(
+                self.sprite, (self.width, self.height*35/30))
+        else:
+            self.sprite_display = pygame.transform.scale(
+                self.sprite, (self.width+2*sqrt(2), self.height+2))
+
+    def display(self):
+        if self.type_empty == "tree":
+            if self.aleatoire == 1:
+                self.screen.blit(
+                    self.sprite_display, (self.left, self.top - self.height*12/30))
+            elif self.aleatoire == 2:
+                self.screen.blit(
+                    self.sprite_display, (self.left, self.top - self.height*11/30))
+            elif self.aleatoire == 3:
+                self.screen.blit(
+                    self.sprite_display, (self.left, self.top - self.height*14/30))
+            elif self.aleatoire == 4:
+                self.screen.blit(
+                    self.sprite_display, (self.left, self.top - self.height*15/30))
+        elif self.type_empty == "rock":
+            self.screen.blit(
+                self.sprite_display, (self.left, self.top-self.height*5/30))
+        else:
+            self.screen.blit(self.sprite_display,
+                             (self.left-sqrt(2), self.top-1))
+        self.display_overlay()
+
     def clear(self):
         if self.type_empty == "tree":
             self.type_empty = "dirt"
+            self.type_sprite = "dirt"
+            self.sprite = pygame.image.load(
+                "game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(self.aleatoire) + ".png")
             self.map.wallet -= 2
+        self.update_sprite_size()
         self.display()
+        # To-do display around
 
     def canBuild(self):
         return self.type_empty == "dirt"
@@ -591,10 +613,13 @@ class Building(Cell):  # un fils de cellule (pas encore sûr de l'utilité)
         super().__init__(x, y, height, width, screen, my_map)
         self.map.buildings.append(self)
         self.destroyed = False
-        cell_around = self.check_cell_around(Path)
-        for j in cell_around:
-            print("Add edge from "+str((self.x, self.y))+" to "+str((j.x, j.y)))
+        path_around = self.check_cell_around(Path)
+        house_around = self.check_cell_around(House)
+        for j in path_around:
             self.map.path_graph.add_edge(j, self)
+            if isinstance(self, House) and len(house_around) != 0:
+                for k in house_around:
+                    self.map.path_graph.add_edge(j, k)
 
     def destroy(self):
         self.destroyed = True
@@ -613,16 +638,32 @@ class House(Building):  # la maison fils de building (?)
         # Temporary
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/house_" + str(self.level) + ".png")
+        self.sprite_display = ""
+        self.update_sprite_size()
         self.type = "house"
+        house_around= self.check_cell_around(House)
+        for i in house_around:
+            path_around = i.check_cell_around(Path)
+            if len(path_around) != 0:
+                self.map.path_graph.add_edge(path_around[0], self, weight=2000)
         self.display()
 
     def __str__(self):
         return f"House { self.level}"
 
+    def update_sprite_size(self):
+        self.sprite_display = pygame.transform.scale(
+            self.sprite, (self.width+2*sqrt(2), self.height+2))
+
+    def display(self):
+        self.screen.blit(self.sprite_display, (self.left-sqrt(2), self.top-1))
+        self.display_overlay()
+
     def nextLevel(self):
         self.level += 1
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/house_" + str(self.level) + ".png")
+        self.update_sprite_size()
         self.display()
         match self.level:
             case 2:
@@ -634,11 +675,11 @@ class House(Building):  # la maison fils de building (?)
 class Well(Building):
     def __init__(self, x, y, height, width, screen, my_map):
         super().__init__(x, y, height, width, screen, my_map)
-        #le risque est la en stand by
+        # le risque est la en stand by
         self.risk = RiskEvent("collapse", self)
         for i in range(-2, 3):
             for j in range(-2, 3):
-                if (39>=self.x+i>=0 and 39>=self.y+j>=0):
+                if (39 >= self.x+i >= 0 and 39 >= self.y+j >= 0):
                     self.map.get_cell(self.x+i, self.y+j).water = True
                     checkedCell = self.map.get_cell(self.x+i, self.y+j)
                     if isinstance(checkedCell, House) and checkedCell.level == 1 and checkedCell.max_occupants == checkedCell.nb_occupants:
@@ -646,7 +687,18 @@ class Well(Building):
 
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/well.png")
+        self.sprite_display = ""
+        self.update_sprite_size()
         self.type = "well"
+
+    def update_sprite_size(self):
+        self.sprite_display = pygame.transform.scale(
+            self.sprite, (self.width, self.height*53/30))
+
+    def display(self):
+        self.screen.blit(self.sprite_display,
+                         (self.left, self.top - self.height*23/30))
+        self.display_overlay()
 
     def __str__(self):
         return "Puit"
@@ -662,7 +714,18 @@ class Prefecture(Building):
         self.risk = RiskEvent("collapse", self)
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/prefecture.png")
-        self.type="prefecture"
+        self.sprite_display = ""
+        self.update_sprite_size()
+        self.type = "prefecture"
+
+    def update_sprite_size(self):
+        self.sprite_display = pygame.transform.scale(
+            self.sprite, (self.width, self.height*38/30))
+
+    def display(self):
+        self.screen.blit(self.sprite_display,
+                         (self.left, self.top - self.height*8/30))
+        self.display_overlay()
 
     def __str__(self):
         return f"Prefecture { self.employees}"
@@ -681,7 +744,18 @@ class EngineerPost(Building):
         self.risk = RiskEvent("fire", self)
         self.sprite = pygame.image.load(
             "game_screen/game_screen_sprites/engineerpost.png")
-        self.type="engineer post"
+        self.sprite_display = ""
+        self.update_sprite_size()
+        self.type = "engineer post"
+
+    def display(self):
+        self.screen.blit(
+            self.sprite_display, (self.left, self.top - self.height*20/30))
+        self.display_overlay()
+
+    def update_sprite_size(self):
+        self.sprite_display = pygame.transform.scale(
+            self.sprite, (self.width, self.height*50/30))
 
     def __str__(self):
         return "Engineer Post"

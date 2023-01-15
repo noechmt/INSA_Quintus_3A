@@ -60,19 +60,19 @@ class Walker() :
         self.isWandering = True
         #print(self.isWandering)
         path = self.currentCell.check_cell_around(Cell.Path)
-        assert len(path) != 0
-        self.cell_assignement(random.choice(path))
-        self.inBuilding = False
-        # if not isinstance(self, Prefect) and not isinstance(self, Engineer) :
-        if not self.alive :
-            self.building.map.walkers.append(self)
-            self.alive = True
+        if len(path) != 0:
+            self.cell_assignement(random.choice(path))
+            self.inBuilding = False
+            # if not isinstance(self, Prefect) and not isinstance(self, Engineer) :
+            if not self.alive :
+                self.building.map.walkers.append(self)
+                self.alive = True
         
 
         print("Walker is leaving the building on the cell " + str(self.currentCell.x)+ ";" + str(self.currentCell.y))
 
     def enter_building(self):
-        assert self.building in self.currentCell.check_cell_around(type(self.building))
+        #assert self.building in self.currentCell.check_cell_around(type(self.building))
         self.cell_assignement(self.building)
         self.inBuilding = True
         self.currentCell.display()
