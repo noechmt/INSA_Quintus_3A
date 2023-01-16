@@ -98,6 +98,26 @@ class Cell:  # Une case de la map
                 self.map.get_cell(self.x+1, self.y+1).display()
                 self.map.get_cell(self.x+1, self.y+1).display_around()
 
+    def display_around_shovel(self):
+        if (self.x-1 > 0 and self.y-1 > 0) :
+            self.map.get_cell(self.x-1, self.y-1).display()
+        if (self.y-1 > 0):
+            self.map.get_cell(self.x, self.y-1).display()
+        if (self.x-1 > 0):
+            self.map.get_cell(self.x-1, self.y).display()
+        if (self.x-1 > 0 and self.y+1 < 40 and self.map.get_cell(self.x-1, self.y+1).type_empty != "dirt" and self.map.get_cell(self.x-1, self.y+1).type != "path"):
+            self.map.get_cell(self.x-1, self.y+1).display()
+        if (self.y-1 > 0 and self.x+1 < 40 and self.map.get_cell(self.x+1, self.y-1).type_empty != "dirt" and self.map.get_cell(self.x+1, self.y-1).type != "path"):
+            self.map.get_cell(self.x+1, self.y-1).display()
+        if (self.y+1 < 40 and self.map.get_cell(self.x, self.y+1).type_empty != "dirt" and self.map.get_cell(self.x, self.y+1).type != "path"):
+            self.map.get_cell(self.x, self.y+1).display()
+        if (self.x+1 < 40 and self.map.get_cell(self.x+1, self.y).type_empty != "dirt" and self.map.get_cell(self.x+1, self.y).type != "path"):
+            self.map.get_cell(self.x+1, self.y).display()
+        if (self.x+1 < 40 and self.y+1 < 40 and self.map.get_cell(self.x+1, self.y+1).type_empty != "dirt" and self.map.get_cell(self.x+1, self.y+1).type != "path"):
+            self.map.get_cell(self.x+1, self.y+1).display()
+            
+        
+
     def handle_zoom(self, zoom_in):
         if zoom_in:
             self.height *= 1.04
