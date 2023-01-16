@@ -34,7 +34,6 @@ class Cell:  # Une case de la map
         self.house_mode = False
         self.WIDTH_SCREEN, self.HEIGHT_SCREEN = self.screen.get_size()
         self.init_screen_coordonates()
-        self.boolean_to_generate_map = 0
 
     def isBuildable(self):
         return isinstance(self, Empty) and self.type_empty == "dirt"
@@ -108,14 +107,19 @@ class Cell:  # Une case de la map
             self.map.get_cell(self.x-1, self.y).display()
         if (self.x-1 > 0 and self.y+1 < 40 and self.map.get_cell(self.x-1, self.y+1).type_empty != "dirt" and self.map.get_cell(self.x-1, self.y+1).type != "path"):
             self.map.get_cell(self.x-1, self.y+1).display()
+            self.map.get_cell(self.x-1, self.y+1).display_around()
         if (self.y-1 > 0 and self.x+1 < 40 and self.map.get_cell(self.x+1, self.y-1).type_empty != "dirt" and self.map.get_cell(self.x+1, self.y-1).type != "path"):
             self.map.get_cell(self.x+1, self.y-1).display()
+            self.map.get_cell(self.x+1, self.y-1).display_around()
         if (self.y+1 < 40 and self.map.get_cell(self.x, self.y+1).type_empty != "dirt" and self.map.get_cell(self.x, self.y+1).type != "path"):
             self.map.get_cell(self.x, self.y+1).display()
+            self.map.get_cell(self.x, self.y+1).display_around()
         if (self.x+1 < 40 and self.map.get_cell(self.x+1, self.y).type_empty != "dirt" and self.map.get_cell(self.x+1, self.y).type != "path"):
             self.map.get_cell(self.x+1, self.y).display()
+            self.map.get_cell(self.x+1, self.y).display_around()
         if (self.x+1 < 40 and self.y+1 < 40 and self.map.get_cell(self.x+1, self.y+1).type_empty != "dirt" and self.map.get_cell(self.x+1, self.y+1).type != "path"):
             self.map.get_cell(self.x+1, self.y+1).display()
+            self.map.get_cell(self.x+1, self.y+1).display_around()
             
         
 
@@ -276,7 +280,7 @@ class Cell:  # Une case de la map
                     i.currentCell.display()
             self.type_empty = "dirt"
             self.map.set_cell_array(self.x, self.y, Empty(
-                self.x, self.y, self.height, self.width, self.screen, self.map))
+               self.x, self.y, self.height, self.width, self.screen, self.map, "dirt", 1))
             arr = self.check_cell_around(Cell)
             for i in arr:
                 if not isinstance(i, Building):
@@ -473,16 +477,16 @@ class Path(Cell):
 
 
 class Empty(Cell):
-    def __init__(self, x, y, height, width, screen, map, type_empty="dirt"):
+    def __init__(self, x, y, height, width, screen, map, type_empty="dirt", boolean_first_generation=0):
         super().__init__(x, y, height, width, screen, map)
         self.type_empty = type_empty  # "dirt", "trees"
         self.type = "empty"
-        tree_or_dirt_list = ["tree", "dirt", "dirt"]
-        rock_or_dirt_list = ["rock", "dirt", "dirt", "dirt"]
+        self.tree_or_dirt_list = ["tree", "dirt", "dirt"]
+        self.rock_or_dirt_list = ["rock", "dirt", "dirt", "dirt"]
 
-        if(self.boolean_to_generate_map == 0):
+        if boolean_first_generation == 0:
             # place the trees
-            self.type_empty = random.choice(tree_or_dirt_list)
+            self.type_empty = random.choice(self.tree_or_dirt_list)
             if self.type_empty == "tree":
                 self.type_sprite = "tree"
                 self.type = "empty_tree"
@@ -491,7 +495,7 @@ class Empty(Cell):
 
             # place the rocks
             if ((27 < x < 36 and 12 < y < 16) or (27 < x < 31 and 15 < y < 23) or (x > 30 and y > 25) or (x > 35 and y < 5) or (x > 35 and y > 30)):
-                self.type_empty = random.choice(rock_or_dirt_list)
+                self.type_empty = random.choice(self.rock_or_dirt_list)
                 if self.type_empty == "rock":
                     self.type_sprite = "rock"
                     self.type = "empty_rock"
@@ -559,24 +563,23 @@ class Empty(Cell):
                     or (x == 13 and 18+x < y < 26+x) or (13 < x < 17 and 19+x < y < 26+x) or (x == 17 and y == 39)):
                 self.type_sprite = "water"
                 self.type_empty = "water"
+        else:
+            self.type_sprite = "dirt"
 
-            # rxver at the bottom
-
-            # select the sprites randomly
-            if (self.type_empty == "rock") or (self.type_empty == "tree"):
-                aleatoire = randint(1, 4)
-            elif (self.type_empty == "dirt"):
-                aleatoire = randint(1, 13)
-            else:
-                aleatoire = randint(1, 2)
-            super().set_aleatoire(aleatoire)
-            self.sprite = pygame.image.load(
-                "game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(aleatoire) + "_not_up.png")
-            # if(self.type_empty == "rock") : 
-            #     self.sprite = pygame.image.load(
-            #         "game_screen/game_screen_sprites/rock_5_not_up.png")
-            self.display()
-        self.boolean_to_generate_map = 1
+        # select the sprites randomly
+        if (self.type_empty == "rock") or (self.type_empty == "tree"):
+            aleatoire = randint(1, 4)
+        elif (self.type_empty == "dirt"):
+            aleatoire = randint(1, 13)
+        else:
+            aleatoire = randint(1, 2)
+        super().set_aleatoire(aleatoire)
+        self.sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(aleatoire) + "_not_up.png")
+        # if(self.type_empty == "rock") : 
+        #     self.sprite = pygame.image.load(
+        #         "game_screen/game_screen_sprites/rock_5_not_up.png")
+        self.display()
 
     def __str__(self):
         return self.type_empty
