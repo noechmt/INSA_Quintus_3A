@@ -2,14 +2,13 @@ from select import select
 import pygame
 from math import sqrt
 import numpy as np
-from Class.Cell import *
 from Class.Button import Button
 from Class.Map import *
 from Class.Panel import Panel
+import time
 
 # draw a rectangle with an opacity option
 
-import sys
 
 def draw_rect_alpha(surface, color, rect):
     shape_surf = pygame.Surface(pygame.Rect(rect).size, pygame.SRCALPHA)
@@ -40,28 +39,31 @@ def game_screen():
     SIZE = 40
 
     map = Map(SIZE, height_land, width_land, SCREEN)
+
     panel = Panel(SCREEN)
 
     # Dims without left panel
     height_wo_panel = HEIGH_SCREEN
     width_wo_panel = WIDTH_SCREEN - (WIDTH_SCREEN/7)
 
-#taskbar
-    color_brown = (70,46,1)
-    bar = pygame.image.load("game_screen/game_screen_sprites/taskbar_background.png")
-    SCREEN.blit(pygame.transform.scale(bar, (WIDTH_SCREEN, HEIGH_SCREEN/32)), (0, 0))
-    taskbarfont = pygame.font.SysFont('courriernew',25) #police, size
-    file_text = taskbarfont.render('File', False, color_brown)
-    options_text = taskbarfont.render('Options', False, color_brown)
-    help_text = taskbarfont.render('Help', False, color_brown)
-    advisors_text = taskbarfont.render('Advisors', False, color_brown)
-    SCREEN.blit(file_text, (WIDTH_SCREEN/60,HEIGH_SCREEN/256))
-    SCREEN.blit(options_text, (WIDTH_SCREEN/16,HEIGH_SCREEN/256))
+# taskbar
+    color_brown = (70, 46, 1)
+    bar = pygame.image.load(
+        "game_screen/game_screen_sprites/taskbar_background.png")
+    SCREEN.blit(pygame.transform.scale(
+        bar, (WIDTH_SCREEN, HEIGH_SCREEN/32)), (0, 0))
+    taskbarfont = pygame.font.SysFont('courriernew', 25)  # police, size
+    file_text = taskbarfont.render('File', 0, color_brown)
+    options_text = taskbarfont.render('Options', 0, color_brown)
+    help_text = taskbarfont.render('Help', 0, color_brown)
+    advisors_text = taskbarfont.render('Advisors', 0, color_brown)
+    SCREEN.blit(file_text, (WIDTH_SCREEN/60, HEIGH_SCREEN/256))
+    SCREEN.blit(options_text, (WIDTH_SCREEN/16, HEIGH_SCREEN/256))
     SCREEN.blit(help_text, (WIDTH_SCREEN/7.5, HEIGH_SCREEN/256))
     SCREEN.blit(advisors_text, (WIDTH_SCREEN/5.5, HEIGH_SCREEN/256))
 
     fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
-    run = True
+    run = 1
     clock = pygame.time.Clock()
 
     speeds = [0.000000001, 0.4, 0.6, 0.8, 1, 1.25, 1.5, 2, 3, 5]
@@ -74,49 +76,49 @@ def game_screen():
     SCREEN.blit(speed_counter_text, (speed_left, speed_top))
     paused = 0
 
-    selection = {"is_active": False, "start": tuple, "cells": set()}
+    selection = {"is_active": 0, "start": tuple, "cells": set()}
     hovered_cell = None
     zoom = 1
     move = 1
+    zoom_update = 0
 
     walker_update_count = 0
     fire_upadte_count = 0
-
-
 
     ##############################
     while run:
         pos = pygame.mouse.get_pos()
         if pos[1] <= 60:
-            map.offset_top += 10*(3 - pos[1] / 20)
-            map.handle_move("up", 3 - pos[1] / 20)
+            map.offset_top += 5*(3 - pos[1] / 20)*zoom
+            map.handle_move("up", (3 - pos[1] / 20)*zoom)
             panel.display()
             speed_counter_text = fps_font.render(
                 f"{speed * 100:.0f}%", 1, (255, 255, 255))
             SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         if pos[1] >= HEIGH_SCREEN - 60:
-            map.offset_top -= 10*(3 - (HEIGH_SCREEN - pos[1]) / 20)
-            map.handle_move("down", 3 - (HEIGH_SCREEN - pos[1]) / 20)
+            map.offset_top -= 5*(3 - (HEIGH_SCREEN - pos[1]) / 20)*zoom
+            map.handle_move("down", (3 - (HEIGH_SCREEN - pos[1]) / 20) * zoom)
             panel.display()
             speed_counter_text = fps_font.render(
                 f"{speed * 100:.0f}%", 1, (255, 255, 255))
             SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         if pos[0] <= 60:
-            map.offset_left -= 10*(3 - pos[0] / 20)
-            map.handle_move("left", 3 - pos[0] / 20)
+            map.offset_left -= 5*(3 - pos[0] / 20)*zoom
+            map.handle_move("left", (3 - pos[0] / 20)*zoom)
             panel.display()
             speed_counter_text = fps_font.render(
                 f"{speed * 100:.0f}%", 1, (255, 255, 255))
             SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         if pos[0] >= WIDTH_SCREEN - 60:
             if not panel.get_road_button().is_hovered(pos) and not panel.get_well_button().is_hovered(pos):
-                map.offset_left += 10*(3 - (WIDTH_SCREEN - pos[0]) / 20)
-                map.handle_move("right", 3 - (WIDTH_SCREEN - pos[0]) / 20)
+                map.offset_left += 5*(3 - (WIDTH_SCREEN - pos[0]) / 20)*zoom
+                map.handle_move(
+                    "right", (3 - (WIDTH_SCREEN - pos[0]) / 20) * zoom)
                 panel.display()
                 speed_counter_text = fps_font.render(
                     f"{speed * 100:.0f}%", 1, (255, 255, 255))
                 SCREEN.blit(speed_counter_text, (speed_left, speed_top))
-
+        zoom_update += 1
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
 
@@ -131,14 +133,14 @@ def game_screen():
             text_wallet = fps_font.render(f"{map.wallet}", 1, (255, 255, 255))
             SCREEN.blit(text_wallet, (0, 40))
             if event.type == pygame.QUIT:
-                run = False
+                run = 0
             # Move up
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if map.inMap(x, y) and not selection["is_active"]:
                         selection["start"] = (x, y)
                         selection["cells"].add((x, y))
-                        selection["is_active"] = True
+                        selection["is_active"] = 1
 
                 # spawn the grid if is clicked
                     if (panel.get_grid_button().is_hovered(pos)):
@@ -151,27 +153,27 @@ def game_screen():
                     if (panel.house_button.is_hovered(pos)):
                         panel.set_window("house")
                         map.handle_button("house")
-                        map.display_map()
+                        # map.display_map()
                     if (panel.shovel_button.is_hovered(pos)):
                         panel.set_window("shovel")
                         map.handle_button("shovel")
-                        map.display_map()
+                        # map.display_map()
                     if (panel.get_road_button().is_hovered(pos)):
                         panel.set_window("road")
                         map.handle_button("road")
-                        map.display_map()
+                        # map.display_map()
                     if (panel.prefecture_button.is_hovered(pos)):
                         panel.set_window("prefecture")
                         map.handle_button("prefecture")
-                        map.display_map()
+                        # map.display_map()
                     if (panel.engineerpost_button.is_hovered(pos)):
                         panel.set_window("engineer post")
                         map.handle_button("engineerpost")
-                        map.display_map()
+                        # map.display_map()
                     if (panel.well_button.is_hovered(pos)):
                         panel.set_window("well")
                         map.handle_button("well")
-                        map.display_map()
+                        # map.display_map()
                     if (panel.up_button.is_hovered(pos)):
                         if speed_index < 9:
                             speed_index += 1
@@ -211,25 +213,26 @@ def game_screen():
                                 f"{speed * 100:.0f}%", 1, (255, 255, 255))
                             SCREEN.blit(speed_counter_text,
                                         (speed_left, speed_top))
-
-                if event.button == 4:
-                    if zoom <= 1.25:
-                        zoom += 0.01
-                        map.handle_zoom(1)
-                        panel.display()
-                        speed_counter_text = fps_font.render(
-                            f"{speed * 100:.0f}%", 1, (255, 255, 255))
-                        SCREEN.blit(speed_counter_text,
-                                    (speed_left, speed_top))
-                if event.button == 5:
-                    if zoom >= 0.95:
-                        zoom -= 0.01
-                        map.handle_zoom(0)
-                        panel.display()
-                        speed_counter_text = fps_font.render(
-                            f"{speed * 100:.0f}%", 1, (255, 255, 255))
-                        SCREEN.blit(speed_counter_text,
-                                    (speed_left, speed_top))
+                if zoom_update > 0:
+                    if event.button == 4:
+                        if zoom < 1.7:
+                            zoom += 0.05
+                            map.handle_zoom(1)
+                            panel.display()
+                            speed_counter_text = fps_font.render(
+                                f"{speed * 100:.0f}%", 1, (255, 255, 255))
+                            SCREEN.blit(speed_counter_text,
+                                        (speed_left, speed_top))
+                    if event.button == 5:
+                        if zoom > 0.8:
+                            zoom -= 0.05
+                            map.handle_zoom(0)
+                            panel.display()
+                            speed_counter_text = fps_font.render(
+                                f"{speed * 100:.0f}%", 1, (255, 255, 255))
+                            SCREEN.blit(speed_counter_text,
+                                        (speed_left, speed_top))
+                    zoom_update = 0
 
             if event.type == pygame.MOUSEBUTTONUP:
                 if selection["is_active"]:
@@ -254,9 +257,9 @@ def game_screen():
                         else:
                             selected_cell.display()
                     map.buildings.sort(key=lambda i: (i.x, i.y))
-                    print([(i.x,i.y) for i in map.buildings])
+                    print([(i.x, i.y) for i in map.buildings])
                     selection["cells"].clear()
-                    selection["is_active"] = False
+                    selection["is_active"] = 0
 
             if event.type == pygame.MOUSEMOTION:
                 # Display previous cell without hover
@@ -270,7 +273,7 @@ def game_screen():
                     hovered_cell = map.get_cell(
                         hovered_coordinates[0], hovered_coordinates[1])
                     hovered_cell.handle_hover_button()
-                    #hovered_cell.display_around()
+                    # hovered_cell.display_around()
 
                 # Selection : fill the set with hovered cell
                 if map.inMap(x, y) and selection["is_active"]:
@@ -302,22 +305,22 @@ def game_screen():
                     panel.set_window("none")
                     map.handle_esc()
 
-                if pygame.key.get_pressed()[pygame.K_p] :
+                if pygame.key.get_pressed()[pygame.K_p]:
                     volume = pygame.mixer.music.get_volume()
-                    pygame.mixer.music.set_volume(volume +0.05)  
+                    pygame.mixer.music.set_volume(volume + 0.05)
                     print("tunic", pygame.mixer.music.get_volume())
-                    for i in map.sound_effect :
+                    for i in map.sound_effect:
                         volume = map.sound_effect[i].get_volume()
-                        map.sound_effect[i].set_volume(volume +0.05)
+                        map.sound_effect[i].set_volume(volume + 0.05)
                         print(map.sound_effect[i].get_volume(), i, "+")
 
-                if pygame.key.get_pressed()[pygame.K_m] :
+                if pygame.key.get_pressed()[pygame.K_m]:
                     volume = pygame.mixer.music.get_volume()
-                    pygame.mixer.music.set_volume(volume -0.05) 
+                    pygame.mixer.music.set_volume(volume - 0.05)
                     print("tunic", pygame.mixer.music.get_volume())
-                    for i in map.sound_effect :
+                    for i in map.sound_effect:
                         volume = map.sound_effect[i].get_volume()
-                        map.sound_effect[i].set_volume(volume -0.05)
+                        map.sound_effect[i].set_volume(volume - 0.05)
                         print(map.sound_effect[i].get_volume(), i, "-")
 
                 # grid_button.handle_hover_button(pos, SCREEN)
@@ -325,13 +328,17 @@ def game_screen():
                 # shovel_button.handle_hover_button(pos, SCREEN)
                 # road_button.handle_hover_button(pos, SCREEN)
 
-    
         walker_update_count += 1
         # print(walker_update_count)
         update_speed = 10 / (speed)
         if walker_update_count >= update_speed:
-            #print(walker_update_count)
+            # print(walker_update_count)
             map.update_walkers()
+            panel.display()
+            speed_counter_text = fps_font.render(
+                f"{speed * 100:.0f}%", 1, (255, 255, 255))
+            SCREEN.blit(speed_counter_text,
+                        (speed_left, speed_top))
             # print("break")
             walker_update_count = 0
 
@@ -341,17 +348,17 @@ def game_screen():
             map.update_collapse()
             fire_upadte_count = 0
 
-
         # if tmpbool :
         #     map.array[13][29] = Prefecture(13, 29, map.height_land, map.width_land,map.screen, map)
         #     SCREEN.blit(pygame.transform.scale(pygame.image.load("walker_sprites/test/Housng1a_00019.png"), (map.array[13][29].width, map.array[13][29].height)), (map.array[13][29].left, map.array[13][29].top))
         #     map.array[31][19] = EngineerPost(31, 19, map.height_land, map.width_land, map.screen, map)
         #     SCREEN.blit(pygame.transform.scale(pygame.image.load("walker_sprites/test/Housng1a_00019.png"), (map.array[31][19].width, map.array[31][19].height)), (map.array[31][19].left, map.array[31][19].top))
-        #     tmpbool = False
+        #     tmpbool = 0
         clock.tick(60)
         fps = (int)(clock.get_fps())
         text_fps = fps_font.render(str(fps), 1, (255, 255, 255))
         pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(
             0, HEIGH_SCREEN - text_fps.get_size()[1], 60, 40))
         SCREEN.blit(text_fps, (0, HEIGH_SCREEN - text_fps.get_size()[1]))
+
         pygame.display.flip()
