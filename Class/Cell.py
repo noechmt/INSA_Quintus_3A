@@ -81,8 +81,8 @@ class Cell:  # Une case de la map
                 self.sprite, (self.width+2*sqrt(2), self.height+2)), (self.left-sqrt(2), self.top-1))
         if self.map.get_grided():
             self.grid()
-        self.display_water()
-"""
+        self.display_water()"""
+
 
     def display_water(self):
         if self.water and self.map.get_welled() and self.type != "well":
@@ -710,12 +710,21 @@ class Well(Building):
         self.type = "well"
 
     def update_sprite_size(self):
-        self.sprite_display = pygame.transform.scale(
-            self.sprite, (self.width, self.height*53/30))
+        if(self.type == "ruin"):
+            self.sprite_display = pygame.transform.scale(
+                self.sprite, (self.width, self.height*34/30))
+        else:
+            self.sprite_display = pygame.transform.scale(
+                self.sprite, (self.width, self.height*53/30))
+            
 
     def display(self):
-        self.screen.blit(self.sprite_display,
-                         (self.left, self.top - self.height*23/30))
+        if(self.type == "ruin"):
+            self.screen.blit(self.sprite_display,
+                         (self.left, self.top- self.height*4/30))
+        else:
+            self.screen.blit(self.sprite_display,
+                            (self.left, self.top - self.height*23/30))
         if self.map.get_grided():
             self.grid()
         self.display_water()
@@ -739,11 +748,19 @@ class Prefecture(Building):
         self.type = "prefecture"
 
     def update_sprite_size(self):
-        self.sprite_display = pygame.transform.scale(
-            self.sprite, (self.width, self.height*38/30))
+        if self.type == "ruin":
+            self.sprite_display = pygame.transform.scale(
+                self.sprite, (self.width, self.height*34/30))
+        else:
+            self.sprite_display = pygame.transform.scale(
+                self.sprite, (self.width, self.height*38/30))
 
     def display(self):
-        self.screen.blit(self.sprite_display,
+        if self.type == "ruin":
+            self.screen.blit(
+                self.sprite_display, (self.left, self.top - self.height*4/30))
+        else:
+            self.screen.blit(self.sprite_display,
                          (self.left, self.top - self.height*8/30))
 
     def __str__(self):
@@ -768,15 +785,24 @@ class EngineerPost(Building):
         self.type = "engineer post"
 
     def display(self):
-        self.screen.blit(
-            self.sprite_display, (self.left, self.top - self.height*20/30))
+        if self.type == "ruin" :
+            self.screen.blit(
+                self.sprite_display, (self.left, self.top))
+        else:
+            self.screen.blit(
+                self.sprite_display, (self.left, self.top - self.height*20/30))
         if self.map.get_grided():
             self.grid()
         self.display_water()
 
     def update_sprite_size(self):
-        self.sprite_display = pygame.transform.scale(
-            self.sprite, (self.width, self.height*50/30))
+        if(self.type == "ruin"):
+            self.sprite_display = pygame.transform.scale(
+                self.sprite, (self.width, self.height))
+        
+        else:
+            self.sprite_display = pygame.transform.scale(
+                self.sprite, (self.width, self.height*50/30))
 
     def __str__(self):
         return "Engineer Post"
