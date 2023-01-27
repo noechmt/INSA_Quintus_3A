@@ -4,6 +4,7 @@ import pygame
 from random import *
 from math import sqrt
 import random
+import time
 
 
 def draw_polygon_alpha(surface, color, points):
@@ -24,16 +25,19 @@ class Cell:  # Une case de la map
         self.width = width
         self.map = map
         self.type = ""
-        self.water = False
+        self.water = 0
         self.sprite = ""
         self.aleatoire = 0
         self.screen = screen
-        self.hovered = False
+        self.hovered = 0
         self.type_empty = None
-        self.grided = False
-        self.house_mode = False
+        self.grided = 0
+        self.house_mode = 0
         self.WIDTH_SCREEN, self.HEIGHT_SCREEN = self.screen.get_size()
         self.init_screen_coordonates()
+
+    def update_sprite_size(self):
+        pass
 
     def isBuildable(self):
         return isinstance(self, Empty) and self.type_empty == "dirt"
@@ -46,7 +50,7 @@ class Cell:  # Une case de la map
             self.height/2 + self.y * self.height/2 + self.map.offset_top
 
     def display(self):
-        if self.type_empty == "tree":
+        """if self.type_empty == "tree":
             if self.aleatoire == 1:
                 self.screen.blit(pygame.transform.scale(
                     self.sprite, (self.width, self.height*42/30)), (self.left, self.top - self.height*12/30))
@@ -78,6 +82,7 @@ class Cell:  # Une case de la map
         if self.map.get_grided():
             self.grid()
         self.display_water()
+"""
 
     def display_water(self):
         if self.water and self.map.get_welled() and self.type != "well":
@@ -100,52 +105,29 @@ class Cell:  # Une case de la map
 
     def handle_zoom(self, zoom_in):
         if zoom_in:
-            self.height *= 1.04
-            self.width *= 1.04
+            self.height *= 1.05
+            self.width *= 1.05
         else:
-            self.height /= 1.04
-            self.width /= 1.04
+            self.height /= 1.05
+            self.width /= 1.05
         self.init_screen_coordonates()
+        self.update_sprite_size()
         self.display()
 
     def handle_move(self, move, m):
         if move == "up":
-            self.top += 10 * m
+            self.top += 5 * m
         if move == "down":
-            self.top -= 10 * m
+            self.top -= 5 * m
         if move == "right":
-            self.left -= 10 * m
+            self.left -= 5 * m
         if move == "left":
-            self.left += 10 * m
-        # self.display()
-
-    # def is_hovered(self, pos):
-    #     # Initialize the number of intersections to 0
-    #     intersections = 0
-
-    #     polygon = self.get_points_polygone()
-
-    #     # Iterate over the polygon's sides
-    #     for i in range(len(polygon)):
-    #         # Get the coordinates of the current side
-    #         x1, y1 = polygon[i]
-    #         x2, y2 = polygon[(i + 1) % len(polygon)]
-
-    #         # Check if the line from the point to the edge of the polygon intersects with the current side
-    #         if min(y1, y2) < pos[1] <= max(y1, y2):
-    #             # Calculate the x-coordinate of the intersection
-    #             x = (pos[1] - y1) * (x2 - x1) / (y2 - y1) + x1
-
-    #             # If the x-coordinate of the intersection is greater than the point's x-coordinate, increment the number of intersections
-    #             if x > pos[0]:
-    #                 intersections += 1
-    #     # If the number of intersections is odd, the point is inside the polygon
-    #     return intersections % 2 == 1
+            self.left += 5 * m
 
     def handle_hover_button(self):
         if (self.map.get_housed()):
             house_sprite = pygame.image.load(
-                "game_screen/game_screen_sprites/house_0.png")
+                "game_screen/game_screen_sprites/house_0.png").convert_alpha()
             self.screen.blit(pygame.transform.scale(
                 house_sprite, (self.width, self.height)), (self.left, self.top))
             if self.isBuildable():
@@ -226,13 +208,13 @@ class Cell:  # Une case de la map
             for i in range(-2, 3):
                 for j in range(-2, 3):
                     if (37 > self.x > 3 and 37 > self.y > 3 and self.map.get_cell(self.x+i, self.y+j).type == "well"):
-                        self.map.get_cell(self.x, self.y).set_water(True)
+                        self.map.get_cell(self.x, self.y).set_water(1)
 
-    def grid(self):
+    def grid(self, pushed=1):
         if self.map.get_grided():
             pygame.draw.polygon(self.screen, (25, 25, 25),
                                 self.get_points_polygone(), 2)
-        else:
+        elif pushed:
             self.display()
 
     def clear(self):
@@ -278,52 +260,59 @@ class Cell:  # Une case de la map
 
 
 sprite_hori = pygame.image.load(
-    "game_screen/game_screen_sprites/road_straight_hori.png")
+    "game_screen/game_screen_sprites/road_straight_hori.png").convert_alpha()
 sprite_verti = pygame.image.load(
-    "game_screen/game_screen_sprites/road_straight_verti.png")
+    "game_screen/game_screen_sprites/road_straight_verti.png").convert_alpha()
 sprite_all_turn = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_all.png")
+    "game_screen/game_screen_sprites/road_turn_all.png").convert_alpha()
 sprite_turn_bot_left = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_bot_left.png")
+    "game_screen/game_screen_sprites/road_turn_bot_left.png").convert_alpha()
 sprite_turn_bot_right = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_bot_right.png")
+    "game_screen/game_screen_sprites/road_turn_bot_right.png").convert_alpha()
 sprite_turn_hori_bot = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_hori_bot.png")
+    "game_screen/game_screen_sprites/road_turn_hori_bot.png").convert_alpha()
 sprite_turn_hori_top = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_hori_top.png")
+    "game_screen/game_screen_sprites/road_turn_hori_top.png").convert_alpha()
 sprite_turn_left_top = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_left_top.png")
+    "game_screen/game_screen_sprites/road_turn_left_top.png").convert_alpha()
 sprite_turn_right_top = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_right_top.png")
+    "game_screen/game_screen_sprites/road_turn_right_top.png").convert_alpha()
 sprite_turn_verti_left = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_verti_left.png")
+    "game_screen/game_screen_sprites/road_turn_verti_left.png").convert_alpha()
 sprite_turn_verti_right = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_verti_right.png")
+    "game_screen/game_screen_sprites/road_turn_verti_right.png").convert_alpha()
 
 
 class Path(Cell):
+
     def __init__(self, x, y, height, width, screen, map, path_level=0):
         super().__init__(x, y, height, width, screen, map)
-        self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/road_straight_verti.png")
+        self.sprite = sprite_verti
+        self.sprite_display = ""
         self.level = path_level
         self.handle_sprites()
-        self.display()
-        self.grid()
+        self.update_sprite_size()
         self.type = "path"
         # Get an array of all neighbor path
         cell_around = self.check_cell_around(Path)
         # Loop through this array
         for i in cell_around:
-            print("Add edge from "+str((self.x, self.y))+" to "+str((i.x, i.y)))
             self.map.path_graph.add_edge(self, i)
-            print("Add edge from "+str((i.x, i.y)) +
-                  " to "+str((self.x, self.y)))
             self.map.path_graph.add_edge(i, self)
 
         cell_around = self.check_cell_around(House)
         for j in cell_around:
             self.map.path_graph.add_edge(self, j)
+
+    def update_sprite_size(self):
+        self.sprite_display = pygame.transform.scale(
+            self.sprite, (self.width+2*sqrt(2), self.height+2))
+
+    def display(self):
+        self.screen.blit(self.sprite_display, (self.left-sqrt(2), self.top-1))
+        if self.map.get_grided():
+            self.grid()
+        self.display_water()
 
     def handle_sprites(self, r=0):
         if r < 2:
@@ -439,12 +428,13 @@ class Path(Cell):
             for dy in range(-1, 2):
                 if abs(dx) != abs(dy):
                     if check[i] != 2 and isinstance(self.map.get_cell(self.x + dx, self.y + dy), Path) != check[i]:
-                        return False
+                        return 0
                     i += 1
-        return True
+        return 1
 
     def set_sprite(self, sprite):
         self.sprite = sprite
+        self.update_sprite_size()
         self.display()
 
     def __str__(self):
@@ -549,22 +539,67 @@ class Empty(Cell):
             aleatoire = randint(1, 2)
         super().set_aleatoire(aleatoire)
         self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(aleatoire) + "_not_up.png")
-        # if(self.type_empty == "rock") : 
-        #     self.sprite = pygame.image.load(
-        #         "game_screen/game_screen_sprites/rock_5_not_up.png")
+            "game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(aleatoire) + ".png").convert_alpha()
+        self.sprite_display = ""
+        self.update_sprite_size()
         self.display()
 
     def __str__(self):
         return self.type_empty
+
+    def update_sprite_size(self):
+        if self.type_empty == "tree":
+            if self.aleatoire == 1:
+                self.sprite_display = pygame.transform.scale(
+                    self.sprite, (self.width, self.height*42/30))
+            elif self.aleatoire == 2:
+                self.sprite_display = pygame.transform.scale(
+                    self.sprite, (self.width, self.height*41/30))
+            elif self.aleatoire == 3:
+                self.sprite_display = pygame.transform.scale(
+                    self.sprite, (self.width, self.height*44/30))
+            elif self.aleatoire == 4:
+                self.sprite_display = pygame.transform.scale(
+                    self.sprite, (self.width, self.height*45/30))
+        elif self.type_empty == "rock":
+            self.sprite_display = pygame.transform.scale(
+                self.sprite, (self.width, self.height*35/30))
+        else:
+            self.sprite_display = pygame.transform.scale(
+                self.sprite, (self.width+2*sqrt(2), self.height+2))
+
+    def display(self):
+        if self.type_empty == "tree":
+            if self.aleatoire == 1:
+                self.screen.blit(
+                    self.sprite_display, (self.left, self.top - self.height*12/30))
+            elif self.aleatoire == 2:
+                self.screen.blit(
+                    self.sprite_display, (self.left, self.top - self.height*11/30))
+            elif self.aleatoire == 3:
+                self.screen.blit(
+                    self.sprite_display, (self.left, self.top - self.height*14/30))
+            elif self.aleatoire == 4:
+                self.screen.blit(
+                    self.sprite_display, (self.left, self.top - self.height*15/30))
+        elif self.type_empty == "rock":
+            self.screen.blit(
+                self.sprite_display, (self.left, self.top-self.height*5/30))
+        else:
+            self.screen.blit(self.sprite_display,
+                             (self.left-sqrt(2), self.top-1))
+        if self.map.get_grided():
+            self.grid()
+        self.display_water()
 
     def clear(self):
         if self.type_empty == "tree":
             self.type_empty = "dirt"
             self.type_sprite = "dirt"
             self.sprite = pygame.image.load(
-                "game_screen/game_screen_sprites/" + self.type_sprite + "_0_not_up.png")
+                "game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(self.aleatoire) + ".png")
             self.map.wallet -= 2
+        self.update_sprite_size()
         self.display()
         # To-do display around
 
@@ -576,14 +611,13 @@ class Building(Cell):  # un fils de cellule (pas encore sûr de l'utilité)
     def __init__(self, x, y, height, width, screen, my_map):
         super().__init__(x, y, height, width, screen, my_map)
         self.map.buildings.append(self)
-        self.destroyed = False
+        self.destroyed = 0
         cell_around = self.check_cell_around(Path)
         for j in cell_around:
-            print("Add edge from "+str((self.x, self.y))+" to "+str((j.x, j.y)))
             self.map.path_graph.add_edge(j, self)
 
     def destroy(self):
-        self.destroyed = True
+        self.destroyed = 1
 
 
 class House(Building):  # la maison fils de building (?)
@@ -598,17 +632,30 @@ class House(Building):  # la maison fils de building (?)
         self.risk = RiskEvent("fire", self)
         # Temporary
         self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/house_" + str(self.level) + ".png")
+            "game_screen/game_screen_sprites/house_" + str(self.level) + ".png").convert_alpha()
+        self.sprite_display = ""
+        self.update_sprite_size()
         self.type = "house"
         self.display()
 
     def __str__(self):
         return f"House { self.level}"
 
+    def update_sprite_size(self):
+        self.sprite_display = pygame.transform.scale(
+            self.sprite, (self.width+2*sqrt(2), self.height+2))
+
+    def display(self):
+        self.screen.blit(self.sprite_display, (self.left-sqrt(2), self.top-1))
+        if self.map.get_grided():
+            self.grid()
+        self.display_water()
+
     def nextLevel(self):
         self.level += 1
         self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/house_" + str(self.level) + ".png")
+            "game_screen/game_screen_sprites/house_" + str(self.level) + ".png").convert_alpha()
+        self.update_sprite_size()
         self.display()
         match self.level:
             case 2:
@@ -625,14 +672,27 @@ class Well(Building):
         for i in range(-2, 3):
             for j in range(-2, 3):
                 if (39 >= self.x+i >= 0 and 39 >= self.y+j >= 0):
-                    self.map.get_cell(self.x+i, self.y+j).water = True
+                    self.map.get_cell(self.x+i, self.y+j).water = 1
                     checkedCell = self.map.get_cell(self.x+i, self.y+j)
                     if isinstance(checkedCell, House) and checkedCell.level == 1 and checkedCell.max_occupants == checkedCell.nb_occupants:
                         checkedCell.nextLevel()
 
         self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/well.png")
+            "game_screen/game_screen_sprites/well.png").convert_alpha()
+        self.sprite_display = ""
+        self.update_sprite_size()
         self.type = "well"
+
+    def update_sprite_size(self):
+        self.sprite_display = pygame.transform.scale(
+            self.sprite, (self.width, self.height*53/30))
+
+    def display(self):
+        self.screen.blit(self.sprite_display,
+                         (self.left, self.top - self.height*23/30))
+        if self.map.get_grided():
+            self.grid()
+        self.display_water()
 
     def __str__(self):
         return "Puit"
@@ -647,8 +707,18 @@ class Prefecture(Building):
         self.requiredEmployees = 5
         self.risk = RiskEvent("collapse", self)
         self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/prefecture.png")
+            "game_screen/game_screen_sprites/prefecture.png").convert_alpha()
+        self.sprite_display = ""
+        self.update_sprite_size()
         self.type = "prefecture"
+
+    def update_sprite_size(self):
+        self.sprite_display = pygame.transform.scale(
+            self.sprite, (self.width, self.height*38/30))
+
+    def display(self):
+        self.screen.blit(self.sprite_display,
+                         (self.left, self.top - self.height*8/30))
 
     def __str__(self):
         return f"Prefecture { self.employees}"
@@ -666,8 +736,21 @@ class EngineerPost(Building):
         self.requiredEmployees = 5
         self.risk = RiskEvent("fire", self)
         self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/engineerpost.png")
+            "game_screen/game_screen_sprites/engineerpost.png").convert_alpha()
+        self.sprite_display = ""
+        self.update_sprite_size()
         self.type = "engineer post"
+
+    def display(self):
+        self.screen.blit(
+            self.sprite_display, (self.left, self.top - self.height*20/30))
+        if self.map.get_grided():
+            self.grid()
+        self.display_water()
+
+    def update_sprite_size(self):
+        self.sprite_display = pygame.transform.scale(
+            self.sprite, (self.width, self.height*50/30))
 
     def __str__(self):
         return "Engineer Post"
