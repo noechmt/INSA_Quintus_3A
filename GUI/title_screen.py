@@ -50,10 +50,15 @@ def title_screen():
 
     top_start_button = top_logo + height_logo + HEIGHT_SCREEN / 30
     start_game_button = Button(left_buttons, top_start_button, width_buttons,
-                               height_buttons, image=logo_background, text="Commencez la partie")
+                               height_buttons, image=logo_background, text="Commencer une partie")
     start_game_button.draw(SCREEN)
 
-    top_leave_button = top_logo + 2 * height_logo
+    top_load_button = top_start_button + height_buttons + HEIGHT_SCREEN / 100
+    load_game_button = Button(left_buttons, top_load_button, width_buttons,
+                               height_buttons, image=logo_background, text="Charger une partie")
+    load_game_button.draw(SCREEN)
+    
+    top_leave_button = top_load_button + height_buttons + HEIGHT_SCREEN / 100
     leave_game_button = Button(left_buttons, top_leave_button, width_buttons,
                                height_buttons, image=logo_background, text="Quittez le jeu")
     leave_game_button.draw(SCREEN)
