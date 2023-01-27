@@ -68,7 +68,7 @@ class Walker():
         self.isWandering = True
         # print(self.isWandering)
         path = self.currentCell.check_cell_around(Cell.Path)
-        assert len(path) != 0
+        if len(path) == 0 : return
         self.cell_assignement(random.choice(path))
         self.inBuilding = False
         # if not isinstance(self, Prefect) and not isinstance(self, Engineer) :
