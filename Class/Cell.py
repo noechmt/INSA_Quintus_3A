@@ -7,6 +7,12 @@ from math import sqrt, floor
 import random
 import time
 
+overlay_risk = [
+    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_0.png"), "width": 58, "height": 30},
+    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_1.png"), "width": 48, "height": 63},
+    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_2.png"), "width": 48, "height": 73},
+    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_3.png"), "width": 48, "height": 83},
+    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_4.png"), "width": 48, "height": 93}]
 
 def draw_polygon_alpha(surface, color, points):
     lx, ly = zip(*points)
@@ -211,8 +217,8 @@ class Cell:  # Une case de la map
 
             case "fire" | "collapse":
                 if isinstance(self, Building) and self.risk.type == self.map.overlay and self.risk.riskCounter < self.risk.riskTreshold:
-                    sprite = pygame.image.load("risks_sprites/overlay/overlay_" + str(floor(self.risk.riskCounter*5/self.risk.riskTreshold)) + ".png")
-                    self.screen.blit(pygame.transform.scale(sprite, (self.width, self.height)), (self.left, self.top)) 
+                    i= floor(self.risk.riskCounter*5/self.risk.riskTreshold)
+                    self.screen.blit(pygame.transform.scale(overlay_risk[i]["sprite"], (overlay_risk[i]["width"], overlay_risk[i]["height"])), (self.left, self.top+self.height-overlay_risk[i]["height"]))
             
             case "water":
                 if self.water and self.map.get_welled() and self.type != "well":

@@ -306,10 +306,10 @@ def game_screen():
                     map.handle_esc()
 
                 if pygame.key.get_pressed()[pygame.K_o]:
-                    outfile = open("Saves/test.plk",'wb')
-                    pickle.dump(map,outfile)
-                    outfile.close()
-                    #map.set_overlay("fire")
+                    # outfile = open("Saves/test.plk",'wb')
+                    # pickle.dump(map,outfile)
+                    # outfile.close()
+                    map.set_overlay("fire")
 
                 # grid_button.handle_hover_button(pos, SCREEN)
                 # home_button.handle_hover_button(pos, SCREEN)
