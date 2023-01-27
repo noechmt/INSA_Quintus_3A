@@ -334,9 +334,13 @@ class Prefect(Walker):
             self.isWorking = False
             self.isWandering = True
             self.ttl = 1
-            self.building.screen.blit(pygame.transform.scale(self.path[0].risk.fire_sprites[8],
-                                                             (self.path[0].width, self.path[0].height)), (self.path[0].left, self.path[0].top))
+            self.current_building.map.buildings[0].sprite = pygame.image.load("risks_sprites/house_fire/fire_9.png")
+            self.current_building.map.buildings[0].update_sprite_size()
+            self.current_building.map.buildings[0].display()
+            # self.building.screen.blit(pygame.transform.scale(self.path[0].risk.fire_sprites[8],
+            #                                                  (self.path[0].width, self.path[0].height)), (self.path[0].left, self.path[0].top))
             self.path = []
+            print("Eteint")
 
 
 class Engineer(Walker):
