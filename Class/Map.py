@@ -4,6 +4,7 @@ import math as m
 import random as rd
 import networkx as nx
 import _thread as thread
+import time
 
 from Class.Cell import *
 
@@ -28,7 +29,8 @@ class Map:  # Un ensemble de cellule
         self.init_map()
         self.wallet = 3000
         self.update_hover = 0
-        self.button_activated = {"house": False, "shovel": False, "road": False, "prefecture": False, "engineerpost": False, "well": False}
+        self.button_activated = {"house": False, "shovel": False, "road": False,
+                                 "prefecture": False, "engineerpost": False, "well": False}
         self.zoom = 1
         self.sound_effect = {"extinguish" : pygame.mixer.Sound("audio/water_bucket.wav"),"cooling" : pygame.mixer.Sound("audio/cooling_fizz.wav"),
                             "break": pygame.mixer.Sound("audio/break.wav")}
@@ -39,12 +41,10 @@ class Map:  # Un ensemble de cellule
 
     def init_map(self):  # Permet d'initialiser le chemin de terre sur la map.
         for i in range(self.size):
-                # Initialisation du chemin
+            # Initialisation du chemin
             self.array[self.size-m.floor(self.size/3)][i] = Path(self.size-m.floor(
                 self.size/3), i, self.height_land, self.width_land, self.screen, self)
         self.display_map()
-
-
 
     def __str__(self):
         s = f"Map {self.size}*{self.size}\n"
@@ -60,7 +60,6 @@ class Map:  # Un ensemble de cellule
             s += "\n"
         return s
 
-
     def handle_button(self, button):
         self.button_activated = dict.fromkeys(self.button_activated, False)
         self.button_activated[button] = True
@@ -72,11 +71,11 @@ class Map:  # Un ensemble de cellule
         self.screen.fill((0, 0, 0))
         #self.offset_left, self.offset_top = (0, 0)
         if zoom_in:
-            self.height_land *= 1.04
-            self.width_land *= 1.04
+            self.height_land *= 1.05
+            self.width_land *= 1.05
         else:
-            self.height_land /= 1.04
-            self.width_land /= 1.04
+            self.height_land /= 1.05
+            self.width_land /= 1.05
         for x in range(40):
             for y in range(40):
                 self.get_cell(x, y).handle_zoom(zoom_in)
@@ -88,7 +87,7 @@ class Map:  # Un ensemble de cellule
             for y in range(40):
                 self.get_cell(x, y).handle_move(move, m)
                 self.get_cell(x, y).display()
-        self.display_grid(0)
+        # self.display_grid(0)
 
     # Check if these coordinates are in the map
     def inMap(self, x, y):
@@ -99,24 +98,27 @@ class Map:  # Un ensemble de cellule
 
         def threading_update(i):
             nonlocal waitfornext
-            if len(i.path) ==0: i.path_finding(i.currentCell, i.building)
+            if len(i.path) == 0:
+                i.path_finding(i.currentCell, i.building)
             if len(i.path) != 0 and ((rd.randint(0, 9) == 9 and not waitfornext) or i.spawnCount == 20):
                 self.walkers.append(i)
                 self.migrantQueue.remove(i)
-                i.screen.blit(pygame.transform.scale(i.walker_sprites["top"], 
-                (i.currentCell.width, i.currentCell.height)), (i.currentCell.left, i.currentCell.top))
+                i.screen.blit(pygame.transform.scale(i.walker_sprites["top"],
+                                                     (i.currentCell.width, i.currentCell.height)), (i.currentCell.left, i.currentCell.top))
                 waitfornext = True
             elif i.spawnCount == 100:
                 i.building.clear()
-            else : i.spawnCount += 1   
+            else:
+                i.spawnCount += 1
 
         if len(self.migrantQueue) != 0:
-            for i in self.migrantQueue :
+            for i in self.migrantQueue:
                 thread.start_new_thread(threading_update, (i,))
 
-        if len(self.laborAdvisorQueue) != 0 :
-            for i in self.laborAdvisorQueue : 
-                if any(house.nb_occupants != 0 for house in self.buildings if isinstance(house, House)): i.leave_building()
+        if len(self.laborAdvisorQueue) != 0:
+            for i in self.laborAdvisorQueue:
+                if any(house.nb_occupants != 0 for house in self.buildings if isinstance(house, House)):
+                    i.leave_building()
 
         for i in self.walkers:
             i.move()
@@ -126,20 +128,19 @@ class Map:  # Un ensemble de cellule
                 i.previousCell.display()
                 i.previousCell.display_around()
 
+        for i in self.buildings:
+            if not i.risk.happened:
+                i.risk.riskIncrease()
 
-        for i in self.buildings :
-            if not i.risk.happened : i.risk.riskIncrease()
-
-    def update_fire(self) :
-        for i in self.buildings :
+    def update_fire(self):
+        for i in self.buildings:
             if i.risk.happened and i.risk.type == "fire":
                 i.risk.burn()
 
-    def update_collapse(self) : 
-        for i in self.buildings : 
-            if i.risk.happened and i.risk.type == "collapse" : 
+    def update_collapse(self):
+        for i in self.buildings:
+            if i.risk.happened and i.risk.type == "collapse":
                 i.risk.collapse()
-
 
     def set_cell_array(self, x, y, cell):
         self.array[x][y] = cell
@@ -173,7 +174,7 @@ class Map:  # Un ensemble de cellule
         if self.grided:
             for x in range(40):
                 for y in range(40):
-                    self.array[x][y].grid()
+                    self.array[x][y].grid(pushed)
         elif pushed:
             for x in range(40):
                 for y in range(40):
