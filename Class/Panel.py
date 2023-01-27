@@ -19,6 +19,7 @@ class Panel():
         pass
 
     def init_sprites(self):
+        self.figure_1 = pygame.image.load("game_screen/game_screen_sprites/figure_2.png")
         self.background = pygame.image.load(
             "game_screen/game_screen_sprites/panel_background.png")
         self.overlays = pygame.image.load(
@@ -95,7 +96,7 @@ class Panel():
          #                                                       self.height_screen/36)), (11*self.width_screen/12+5, self.height_screen/32+2))
 
         
-
+        self.screen.blit(pygame.transform.scale(self.figure_1, (81, 91)), (180*self.width_screen/192, self.height_screen/15))
 
         draw_rect_alpha(self.screen, (255, 255, 255, 127), (177*self.width_screen/192-2,
                         0.25*self.height_screen-2, (self.width_screen)/48+4, (self.height_screen)/40+4))
