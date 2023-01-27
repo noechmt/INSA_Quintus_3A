@@ -17,7 +17,7 @@ class Map:  # Un ensemble de cellule
         self.offset_top = 0
         self.offset_left = 0
         self.screen = screen
-        self.grided = False
+        self.overlay = ""
         self.array = [[Empty(j, i, self.height_land, self.width_land, self.screen, self) for i in range(
             size)] for j in range(size)]  # tableau de cellule (voir classe cellule) : list
         self.walkers = []
@@ -79,7 +79,7 @@ class Map:  # Un ensemble de cellule
         for x in range(40):
             for y in range(40):
                 self.get_cell(x, y).handle_zoom(zoom_in)
-        self.display_grid(0)
+        self.display_overlay()
 
     def handle_move(self, move, m):
         self.screen.fill((0, 0, 0))
@@ -87,7 +87,7 @@ class Map:  # Un ensemble de cellule
             for y in range(40):
                 self.get_cell(x, y).handle_move(move, m)
                 self.get_cell(x, y).display()
-        # self.display_grid(0)
+        self.display_overlay()
 
     # Check if these coordinates are in the map
     def inMap(self, x, y):
@@ -160,25 +160,33 @@ class Map:  # Un ensemble de cellule
             for j in range(40):
                 self.array[i][j].display()
 
-    def set_grided(self, g):
-        self.grided = g
+    def get_overlay(self):
+        return self.overlay
 
-    def get_grided(self):
-        return self.grided
+    def check_overlay(self, overlay):
+        return self.overlay == overlay
 
-    def grid_map(self):
-        self.grided = not self.grided
-        self.display_grid()
+    def set_overlay(self, overlay):
+        if(self.overlay == overlay):
+            self.overlay = ""
+        else:
+            self.overlay = overlay
+        self.display_overlay()
 
-    def display_grid(self, pushed=1):
-        if self.grided:
-            for x in range(40):
-                for y in range(40):
-                    self.array[x][y].grid(pushed)
-        elif pushed:
-            for x in range(40):
-                for y in range(40):
-                    self.array[x][y].display()
+    def display_overlay(self, pushed=1):
+        match self.overlay:
+            case "grid" | "water":
+                for x in range(40):
+                    for y in range(40):
+                        self.array[x][y].display_overlay()
+
+            case "fire" | "collapse":
+                for i in self.buildings:
+                    i.display_overlay()
+
+            case _:
+                self.display_map()
+
 
     def get_housed(self):
         return self.button_activated["house"]

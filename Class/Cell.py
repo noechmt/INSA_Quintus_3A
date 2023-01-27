@@ -1,11 +1,18 @@
+from email.policy import default
 from Class.Walker import *
 from Class.RiskEvent import *
 import pygame
 from random import *
-from math import sqrt
+from math import sqrt, floor
 import random
 import time
 
+overlay_risk = [
+    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_0.png"), "width": 58, "height": 30},
+    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_1.png"), "width": 48, "height": 63},
+    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_2.png"), "width": 48, "height": 73},
+    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_3.png"), "width": 48, "height": 83},
+    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_4.png"), "width": 48, "height": 93}]
 
 def draw_polygon_alpha(surface, color, points):
     lx, ly = zip(*points)
@@ -31,8 +38,7 @@ class Cell:  # Une case de la map
         self.screen = screen
         self.hovered = 0
         self.type_empty = None
-        self.grided = 0
-        self.house_mode = 0
+        self.house_mode = False
         self.WIDTH_SCREEN, self.HEIGHT_SCREEN = self.screen.get_size()
         self.init_screen_coordonates()
 
@@ -79,16 +85,8 @@ class Cell:  # Une case de la map
         else:
             self.screen.blit(pygame.transform.scale(
                 self.sprite, (self.width+2*sqrt(2), self.height+2)), (self.left-sqrt(2), self.top-1))
-        if self.map.get_grided():
-            self.grid()
-        self.display_water()"""
-
-
-    def display_water(self):
-        if self.water and self.map.get_welled() and self.type != "well":
-            draw_polygon_alpha(self.screen, (0, 0, 255, 85),
-                               self.get_points_polygone())
-
+        """
+        
     def display_around(self):
         if (self.y+1 < 40 and (self.map.get_cell(self.x, self.y+1).type_empty != "dirt") and self.map.get_cell(self.x, self.y+1).type != "path"):
             if (self.map.get_cell(self.x, self.y+1).type_empty != "water"):
@@ -235,12 +233,22 @@ class Cell:  # Une case de la map
                     if (37 > self.x > 3 and 37 > self.y > 3 and self.map.get_cell(self.x+i, self.y+j).type == "well"):
                         self.map.get_cell(self.x, self.y).set_water(1)
 
-    def grid(self, pushed=1):
-        if self.map.get_grided():
-            pygame.draw.polygon(self.screen, (25, 25, 25),
-                                self.get_points_polygone(), 2)
-        elif pushed:
-            self.display()
+    def display_overlay(self):
+        overlay = self.map.overlay
+        match overlay:
+            case "grid":
+                pygame.draw.polygon(self.screen, (25, 25, 25),
+                    self.get_points_polygone(), 2)
+
+            case "fire" | "collapse":
+                if isinstance(self, Building) and self.risk.type == self.map.overlay and self.risk.riskCounter < self.risk.riskTreshold:
+                    i= floor(self.risk.riskCounter*5/self.risk.riskTreshold)
+                    self.screen.blit(pygame.transform.scale(overlay_risk[i]["sprite"], (overlay_risk[i]["width"], overlay_risk[i]["height"])), (self.left, self.top+self.height-overlay_risk[i]["height"]))
+            
+            case "water":
+                if self.water and self.map.get_welled() and self.type != "well":
+                    draw_polygon_alpha(self.screen, (0, 0, 255, 85),
+                                    self.get_points_polygone())
 
     def clear(self):
         if not isinstance(self, Empty) and self.type_empty != "rock" and self.type_empty != "water":
@@ -325,9 +333,13 @@ class Path(Cell):
             self.map.path_graph.add_edge(self, i)
             self.map.path_graph.add_edge(i, self)
 
-        cell_around = self.check_cell_around(House)
-        for j in cell_around:
+        house_around = self.check_cell_around(House)
+        for j in house_around:
             self.map.path_graph.add_edge(self, j)
+            house_around_house = j.check_cell_around(House)
+            for k in house_around_house:
+                self.map.path_graph.add_edge(self, k, weight=2000)
+            
 
     def update_sprite_size(self):
         self.sprite_display = pygame.transform.scale(
@@ -335,9 +347,7 @@ class Path(Cell):
 
     def display(self):
         self.screen.blit(self.sprite_display, (self.left-sqrt(2), self.top-1))
-        if self.map.get_grided():
-            self.grid()
-        self.display_water()
+        self.display_overlay()
 
     def handle_sprites(self, r=0):
         if r < 2:
@@ -348,21 +358,21 @@ class Path(Cell):
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                self.grid()
+                
                 return
             # Check if the road is a turn bottom to left
             if self.check_surrondings([1, 0, 1, 0]):
                 self.set_sprite(sprite_turn_bot_left)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                self.grid()
+                
                 return
             # Check if the road is a turn bottom to right
             if self.check_surrondings([0, 0, 1, 1]):
                 self.set_sprite(sprite_turn_bot_right)
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                self.grid()
+                
                 return
             # Check if the road is a turn horizontal to bottom
             if self.check_surrondings([1, 0, 1, 1]):
@@ -370,7 +380,7 @@ class Path(Cell):
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                self.grid()
+                
 
                 return
             # Check if the road is a turn horizontal to top
@@ -379,7 +389,7 @@ class Path(Cell):
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
-                self.grid()
+                
 
                 return
             # Check if the road is a turn letf to top
@@ -387,14 +397,14 @@ class Path(Cell):
                 self.set_sprite(sprite_turn_left_top)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
-                self.grid()
+                
                 return
             # Check if the road is a turn right to top
             if self.check_surrondings([0, 1, 0, 1]):
                 self.set_sprite(sprite_turn_right_top)
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
-                self.grid()
+                
 
                 return
             # Check if the road is a turn vertical to left
@@ -403,7 +413,7 @@ class Path(Cell):
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                self.grid()
+                
 
                 return
             # Check if the road is a turn vertical to right
@@ -412,7 +422,7 @@ class Path(Cell):
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                self.grid()
+                
 
                 return
 
@@ -422,14 +432,14 @@ class Path(Cell):
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x - 1, self.y), Path):
                     self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
-                self.grid()
+                
                 return
             if self.check_surrondings([1, 0, 0, 2]):
                 self.set_sprite(sprite_hori)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x + 1, self.y), Path):
                     self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
-                self.grid()
+                
                 return
             # Check vertical road
             if self.check_surrondings([0, 2, 1, 0]):
@@ -437,14 +447,14 @@ class Path(Cell):
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x, self.y - 1), Path):
                     self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
-                self.grid()
+                
                 return
             if self.check_surrondings([0, 1, 2, 0]):
                 self.set_sprite(sprite_verti)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x, self.y + 1), Path):
                     self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                self.grid()
+                
                 return
 
     def check_surrondings(self, check):
@@ -614,9 +624,7 @@ class Empty(Cell):
         else:
             self.screen.blit(self.sprite_display,
                              (self.left-sqrt(2), self.top-1))
-        if self.map.get_grided():
-            self.grid()
-        self.display_water()
+        self.display_overlay()
 
     def clear(self):
         if self.type_empty == "tree":
@@ -637,10 +645,14 @@ class Building(Cell):  # un fils de cellule (pas encore sûr de l'utilité)
     def __init__(self, x, y, height, width, screen, my_map):
         super().__init__(x, y, height, width, screen, my_map)
         self.map.buildings.append(self)
-        self.destroyed = 0
-        cell_around = self.check_cell_around(Path)
-        for j in cell_around:
+        self.destroyed = False
+        path_around = self.check_cell_around(Path)
+        house_around = self.check_cell_around(House)
+        for j in path_around:
             self.map.path_graph.add_edge(j, self)
+            if isinstance(self, House) and len(house_around) != 0:
+                for k in house_around:
+                    self.map.path_graph.add_edge(j, k)
 
     def destroy(self):
         self.destroyed = 1
@@ -662,6 +674,11 @@ class House(Building):  # la maison fils de building (?)
         self.sprite_display = ""
         self.update_sprite_size()
         self.type = "house"
+        house_around= self.check_cell_around(House)
+        for i in house_around:
+            path_around = i.check_cell_around(Path)
+            if len(path_around) != 0:
+                self.map.path_graph.add_edge(path_around[0], self, weight=2000)
         self.display()
 
     def __str__(self):
@@ -673,9 +690,7 @@ class House(Building):  # la maison fils de building (?)
 
     def display(self):
         self.screen.blit(self.sprite_display, (self.left-sqrt(2), self.top-1))
-        if self.map.get_grided():
-            self.grid()
-        self.display_water()
+        self.display_overlay()
 
     def nextLevel(self):
         self.level += 1
@@ -725,9 +740,7 @@ class Well(Building):
         else:
             self.screen.blit(self.sprite_display,
                             (self.left, self.top - self.height*23/30))
-        if self.map.get_grided():
-            self.grid()
-        self.display_water()
+        self.display_overlay()
 
     def __str__(self):
         return "Puit"
@@ -762,6 +775,7 @@ class Prefecture(Building):
         else:
             self.screen.blit(self.sprite_display,
                          (self.left, self.top - self.height*8/30))
+        self.display_overlay()
 
     def __str__(self):
         return f"Prefecture { self.employees}"
@@ -791,9 +805,7 @@ class EngineerPost(Building):
         else:
             self.screen.blit(
                 self.sprite_display, (self.left, self.top - self.height*20/30))
-        if self.map.get_grided():
-            self.grid()
-        self.display_water()
+        self.display_overlay()
 
     def update_sprite_size(self):
         if(self.type == "ruin"):

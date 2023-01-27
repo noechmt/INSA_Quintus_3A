@@ -1,5 +1,7 @@
 from select import select
+from tabnanny import check
 import pygame
+import pickle
 from math import sqrt
 import numpy as np
 from Class.Button import Button
@@ -85,6 +87,7 @@ def game_screen():
     walker_update_count = 0
     fire_upadte_count = 0
 
+    
     ##############################
     while run:
         pos = pygame.mouse.get_pos()
@@ -120,6 +123,7 @@ def game_screen():
                 SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         zoom_update += 1
         for event in pygame.event.get():
+            if map.get_overlay() in ("fire", "collapse"): map.display_overlay()
             pos = pygame.mouse.get_pos()
 
             # Set and print logical coordinates
@@ -144,7 +148,7 @@ def game_screen():
 
                 # spawn the grid if is clicked
                     if (panel.get_grid_button().is_hovered(pos)):
-                        map.grid_map()
+                        map.set_overlay("grid")
                         panel.display()
                         speed_counter_text = fps_font.render(
                             f"{speed * 100:.0f}%", 1, (255, 255, 255))
@@ -173,6 +177,7 @@ def game_screen():
                     if (panel.well_button.is_hovered(pos)):
                         panel.set_window("well")
                         map.handle_button("well")
+                        map.set_overlay("water")
                         # map.display_map()
                     if (panel.up_button.is_hovered(pos)):
                         if speed_index < 9:
@@ -305,6 +310,12 @@ def game_screen():
                 if pygame.key.get_pressed()[pygame.K_ESCAPE]:
                     panel.set_window("none")
                     map.handle_esc()
+
+                if pygame.key.get_pressed()[pygame.K_o]:
+                    # outfile = open("Saves/test.plk",'wb')
+                    # pickle.dump(map,outfile)
+                    # outfile.close()
+                    map.set_overlay("fire")
 
                 if pygame.key.get_pressed()[pygame.K_p]:
                     volume = pygame.mixer.music.get_volume()
