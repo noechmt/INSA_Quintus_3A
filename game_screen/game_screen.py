@@ -123,7 +123,6 @@ def game_screen():
                 SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         zoom_update += 1
         for event in pygame.event.get():
-            if map.get_overlay() in ("fire", "collapse"): map.display_overlay()
             pos = pygame.mouse.get_pos()
 
             # Set and print logical coordinates
@@ -340,6 +339,8 @@ def game_screen():
                 # shovel_button.handle_hover_button(pos, SCREEN)
                 # road_button.handle_hover_button(pos, SCREEN)
 
+        if map.get_overlay() in ("fire", "collapse"): map.display_overlay()
+        
         walker_update_count += 1
         # print(walker_update_count)
         update_speed = 10 / (speed)

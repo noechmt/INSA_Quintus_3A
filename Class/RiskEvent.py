@@ -65,6 +65,7 @@ class RiskEvent():
         
             
         else : 
+            if self.riskCounter == self.riskTreshold+1 and self.building.map.check_overlay("fire"): self.building.map.display_map()
             self.building.sprite = self.fire_sprites[self.fireCounter%8]
             self.building.update_sprite_size()
             self.building.display()

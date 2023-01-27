@@ -241,10 +241,12 @@ class Cell:  # Une case de la map
                     self.get_points_polygone(), 2)
 
             case "fire" | "collapse":
-                if isinstance(self, Building) and self.risk.type == self.map.overlay and self.risk.riskCounter < self.risk.riskTreshold:
-                    i= floor(self.risk.riskCounter*5/self.risk.riskTreshold)
-                    self.screen.blit(pygame.transform.scale(overlay_risk[i]["sprite"], (overlay_risk[i]["width"], overlay_risk[i]["height"])), (self.left, self.top+self.height-overlay_risk[i]["height"]))
-            
+                if isinstance(self, Building) and self.risk.type == self.map.overlay:
+                    if self.risk.riskCounter < self.risk.riskTreshold:
+                        i= floor(self.risk.riskCounter*5/self.risk.riskTreshold)
+                        self.screen.blit(pygame.transform.scale(overlay_risk[i]["sprite"], (overlay_risk[i]["width"], overlay_risk[i]["height"])), (self.left, self.top+self.height-overlay_risk[i]["height"]))
+
+
             case "water":
                 if self.water and self.map.get_welled() and self.type != "well":
                     draw_polygon_alpha(self.screen, (0, 0, 255, 85),
