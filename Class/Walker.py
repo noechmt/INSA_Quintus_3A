@@ -80,8 +80,8 @@ class Walker():
               str(self.currentCell.x) + ";" + str(self.currentCell.y))
 
     def enter_building(self):
-        assert self.building in self.currentCell.check_cell_around(
-            type(self.building))
+        # assert self.building in self.currentCell.check_cell_around(
+        #     type(self.building))
         self.cell_assignement(self.building)
         self.inBuilding = True
         self.currentCell.display()

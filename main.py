@@ -9,7 +9,7 @@ import ctypes
 assert sys.version[0:4] == "3.10", "Merci d'utiliser une version de python >= 3.10 !"
 
 # Check if all the dependencies are installed
-os.system(str(sys.executable) + " -m pip install -r requirements.txt")
+os.system(str(sys.executable) + " -m pip install -r requirementso.txt")
 
 if os.name == "nt":
     ctypes.windll.shcore.SetProcessDpiAwareness(1)
