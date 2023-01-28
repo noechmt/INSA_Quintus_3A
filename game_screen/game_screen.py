@@ -42,7 +42,10 @@ def game_screen():
     SIZE = 40
 
     # Load new map or existing one with pickle
-    map = Map(SIZE, height_land, width_land)
+    """map = Map(SIZE, height_land, width_land)"""
+    with open('not_empty_map', 'rb') as f1:
+        map = pickle.load(f1)
+    map.display_map()
 
     panel = Panel(SCREEN)
 
@@ -140,6 +143,8 @@ def game_screen():
             text_wallet = fps_font.render(f"{map.wallet}", 1, (255, 255, 255))
             SCREEN.blit(text_wallet, (0, 40))
             if event.type == pygame.QUIT:
+                """with open('not_empty_map', 'wb') as f1:
+                    pickle.dump(map, f1)"""
                 run = 0
             # Move up
             if event.type == pygame.MOUSEBUTTONDOWN:

@@ -124,14 +124,15 @@ class Walker():
     def __getstate__(self):
         state = self.__dict__.copy()
         state.pop("walker_sprites")
-        state.pop("screen")
         return state
 
     def __setstate__(self, state):
+        print(state["job"])
         match state["job"]:
             case "migrant":
                 state["walker_sprites"] = dict((k, pygame.image.load(
                     "walker_sprites/migrant_sprites/mg_" + k + ".png").convert_alpha()) for k in ["top", "bot", "left", "right"])
+                self.__dict__.update(state)
             case "labor advisor":
                 state["walker_sprites"] = dict(
                     (k, [0, 0]) for k in ["top", "bot", "left", "right"])
@@ -139,9 +140,11 @@ class Walker():
                     for j in range(2):
                         state["walker_sprites"][i][j] = pygame.image.load(
                             "walker_sprites/LA_sprites/LA_" + i + "_" + str(j) + ".png").convert_alpha()
+                self.__dict__.update(state)
             case "prefect":
                 state["walker_sprites"] = dict((k, [0, 0])
                                                for k in ["top", "bot", "left", "right"])
+                self.__dict__.update(state)
                 for i in self.walker_sprites:
                     for j in range(2):
                         self.walker_sprites[i][j] = pygame.image.load(
@@ -150,6 +153,7 @@ class Walker():
             case "engineer":
                 state["walker_sprites"] = dict((k, [0, 0])
                                                for k in ["top", "bot", "left", "right"])
+                self.__dict__.update(state)
                 for i in self.walker_sprites:
                     for j in range(2):
                         self.walker_sprites[i][j] = pygame.image.load(
@@ -239,12 +243,11 @@ class Migrant(Walker):
     def __getstate__(self):
         state = self.__dict__.copy()
         state.pop("walker_sprites")
-        state.pop("screen")
         state.pop("cart_sprites")
         return state
 
     def __setstate__(self, state):
-        state = super().__setstate__(state)
+        super().__setstate__(state)
         state["cart_sprites"] = dict((k, pygame.image.load("walker_sprites/migrant_sprites/mg_cart_" +
                                                            k + ".png").convert_alpha()) for k in ["top", "bot", "left", "right"])
         self.__dict__.update(state)
@@ -297,11 +300,10 @@ class LaborAdvisor(Walker):
     def __getstate__(self):
         state = self.__dict__.copy()
         state.pop("walker_sprites")
-        state.pop("screen")
         return state
 
     def __setstate__(self, state):
-        state = super().__setstate__(state)
+        super().__setstate__(state)
         self.__dict__.update(state)
 
 
@@ -420,14 +422,14 @@ class Prefect(Walker):
     def __getstate__(self):
         state = self.__dict__.copy()
         state.pop("walker_sprites")
-        state.pop("screen")
         state.pop("prefect_working_sprites")
         return state
 
     def __setstate__(self, state):
-        state = super().__setstate__(state)
+        super().__setstate__(state)
         state["prefect_working_sprites"] = dict((k, [0 for _ in range(6)]) for k in [
             "top", "bot", "left", "right"])
+        self.__dict__.update(state)
         for i in self.prefect_working_sprites:
             for j in range(6):
                 self.prefect_working_sprites[i][j] = pygame.image.load(
@@ -477,11 +479,10 @@ class Engineer(Walker):
     def __getstate__(self):
         state = self.__dict__.copy()
         state.pop("walker_sprites")
-        state.pop("screen")
         return state
 
     def __setstate__(self, state):
-        state = super().__setstate__(state)
+        super().__setstate__(state)
         self.__dict__.update(state)
 
 

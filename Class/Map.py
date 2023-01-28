@@ -18,6 +18,14 @@ def set_SCREEN(screen):
     set_SCREEN_cell(screen)
 
 
+sound_effect = {"extinguish": pygame.mixer.Sound("audio/water_bucket.wav"), "cooling": pygame.mixer.Sound("audio/cooling_fizz.wav"),
+                "break": pygame.mixer.Sound("audio/break.wav")}
+
+sound_effect["break"].set_volume(0.1)
+sound_effect["cooling"].set_volume(0.1)
+sound_effect["extinguish"].set_volume(0.1)
+
+
 class Map:  # Un ensemble de cellule
 
     def __init__(self, size, height, width):
@@ -41,12 +49,6 @@ class Map:  # Un ensemble de cellule
         self.button_activated = {"house": False, "shovel": False, "road": False,
                                  "prefecture": False, "engineerpost": False, "well": False}
         self.zoom = 1
-        self.sound_effect = {"extinguish": pygame.mixer.Sound("audio/water_bucket.wav"), "cooling": pygame.mixer.Sound("audio/cooling_fizz.wav"),
-                             "break": pygame.mixer.Sound("audio/break.wav")}
-
-        self.sound_effect["break"].set_volume(0.1)
-        self.sound_effect["cooling"].set_volume(0.1)
-        self.sound_effect["extinguish"].set_volume(0.1)
 
     def init_map(self):  # Permet d'initialiser le chemin de terre sur la map.
         for i in range(self.size):
@@ -112,8 +114,8 @@ class Map:  # Un ensemble de cellule
             if len(i.path) != 0 and ((rd.randint(0, 9) == 9 and not waitfornext) or i.spawnCount == 20):
                 self.walkers.append(i)
                 self.migrantQueue.remove(i)
-                i.screen.blit(pygame.transform.scale(i.walker_sprites["top"],
-                                                     (i.currentCell.width, i.currentCell.height)), (i.currentCell.left, i.currentCell.top))
+                SCREEN.blit(pygame.transform.scale(i.walker_sprites["top"],
+                                                   (i.currentCell.width, i.currentCell.height)), (i.currentCell.left, i.currentCell.top))
                 waitfornext = True
             elif i.spawnCount == 100:
                 i.building.clear()
@@ -162,8 +164,9 @@ class Map:  # Un ensemble de cellule
         return self.array[x][y]
 
     def display(self):
-        print(np.array([[(self.array[i][j].type_of_cell)
-              for i in range(self.size)] for j in range(self.size)]))
+        """print(np.array([[(self.array[i][j].type_of_cell)
+              for i in range(self.size)] for j in range(self.size)]))"""
+        pass
 
     def display_map(self):
         for i in range(40):
