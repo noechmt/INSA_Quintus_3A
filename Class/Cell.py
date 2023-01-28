@@ -40,7 +40,6 @@ def draw_polygon_alpha(surface, color, points):
 class Cell:  # Une case de la map
 
     def __init__(self, x, y, height, width, screen, map):
-        self.screen = SCREEN
         self.x = x
         self.y = y
         self.height = height
@@ -54,7 +53,7 @@ class Cell:  # Une case de la map
         self.hovered = 0
         self.type_empty = None
         self.house_mode = False
-        self.WIDTH_SCREEN, self.HEIGHT_SCREEN = self.screen.get_size()
+        self.WIDTH_SCREEN, self.HEIGHT_SCREEN = SCREEN.get_size()
         self.init_screen_coordonates()
 
     def update_sprite_size(self):
@@ -73,32 +72,32 @@ class Cell:  # Une case de la map
     def display(self):
         """if self.type_empty == "tree":
             if self.aleatoire == 1:
-                self.screen.blit(pygame.transform.scale(
+                SCREEN.blit(pygame.transform.scale(
                     self.sprite, (self.width, self.height*42/30)), (self.left, self.top - self.height*12/30))
             elif self.aleatoire == 2:
-                self.screen.blit(pygame.transform.scale(
+                SCREEN.blit(pygame.transform.scale(
                     self.sprite, (self.width, self.height*41/30)), (self.left, self.top - self.height*11/30))
             elif self.aleatoire == 3:
-                self.screen.blit(pygame.transform.scale(
+                SCREEN.blit(pygame.transform.scale(
                     self.sprite, (self.width, self.height*44/30)), (self.left, self.top - self.height*14/30))
             elif self.aleatoire == 4:
-                self.screen.blit(pygame.transform.scale(
+                SCREEN.blit(pygame.transform.scale(
                     self.sprite, (self.width, self.height*45/30)), (self.left, self.top - self.height*15/30))
         elif self.type_empty == "rock":
-            self.screen.blit(pygame.transform.scale(
+            SCREEN.blit(pygame.transform.scale(
                 self.sprite, (self.width, self.height*35/30)), (self.left, self.top-self.height*5/30))
 
         if (self.type == "well"):
-            self.screen.blit(pygame.transform.scale(
+            SCREEN.blit(pygame.transform.scale(
                 self.sprite, (self.width, self.height*53/30)), (self.left, self.top - self.height*23/30))
         elif (self.type == "engineer post"):
-            self.screen.blit(pygame.transform.scale(
+            SCREEN.blit(pygame.transform.scale(
                 self.sprite, (self.width, self.height*50/30)), (self.left, self.top - self.height*20/30))
         elif (self.type == "prefecture"):
-            self.screen.blit(pygame.transform.scale(
+            SCREEN.blit(pygame.transform.scale(
                 self.sprite, (self.width, self.height*38/30)), (self.left, self.top - self.height*8/30))
         else:
-            self.screen.blit(pygame.transform.scale(
+            SCREEN.blit(pygame.transform.scale(
                 self.sprite, (self.width+2*sqrt(2), self.height+2)), (self.left-sqrt(2), self.top-1))
         """
 
@@ -164,19 +163,19 @@ class Cell:  # Une case de la map
         if (self.map.get_housed()):
             house_sprite = pygame.image.load(
                 "game_screen/game_screen_sprites/house_0.png").convert_alpha()
-            self.screen.blit(pygame.transform.scale(
+            SCREEN.blit(pygame.transform.scale(
                 house_sprite, (self.width, self.height)), (self.left, self.top))
             if self.isBuildable():
-                draw_polygon_alpha(self.screen, (0, 0, 0, 85),
+                draw_polygon_alpha(SCREEN, (0, 0, 0, 85),
                                    self.get_points_polygone())
             else:
-                draw_polygon_alpha(self.screen, (255, 0, 0, 85),
+                draw_polygon_alpha(SCREEN, (255, 0, 0, 85),
                                    self.get_points_polygone())
         elif self.map.get_road_button_activated() and not self.isBuildable():
-            draw_polygon_alpha(self.screen, (255, 0, 0, 85),
+            draw_polygon_alpha(SCREEN, (255, 0, 0, 85),
                                self.get_points_polygone())
         else:
-            draw_polygon_alpha(self.screen, (0, 0, 0, 85),
+            draw_polygon_alpha(SCREEN, (0, 0, 0, 85),
                                self.get_points_polygone())
 
     def get_points_polygone(self):
@@ -221,25 +220,25 @@ class Cell:  # Une case de la map
             match type:
                 case "path":
                     self.map.set_cell_array(self.x, self.y, Path(
-                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                        self.x, self.y, self.height, self.width, SCREEN, self.map))
                     self.map.get_cell(self.x, self.y).handle_sprites()
                     self.map.get_cell(self.x, self.y).display()
                     self.map.wallet -= 4
                 case "house":
                     self.map.set_cell_array(self.x, self.y, House(
-                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                        self.x, self.y, self.height, self.width, SCREEN, self.map))
                     self.map.wallet -= 10
                 case "well":
                     self.map.set_cell_array(self.x, self.y, Well(
-                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                        self.x, self.y, self.height, self.width, SCREEN, self.map))
                     self.map.wallet -= 5
                 case "prefecture":
                     self.map.set_cell_array(self.x, self.y, Prefecture(
-                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                        self.x, self.y, self.height, self.width, SCREEN, self.map))
                     self.map.wallet -= 30
                 case "engineer post":
                     self.map.set_cell_array(self.x, self.y, EngineerPost(
-                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                        self.x, self.y, self.height, self.width, SCREEN, self.map))
                     self.map.wallet -= 30
             for i in range(-2, 3):
                 for j in range(-2, 3):
@@ -250,18 +249,18 @@ class Cell:  # Une case de la map
         overlay = self.map.overlay
         match overlay:
             case "grid":
-                pygame.draw.polygon(self.screen, (25, 25, 25),
+                pygame.draw.polygon(SCREEN, (25, 25, 25),
                                     self.get_points_polygone(), 2)
 
             case "fire" | "collapse":
                 if isinstance(self, Building) and self.risk.type == self.map.overlay and self.risk.riskCounter < self.risk.riskTreshold:
                     i = floor(self.risk.riskCounter*5/self.risk.riskTreshold)
-                    self.screen.blit(pygame.transform.scale(overlay_risk[i]["sprite"], (
+                    SCREEN.blit(pygame.transform.scale(overlay_risk[i]["sprite"], (
                         overlay_risk[i]["width"], overlay_risk[i]["height"])), (self.left, self.top+self.height-overlay_risk[i]["height"]))
 
             case "water":
                 if self.water and self.map.get_welled() and self.type != "well":
-                    draw_polygon_alpha(self.screen, (0, 0, 255, 85),
+                    draw_polygon_alpha(SCREEN, (0, 0, 255, 85),
                                        self.get_points_polygone())
 
     def clear(self):
@@ -284,7 +283,7 @@ class Cell:  # Une case de la map
                     i.currentCell.display()
             self.type_empty = "dirt"
             self.map.set_cell_array(self.x, self.y, Empty(
-                self.x, self.y, self.height, self.width, self.screen, self.map, "dirt", 1))
+                self.x, self.y, self.height, self.width, SCREEN, self.map, "dirt", 1))
             arr = self.check_cell_around(Cell)
             for i in arr:
                 if not isinstance(i, Building):
@@ -359,7 +358,7 @@ class Path(Cell):
             self.sprite, (self.width+2*sqrt(2), self.height+2))
 
     def display(self):
-        self.screen.blit(self.sprite_display, (self.left-sqrt(2), self.top-1))
+        SCREEN.blit(self.sprite_display, (self.left-sqrt(2), self.top-1))
         self.display_overlay()
 
     def handle_sprites(self, r=0):
@@ -615,23 +614,23 @@ class Empty(Cell):
     def display(self):
         if self.type_empty == "tree":
             if self.aleatoire == 1:
-                self.screen.blit(
+                SCREEN.blit(
                     self.sprite_display, (self.left, self.top - self.height*12/30))
             elif self.aleatoire == 2:
-                self.screen.blit(
+                SCREEN.blit(
                     self.sprite_display, (self.left, self.top - self.height*11/30))
             elif self.aleatoire == 3:
-                self.screen.blit(
+                SCREEN.blit(
                     self.sprite_display, (self.left, self.top - self.height*14/30))
             elif self.aleatoire == 4:
-                self.screen.blit(
+                SCREEN.blit(
                     self.sprite_display, (self.left, self.top - self.height*15/30))
         elif self.type_empty == "rock":
-            self.screen.blit(
+            SCREEN.blit(
                 self.sprite_display, (self.left, self.top-self.height*5/30))
         else:
-            self.screen.blit(self.sprite_display,
-                             (self.left-sqrt(2), self.top-1))
+            SCREEN.blit(self.sprite_display,
+                        (self.left-sqrt(2), self.top-1))
         self.display_overlay()
 
     def clear(self):
@@ -698,7 +697,7 @@ class House(Building):  # la maison fils de building (?)
             self.sprite, (self.width+2*sqrt(2), self.height+2))
 
     def display(self):
-        self.screen.blit(self.sprite_display, (self.left-sqrt(2), self.top-1))
+        SCREEN.blit(self.sprite_display, (self.left-sqrt(2), self.top-1))
         self.display_overlay()
 
     def nextLevel(self):
@@ -743,11 +742,11 @@ class Well(Building):
 
     def display(self):
         if (self.type == "ruin"):
-            self.screen.blit(self.sprite_display,
-                             (self.left, self.top - self.height*4/30))
+            SCREEN.blit(self.sprite_display,
+                        (self.left, self.top - self.height*4/30))
         else:
-            self.screen.blit(self.sprite_display,
-                             (self.left, self.top - self.height*23/30))
+            SCREEN.blit(self.sprite_display,
+                        (self.left, self.top - self.height*23/30))
         self.display_overlay()
 
     def __str__(self):
@@ -778,11 +777,11 @@ class Prefecture(Building):
 
     def display(self):
         if self.type == "ruin":
-            self.screen.blit(
+            SCREEN.blit(
                 self.sprite_display, (self.left, self.top - self.height*4/30))
         else:
-            self.screen.blit(self.sprite_display,
-                             (self.left, self.top - self.height*8/30))
+            SCREEN.blit(self.sprite_display,
+                        (self.left, self.top - self.height*8/30))
         self.display_overlay()
 
     def __str__(self):
@@ -808,10 +807,10 @@ class EngineerPost(Building):
 
     def display(self):
         if self.type == "ruin":
-            self.screen.blit(
+            SCREEN.blit(
                 self.sprite_display, (self.left, self.top))
         else:
-            self.screen.blit(
+            SCREEN.blit(
                 self.sprite_display, (self.left, self.top - self.height*20/30))
         self.display_overlay()
 

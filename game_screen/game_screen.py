@@ -40,6 +40,8 @@ def game_screen():
     height_land = HEIGH_SCREEN/60
     width_land = WIDTH_SCREEN*sqrt(2)/80
     SIZE = 40
+
+    # Load new map or existing one with pickle
     map = Map(SIZE, height_land, width_land)
 
     panel = Panel(SCREEN)

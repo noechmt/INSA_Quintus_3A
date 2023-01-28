@@ -24,7 +24,6 @@ def print_SCREEN():
 class Walker():
 
     def __init__(self, job, building, state):
-        self.screen = SCREEN
         self.job = job  # le métier (migrant, worker, etc) : string
         self.building = building  # string (prefecture, engineer post, house)
         self.currentCell = building  # La cellule de départ de l'entity : Cell
@@ -43,16 +42,16 @@ class Walker():
     def display(self):
         if not self.inBuilding:
             if self.previousCell.x < self.currentCell.x:
-                self.screen.blit(pygame.transform.scale(self.walker_sprites["right"][self.currentSprite % 2], (
+                SCREEN.blit(pygame.transform.scale(self.walker_sprites["right"][self.currentSprite % 2], (
                     self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
             elif self.previousCell.x > self.currentCell.x:
-                self.screen.blit(pygame.transform.scale(self.walker_sprites["left"][self.currentSprite % 2], (
+                SCREEN.blit(pygame.transform.scale(self.walker_sprites["left"][self.currentSprite % 2], (
                     self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
             elif self.previousCell.y < self.currentCell.y:
-                self.screen.blit(pygame.transform.scale(self.walker_sprites["bot"][self.currentSprite % 2], (
+                SCREEN.blit(pygame.transform.scale(self.walker_sprites["bot"][self.currentSprite % 2], (
                     self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
             elif self.previousCell.y > self.currentCell.y:
-                self.screen.blit(pygame.transform.scale(self.walker_sprites["top"][self.currentSprite % 2], (
+                SCREEN.blit(pygame.transform.scale(self.walker_sprites["top"][self.currentSprite % 2], (
                     self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
 
             self.currentSprite += 1
@@ -169,7 +168,7 @@ class Migrant(Walker):
             "walker_sprites/migrant_sprites/mg_" + k + ".png").convert_alpha()) for k in ["top", "bot", "left", "right"])
         self.cart_sprites = dict((k, pygame.image.load("walker_sprites/migrant_sprites/mg_cart_" +
                                  k + ".png").convert_alpha()) for k in ["top", "bot", "left", "right"])
-        # self.screen.blit(pygame.transform.scale(self.walker_sprites["top"],
+        # SCREEN.blit(pygame.transform.scale(self.walker_sprites["top"],
         # (self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
         self.spawnCount = 0
 
@@ -177,9 +176,9 @@ class Migrant(Walker):
 
         if self.previousCell.x < self.currentCell.x:
             if not self.inBuilding:
-                self.screen.blit(pygame.transform.scale(self.walker_sprites["right"], (
+                SCREEN.blit(pygame.transform.scale(self.walker_sprites["right"], (
                     self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
-                self.screen.blit(pygame.transform.scale(self.cart_sprites["right"], (
+                SCREEN.blit(pygame.transform.scale(self.cart_sprites["right"], (
                     self.currentCell.width, self.currentCell.height)), (self.previousCell.left, self.previousCell.top))
             if 0 < self.previousCell.x < 39:
                 self.currentCell.map.array[self.previousCell.x -
@@ -188,9 +187,9 @@ class Migrant(Walker):
                     self.previousCell.x-1, self.currentCell.y).display_around()
         elif self.previousCell.x > self.currentCell.x:
             if not self.inBuilding:
-                self.screen.blit(pygame.transform.scale(self.walker_sprites["left"], (
+                SCREEN.blit(pygame.transform.scale(self.walker_sprites["left"], (
                     self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
-                self.screen.blit(pygame.transform.scale(self.cart_sprites["left"], (
+                SCREEN.blit(pygame.transform.scale(self.cart_sprites["left"], (
                     self.currentCell.width, self.currentCell.height)), (self.previousCell.left, self.previousCell.top))
             if 0 < self.previousCell.x < 39:
                 self.currentCell.map.array[self.previousCell.x +
@@ -199,9 +198,9 @@ class Migrant(Walker):
                     self.previousCell.x+1, self.currentCell.y).display_around()
         elif self.previousCell.y < self.currentCell.y:
             if not self.inBuilding:
-                self.screen.blit(pygame.transform.scale(self.walker_sprites["bot"], (
+                SCREEN.blit(pygame.transform.scale(self.walker_sprites["bot"], (
                     self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
-                self.screen.blit(pygame.transform.scale(self.cart_sprites["bot"], (
+                SCREEN.blit(pygame.transform.scale(self.cart_sprites["bot"], (
                     self.currentCell.width, self.currentCell.height)), (self.previousCell.left, self.previousCell.top))
             if 0 < self.previousCell.y < 39:
                 self.currentCell.map.array[self.currentCell.x][self.previousCell.y - 1].display()
@@ -209,9 +208,9 @@ class Migrant(Walker):
                     self.currentCell.x, self.previousCell.y-1).display_around()
         elif self.previousCell.y > self.currentCell.y:
             if not self.inBuilding:
-                self.screen.blit(pygame.transform.scale(self.walker_sprites["top"], (
+                SCREEN.blit(pygame.transform.scale(self.walker_sprites["top"], (
                     self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
-                self.screen.blit(pygame.transform.scale(self.cart_sprites["top"], (
+                SCREEN.blit(pygame.transform.scale(self.cart_sprites["top"], (
                     self.currentCell.width, self.currentCell.height)), (self.previousCell.left, self.previousCell.top))
             if 0 < self.previousCell.y < 39:
                 self.currentCell.map.array[self.currentCell.x][self.previousCell.y + 1].display()
@@ -391,7 +390,7 @@ class Prefect(Walker):
     def extinguishFire(self):
         if self.extinguishCounter < 36:
             self.currentCell.display()
-            self.screen.blit(pygame.transform.scale(self.prefect_working_sprites[self.orientation][self.extinguishCounter % 6], (
+            SCREEN.blit(pygame.transform.scale(self.prefect_working_sprites[self.orientation][self.extinguishCounter % 6], (
                 self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))
             # print("working...")
             if self.waterCounter > 5:

@@ -21,14 +21,13 @@ def set_SCREEN(screen):
 class Map:  # Un ensemble de cellule
 
     def __init__(self, size, height, width):
-        self.screen = SCREEN
         self.size = size  # La taille de la map est size*size : int
         self.height_land = height
         self.width_land = width
         self.offset_top = 0
         self.offset_left = 0
         self.overlay = ""
-        self.array = [[Empty(j, i, self.height_land, self.width_land, self.screen, self) for i in range(
+        self.array = [[Empty(j, i, self.height_land, self.width_land, SCREEN, self) for i in range(
             size)] for j in range(size)]  # tableau de cellule (voir classe cellule) : list
         self.walkers = []
         self.migrantQueue = []
@@ -53,7 +52,7 @@ class Map:  # Un ensemble de cellule
         for i in range(self.size):
             # Initialisation du chemin
             self.array[self.size-m.floor(self.size/3)][i] = Path(self.size-m.floor(
-                self.size/3), i, self.height_land, self.width_land, self.screen, self)
+                self.size/3), i, self.height_land, self.width_land, SCREEN, self)
         self.display_map()
 
     def __str__(self):
@@ -78,7 +77,7 @@ class Map:  # Un ensemble de cellule
         self.button_activated = dict.fromkeys(self.button_activated, False)
 
     def handle_zoom(self, zoom_in):
-        self.screen.fill((0, 0, 0))
+        SCREEN.fill((0, 0, 0))
         #self.offset_left, self.offset_top = (0, 0)
         if zoom_in:
             self.height_land *= 1.05
@@ -92,7 +91,7 @@ class Map:  # Un ensemble de cellule
         self.display_overlay()
 
     def handle_move(self, move, m):
-        self.screen.fill((0, 0, 0))
+        SCREEN.fill((0, 0, 0))
         for x in range(40):
             for y in range(40):
                 self.get_cell(x, y).handle_move(move, m)
