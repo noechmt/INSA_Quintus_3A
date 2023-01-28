@@ -130,7 +130,6 @@ class Walker():
         return state
 
     def __setstate__(self, state):
-        print(state["job"])
         match state["job"]:
             case "migrant":
                 state["walker_sprites"] = dict((k, pygame.image.load(

@@ -5,7 +5,6 @@ import random as rd
 import networkx as nx
 import _thread as thread
 import time
-
 from Class.Cell import *
 
 SCREEN = None
