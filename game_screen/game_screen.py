@@ -156,14 +156,16 @@ def game_screen():
                     if (panel.house_button.is_hovered(pos)):
                         panel.set_window("house")
                         map.handle_button("house")
-                        # map.display_map()
+                        map.set_overlay("")
                     if (panel.shovel_button.is_hovered(pos)):
                         panel.set_window("shovel")
                         map.handle_button("shovel")
+                        map.set_overlay("")
                         # map.display_map()
                     if (panel.get_road_button().is_hovered(pos)):
                         panel.set_window("road")
                         map.handle_button("road")
+                        map.set_overlay("")
                         # map.display_map()
                     if (panel.prefecture_button.is_hovered(pos)):
                         panel.set_window("prefecture")
@@ -172,6 +174,7 @@ def game_screen():
                     if (panel.engineerpost_button.is_hovered(pos)):
                         panel.set_window("engineer post")
                         map.handle_button("engineerpost")
+                        map.set_overlay("")
                         # map.display_map()
                     if (panel.well_button.is_hovered(pos)):
                         panel.set_window("well")
