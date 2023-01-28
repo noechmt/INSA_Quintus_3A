@@ -28,6 +28,12 @@ class Button():
             text = font.render(self.text, 1, (0, 0, 0))
             screen.blit(text, (self.left + (self.width/2 - text.get_width()/2),
                         self.top + ((self.height/2 - text.get_height()/2))))
+        if self.darken:
+            darken_percent = .075
+            dark = pygame.Surface(
+                self.get_size()).convert_alpha()
+            dark.fill((0, 0, 0, darken_percent*255))
+            screen.blit(dark, self.get_pos())
 
     def change_image(self, image):
         self.image = image

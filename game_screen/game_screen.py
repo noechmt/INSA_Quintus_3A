@@ -226,6 +226,9 @@ def game_screen():
                                 f"{speed * 100:.0f}%", 1, (255, 255, 255))
                             SCREEN.blit(speed_counter_text,
                                         (speed_left, speed_top))
+
+                    if (panel.get_save_button().is_hovered(pos)):
+                        print("Save en cours")
                 if zoom_update > 0:
                     if event.button == 4:
                         if zoom < 1.7:
@@ -313,6 +316,7 @@ def game_screen():
                 panel.get_up_button().handle_hover_button(pos, SCREEN)
                 panel.get_down_button().handle_hover_button(pos, SCREEN)
                 panel.get_pause_button().handle_hover_button(pos, SCREEN)
+                panel.get_save_button().handle_hover_button(pos, SCREEN)
 
             if event.type == pygame.KEYDOWN:
                 if pygame.key.get_pressed()[pygame.K_ESCAPE]:
