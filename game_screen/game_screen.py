@@ -23,6 +23,7 @@ def game_screen():
     pygame.init()
 
     SCREEN = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    set_SCREEN(SCREEN)
     FPS = 60
 
     # Re-initialize the window
@@ -39,8 +40,6 @@ def game_screen():
     height_land = HEIGH_SCREEN/60
     width_land = WIDTH_SCREEN*sqrt(2)/80
     SIZE = 40
-
-    Walker.screen, Map.screen, Cell.screen = SCREEN, SCREEN, SCREEN
     map = Map(SIZE, height_land, width_land)
 
     panel = Panel(SCREEN)
@@ -88,10 +87,9 @@ def game_screen():
     walker_update_count = 0
     fire_upadte_count = 0
 
-    
     ##############################
     while run:
-        
+
         pos = pygame.mouse.get_pos()
         if pos[1] <= 60:
             map.offset_top += 5*(3 - pos[1] / 20)*zoom
@@ -125,7 +123,8 @@ def game_screen():
                 SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         zoom_update += 1
         for event in pygame.event.get():
-            if map.get_overlay() in ("fire", "collapse"): map.display_overlay()
+            if map.get_overlay() in ("fire", "collapse"):
+                map.display_overlay()
             pos = pygame.mouse.get_pos()
 
             # Set and print logical coordinates

@@ -7,12 +7,25 @@ from math import sqrt, floor
 import random
 import time
 
+SCREEN = None
+
+
+def set_SCREEN_cell(screen):
+    global SCREEN
+    SCREEN = screen
+
+
 overlay_risk = [
-    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_0.png"), "width": 58, "height": 30},
-    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_1.png"), "width": 48, "height": 63},
-    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_2.png"), "width": 48, "height": 73},
-    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_3.png"), "width": 48, "height": 83},
+    {"sprite": pygame.image.load(
+        "risks_sprites/overlay/overlay_0.png"), "width": 58, "height": 30},
+    {"sprite": pygame.image.load(
+        "risks_sprites/overlay/overlay_1.png"), "width": 48, "height": 63},
+    {"sprite": pygame.image.load(
+        "risks_sprites/overlay/overlay_2.png"), "width": 48, "height": 73},
+    {"sprite": pygame.image.load(
+        "risks_sprites/overlay/overlay_3.png"), "width": 48, "height": 83},
     {"sprite": pygame.image.load("risks_sprites/overlay/overlay_4.png"), "width": 48, "height": 93}]
+
 
 def draw_polygon_alpha(surface, color, points):
     lx, ly = zip(*points)
@@ -26,9 +39,8 @@ def draw_polygon_alpha(surface, color, points):
 
 class Cell:  # Une case de la map
 
-    screen = None
-    
     def __init__(self, x, y, height, width, screen, map):
+        self.screen = SCREEN
         self.x = x
         self.y = y
         self.height = height
@@ -89,7 +101,7 @@ class Cell:  # Une case de la map
             self.screen.blit(pygame.transform.scale(
                 self.sprite, (self.width+2*sqrt(2), self.height+2)), (self.left-sqrt(2), self.top-1))
         """
-        
+
     def display_around(self):
         if (self.y+1 < 40 and (self.map.get_cell(self.x, self.y+1).type_empty != "dirt") and self.map.get_cell(self.x, self.y+1).type != "path"):
             if (self.map.get_cell(self.x, self.y+1).type_empty != "water"):
@@ -105,7 +117,7 @@ class Cell:  # Une case de la map
                 self.map.get_cell(self.x+1, self.y+1).display_around()
 
     def display_around_shovel(self):
-        if (self.x-1 > 0 and self.y-1 > 0) :
+        if (self.x-1 > 0 and self.y-1 > 0):
             self.map.get_cell(self.x-1, self.y-1).display()
         if (self.y-1 > 0):
             self.map.get_cell(self.x, self.y-1).display()
@@ -126,8 +138,6 @@ class Cell:  # Une case de la map
         if (self.x+1 < 40 and self.y+1 < 40 and self.map.get_cell(self.x+1, self.y+1).type_empty != "dirt" and self.map.get_cell(self.x+1, self.y+1).type != "path"):
             self.map.get_cell(self.x+1, self.y+1).display()
             self.map.get_cell(self.x+1, self.y+1).display_around()
-            
-        
 
     def handle_zoom(self, zoom_in):
         if zoom_in:
@@ -241,17 +251,18 @@ class Cell:  # Une case de la map
         match overlay:
             case "grid":
                 pygame.draw.polygon(self.screen, (25, 25, 25),
-                    self.get_points_polygone(), 2)
+                                    self.get_points_polygone(), 2)
 
             case "fire" | "collapse":
                 if isinstance(self, Building) and self.risk.type == self.map.overlay and self.risk.riskCounter < self.risk.riskTreshold:
-                    i= floor(self.risk.riskCounter*5/self.risk.riskTreshold)
-                    self.screen.blit(pygame.transform.scale(overlay_risk[i]["sprite"], (overlay_risk[i]["width"], overlay_risk[i]["height"])), (self.left, self.top+self.height-overlay_risk[i]["height"]))
-            
+                    i = floor(self.risk.riskCounter*5/self.risk.riskTreshold)
+                    self.screen.blit(pygame.transform.scale(overlay_risk[i]["sprite"], (
+                        overlay_risk[i]["width"], overlay_risk[i]["height"])), (self.left, self.top+self.height-overlay_risk[i]["height"]))
+
             case "water":
                 if self.water and self.map.get_welled() and self.type != "well":
                     draw_polygon_alpha(self.screen, (0, 0, 255, 85),
-                                    self.get_points_polygone())
+                                       self.get_points_polygone())
 
     def clear(self):
         if not isinstance(self, Empty) and self.type_empty != "rock" and self.type_empty != "water":
@@ -273,7 +284,7 @@ class Cell:  # Une case de la map
                     i.currentCell.display()
             self.type_empty = "dirt"
             self.map.set_cell_array(self.x, self.y, Empty(
-               self.x, self.y, self.height, self.width, self.screen, self.map, "dirt", 1))
+                self.x, self.y, self.height, self.width, self.screen, self.map, "dirt", 1))
             arr = self.check_cell_around(Cell)
             for i in arr:
                 if not isinstance(i, Building):
@@ -342,7 +353,6 @@ class Path(Cell):
             house_around_house = j.check_cell_around(House)
             for k in house_around_house:
                 self.map.path_graph.add_edge(self, k, weight=2000)
-            
 
     def update_sprite_size(self):
         self.sprite_display = pygame.transform.scale(
@@ -361,21 +371,21 @@ class Path(Cell):
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                
+
                 return
             # Check if the road is a turn bottom to left
             if self.check_surrondings([1, 0, 1, 0]):
                 self.set_sprite(sprite_turn_bot_left)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                
+
                 return
             # Check if the road is a turn bottom to right
             if self.check_surrondings([0, 0, 1, 1]):
                 self.set_sprite(sprite_turn_bot_right)
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                
+
                 return
             # Check if the road is a turn horizontal to bottom
             if self.check_surrondings([1, 0, 1, 1]):
@@ -383,7 +393,6 @@ class Path(Cell):
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                
 
                 return
             # Check if the road is a turn horizontal to top
@@ -392,7 +401,6 @@ class Path(Cell):
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
-                
 
                 return
             # Check if the road is a turn letf to top
@@ -400,14 +408,13 @@ class Path(Cell):
                 self.set_sprite(sprite_turn_left_top)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
-                
+
                 return
             # Check if the road is a turn right to top
             if self.check_surrondings([0, 1, 0, 1]):
                 self.set_sprite(sprite_turn_right_top)
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
-                
 
                 return
             # Check if the road is a turn vertical to left
@@ -416,7 +423,6 @@ class Path(Cell):
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                
 
                 return
             # Check if the road is a turn vertical to right
@@ -425,7 +431,6 @@ class Path(Cell):
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                
 
                 return
 
@@ -435,14 +440,14 @@ class Path(Cell):
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x - 1, self.y), Path):
                     self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
-                
+
                 return
             if self.check_surrondings([1, 0, 0, 2]):
                 self.set_sprite(sprite_hori)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x + 1, self.y), Path):
                     self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
-                
+
                 return
             # Check vertical road
             if self.check_surrondings([0, 2, 1, 0]):
@@ -450,14 +455,14 @@ class Path(Cell):
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x, self.y - 1), Path):
                     self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
-                
+
                 return
             if self.check_surrondings([0, 1, 2, 0]):
                 self.set_sprite(sprite_verti)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x, self.y + 1), Path):
                     self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                
+
                 return
 
     def check_surrondings(self, check):
@@ -670,7 +675,7 @@ class House(Building):  # la maison fils de building (?)
         self.max_occupants = 5
         self.unemployedCount = 0
         self.migrant = Migrant(self)
-        #test_pickle(self.migrant)
+        # test_pickle(self.migrant)
         self.risk = RiskEvent("fire", self)
         # Temporary
         self.sprite = pygame.image.load(
@@ -678,7 +683,7 @@ class House(Building):  # la maison fils de building (?)
         self.sprite_display = ""
         self.update_sprite_size()
         self.type = "house"
-        house_around= self.check_cell_around(House)
+        house_around = self.check_cell_around(House)
         for i in house_around:
             path_around = i.check_cell_around(Path)
             if len(path_around) != 0:
@@ -729,21 +734,20 @@ class Well(Building):
         self.type = "well"
 
     def update_sprite_size(self):
-        if(self.type == "ruin"):
+        if (self.type == "ruin"):
             self.sprite_display = pygame.transform.scale(
                 self.sprite, (self.width, self.height*34/30))
         else:
             self.sprite_display = pygame.transform.scale(
                 self.sprite, (self.width, self.height*53/30))
-            
 
     def display(self):
-        if(self.type == "ruin"):
+        if (self.type == "ruin"):
             self.screen.blit(self.sprite_display,
-                         (self.left, self.top- self.height*4/30))
+                             (self.left, self.top - self.height*4/30))
         else:
             self.screen.blit(self.sprite_display,
-                            (self.left, self.top - self.height*23/30))
+                             (self.left, self.top - self.height*23/30))
         self.display_overlay()
 
     def __str__(self):
@@ -778,7 +782,7 @@ class Prefecture(Building):
                 self.sprite_display, (self.left, self.top - self.height*4/30))
         else:
             self.screen.blit(self.sprite_display,
-                         (self.left, self.top - self.height*8/30))
+                             (self.left, self.top - self.height*8/30))
         self.display_overlay()
 
     def __str__(self):
@@ -803,7 +807,7 @@ class EngineerPost(Building):
         self.type = "engineer post"
 
     def display(self):
-        if self.type == "ruin" :
+        if self.type == "ruin":
             self.screen.blit(
                 self.sprite_display, (self.left, self.top))
         else:
@@ -812,10 +816,10 @@ class EngineerPost(Building):
         self.display_overlay()
 
     def update_sprite_size(self):
-        if(self.type == "ruin"):
+        if (self.type == "ruin"):
             self.sprite_display = pygame.transform.scale(
                 self.sprite, (self.width, self.height))
-        
+
         else:
             self.sprite_display = pygame.transform.scale(
                 self.sprite, (self.width, self.height*50/30))
@@ -826,20 +830,21 @@ class EngineerPost(Building):
     def patrol(self):
         self.engineer.leave_building()
 
-def test_pickle(xThing,lTested = []):
+
+def test_pickle(xThing, lTested=[]):
     import pickle
     if id(xThing) in lTested:
         return lTested
     sType = type(xThing).__name__
     print('Testing {0}...'.format(sType))
 
-    if sType in ['type','int','str']:
+    if sType in ['type', 'int', 'str']:
         print('...too easy')
         return lTested
     if sType == 'dict':
         print('...testing members')
         for k in xThing:
-            lTested = test_pickle(xThing[k],lTested)
+            lTested = test_pickle(xThing[k], lTested)
         print('...tested members')
         return lTested
     if sType == 'list':
@@ -856,9 +861,9 @@ def test_pickle(xThing,lTested = []):
         if s.startswith('_'):
             print('...skipping *private* thingy')
             continue
-        #if it is an attribute: Skip it
+        # if it is an attribute: Skip it
         try:
-            xClassAttribute = oClass.__getattribute__(oClass,s)
+            xClassAttribute = oClass.__getattribute__(oClass, s)
         except AttributeError:
             pass
         else:
@@ -867,8 +872,9 @@ def test_pickle(xThing,lTested = []):
                 continue
 
         xAttribute = xThing.__getattribute__(s)
-        print('Testing {0}.{1} of type {2}'.format(sType,s,type(xAttribute).__name__))
-        #if it is a function make sure it is stuck to the class...
+        print('Testing {0}.{1} of type {2}'.format(
+            sType, s, type(xAttribute).__name__))
+        # if it is a function make sure it is stuck to the class...
         if type(xAttribute).__name__ == 'function':
             raise Exception('ERROR: found a function')
         if type(xAttribute).__name__ == 'method':
@@ -877,35 +883,37 @@ def test_pickle(xThing,lTested = []):
         if type(xAttribute).__name__ == 'HtmlElement':
             continue
         if type(xAttribute) == dict:
-            print('...testing dict values for {0}.{1}'.format(sType,s))
+            print('...testing dict values for {0}.{1}'.format(sType, s))
             for k in xAttribute:
                 lTested = test_pickle(xAttribute[k])
                 continue
-            print('...finished testing dict values for {0}.{1}'.format(sType,s))
+            print(
+                '...finished testing dict values for {0}.{1}'.format(sType, s))
 
         try:
             oIter = xAttribute.__iter__()
         except AttributeError:
             pass
         except AssertionError:
-            pass #lxml elements do this
+            pass  # lxml elements do this
         else:
-            print('...testing iter values for {0}.{1} of type {2}'.format(sType,s,type(xAttribute).__name__))
-            for x in xAttribute:   
-                lTested = test_pickle(x,lTested)
-            print('...finished testing iter values for {0}.{1}'.format(sType,s))
+            print('...testing iter values for {0}.{1} of type {2}'.format(
+                sType, s, type(xAttribute).__name__))
+            for x in xAttribute:
+                lTested = test_pickle(x, lTested)
+            print(
+                '...finished testing iter values for {0}.{1}'.format(sType, s))
 
         try:
             xAttribute.__dict__
         except AttributeError:
             pass
         else:
-            #this attribute should be explored seperately...
-            lTested = test_pickle(xAttribute,lTested)
+            # this attribute should be explored seperately...
+            lTested = test_pickle(xAttribute, lTested)
             continue
         pickle.dumps(xAttribute)
 
-
     print('Testing {0} as complete object'.format(sType))
     pickle.dumps(xThing)
-    return lTested   
+    return lTested

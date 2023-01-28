@@ -8,12 +8,20 @@ import time
 
 from Class.Cell import *
 
+SCREEN = None
+
+
+def set_SCREEN(screen):
+    global SCREEN
+    SCREEN = screen
+    set_SCREEN_walker(screen)
+    set_SCREEN_cell(screen)
+
 
 class Map:  # Un ensemble de cellule
 
-    screen = None
-
     def __init__(self, size, height, width):
+        self.screen = SCREEN
         self.size = size  # La taille de la map est size*size : int
         self.height_land = height
         self.width_land = width
@@ -34,9 +42,9 @@ class Map:  # Un ensemble de cellule
         self.button_activated = {"house": False, "shovel": False, "road": False,
                                  "prefecture": False, "engineerpost": False, "well": False}
         self.zoom = 1
-        self.sound_effect = {"extinguish" : pygame.mixer.Sound("audio/water_bucket.wav"),"cooling" : pygame.mixer.Sound("audio/cooling_fizz.wav"),
-                            "break": pygame.mixer.Sound("audio/break.wav")}
-        
+        self.sound_effect = {"extinguish": pygame.mixer.Sound("audio/water_bucket.wav"), "cooling": pygame.mixer.Sound("audio/cooling_fizz.wav"),
+                             "break": pygame.mixer.Sound("audio/break.wav")}
+
         self.sound_effect["break"].set_volume(0.1)
         self.sound_effect["cooling"].set_volume(0.1)
         self.sound_effect["extinguish"].set_volume(0.1)
@@ -124,7 +132,8 @@ class Map:  # Un ensemble de cellule
 
         for i in self.walkers:
             i.move()
-            if  not isinstance(i, Prefect) or (isinstance(i, Prefect) and not i.isWorking):i.display()
+            if not isinstance(i, Prefect) or (isinstance(i, Prefect) and not i.isWorking):
+                i.display()
             i.currentCell.display_around()
             if not isinstance(i, Migrant):
                 i.previousCell.display()
@@ -169,7 +178,7 @@ class Map:  # Un ensemble de cellule
         return self.overlay == overlay
 
     def set_overlay(self, overlay):
-        if(self.overlay == overlay):
+        if (self.overlay == overlay):
             self.overlay = ""
         else:
             self.overlay = overlay
@@ -188,7 +197,6 @@ class Map:  # Un ensemble de cellule
 
             case _:
                 self.display_map()
-
 
     def get_housed(self):
         return self.button_activated["house"]

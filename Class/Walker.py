@@ -9,11 +9,22 @@ def rm_dup_list(x):
     return list(dict.fromkeys(x))
 
 
+SCREEN = None
+
+
+def set_SCREEN_walker(screen):
+    global SCREEN
+    SCREEN = screen
+
+
+def print_SCREEN():
+    print(SCREEN)
+
+
 class Walker():
 
-    screen = None
-
     def __init__(self, job, building, state):
+        self.screen = SCREEN
         self.job = job  # le métier (migrant, worker, etc) : string
         self.building = building  # string (prefecture, engineer post, house)
         self.currentCell = building  # La cellule de départ de l'entity : Cell
@@ -23,7 +34,7 @@ class Walker():
         self.ttl = 50
         self.wait = 0
         print("Walker spawn")
-        
+
         self.walker_sprites = {}
         self.alive = False
         self.isWandering = False
@@ -71,7 +82,8 @@ class Walker():
         self.isWandering = True
         # print(self.isWandering)
         path = self.currentCell.check_cell_around(Cell.Path)
-        if len(path) == 0 : return
+        if len(path) == 0:
+            return
         self.cell_assignement(random.choice(path))
         self.inBuilding = False
         # if not isinstance(self, Prefect) and not isinstance(self, Engineer) :
@@ -120,16 +132,17 @@ class Walker():
         match state["job"]:
             case "migrant":
                 state["walker_sprites"] = dict((k, pygame.image.load(
-                                            "walker_sprites/migrant_sprites/mg_" + k + ".png").convert_alpha()) for k in ["top", "bot", "left", "right"])
+                    "walker_sprites/migrant_sprites/mg_" + k + ".png").convert_alpha()) for k in ["top", "bot", "left", "right"])
             case "labor advisor":
-                state["walker_sprites"] = dict((k, [0, 0]) for k in ["top", "bot", "left", "right"])
+                state["walker_sprites"] = dict(
+                    (k, [0, 0]) for k in ["top", "bot", "left", "right"])
                 for i in state["walker_sprites"]:
                     for j in range(2):
                         state["walker_sprites"][i][j] = pygame.image.load(
                             "walker_sprites/LA_sprites/LA_" + i + "_" + str(j) + ".png").convert_alpha()
             case "prefect":
                 state["walker_sprites"] = dict((k, [0, 0])
-                    for k in ["top", "bot", "left", "right"])
+                                               for k in ["top", "bot", "left", "right"])
                 for i in self.walker_sprites:
                     for j in range(2):
                         self.walker_sprites[i][j] = pygame.image.load(
@@ -137,7 +150,7 @@ class Walker():
 
             case "engineer":
                 state["walker_sprites"] = dict((k, [0, 0])
-                    for k in ["top", "bot", "left", "right"])
+                                               for k in ["top", "bot", "left", "right"])
                 for i in self.walker_sprites:
                     for j in range(2):
                         self.walker_sprites[i][j] = pygame.image.load(
@@ -234,7 +247,7 @@ class Migrant(Walker):
     def __setstate__(self, state):
         state = super().__setstate__(state)
         state["cart_sprites"] = dict((k, pygame.image.load("walker_sprites/migrant_sprites/mg_cart_" +
-                                 k + ".png").convert_alpha()) for k in ["top", "bot", "left", "right"])
+                                                           k + ".png").convert_alpha()) for k in ["top", "bot", "left", "right"])
         self.__dict__.update(state)
 
 
@@ -291,6 +304,7 @@ class LaborAdvisor(Walker):
     def __setstate__(self, state):
         state = super().__setstate__(state)
         self.__dict__.update(state)
+
 
 class Prefect(Walker):
     def __init__(self, current_prefecture):
@@ -394,7 +408,8 @@ class Prefect(Walker):
             self.isWorking = False
             self.isWandering = True
             self.ttl = 1
-            self.current_building.map.buildings[0].sprite = pygame.image.load("risks_sprites/house_fire/fire_9.png")
+            self.current_building.map.buildings[0].sprite = pygame.image.load(
+                "risks_sprites/house_fire/fire_9.png")
             self.current_building.map.buildings[0].path = "risks_sprites/house_fire/fire_9.png"
             self.current_building.map.buildings[0].update_sprite_size()
             self.current_building.map.buildings[0].display()
@@ -402,7 +417,7 @@ class Prefect(Walker):
             #                                                  (self.path[0].width, self.path[0].height)), (self.path[0].left, self.path[0].top))
             self.path = []
             print("Eteint")
-    
+
     def __getstate__(self):
         state = self.__dict__.copy()
         state.pop("walker_sprites")
@@ -413,7 +428,7 @@ class Prefect(Walker):
     def __setstate__(self, state):
         state = super().__setstate__(state)
         state["prefect_working_sprites"] = dict((k, [0 for _ in range(6)]) for k in [
-                                            "top", "bot", "left", "right"])
+            "top", "bot", "left", "right"])
         for i in self.prefect_working_sprites:
             for j in range(6):
                 self.prefect_working_sprites[i][j] = pygame.image.load(
@@ -459,7 +474,7 @@ class Engineer(Walker):
         for i in cell:
             if not isinstance(i, Cell.EngineerPost):
                 i.risk.resetEvent()
-    
+
     def __getstate__(self):
         state = self.__dict__.copy()
         state.pop("walker_sprites")
