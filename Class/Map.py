@@ -79,7 +79,6 @@ class Map:  # Un ensemble de cellule
         for x in range(40):
             for y in range(40):
                 self.get_cell(x, y).handle_zoom(zoom_in)
-        self.display_overlay()
 
     def handle_move(self, move, m):
         self.screen.fill((0, 0, 0))
@@ -87,8 +86,6 @@ class Map:  # Un ensemble de cellule
             for y in range(40):
                 self.get_cell(x, y).handle_move(move, m)
                 self.get_cell(x, y).display()
-        self.display_overlay()
-
     # Check if these coordinates are in the map
     def inMap(self, x, y):
         return (0 <= x and x <= self.size-1 and 0 <= y and y <= self.size-1)
