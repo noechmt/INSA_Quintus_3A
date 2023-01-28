@@ -20,7 +20,7 @@ class RiskEvent():
         self.type = eType
         self.tmpbool = True
         self.fireCounter = 0
-        self.fire_sprites = [{"sprite": pygame.image.load("risks_sprites/house_fire/fire_" + str(k) + ".png"),
+        self.fire_sprites = [{"sprite": pygame.image.load("risks_sprites/house_fire/fire_" + str(k) + ".png").convert_alpha(),
                               "path": "risks_sprites/house_fire/fire_" + str(k) + ".png"} for k in range(0, 10)]
         self.building = building
 
@@ -40,7 +40,7 @@ class RiskEvent():
             if self.type == "fire" or self.type == "collapse":
                 # Au cas où il faut changer de sprite pour le collapse
                 self.building.sprite = pygame.image.load(
-                    "risks_sprites/house_fire/fire_8.png")
+                    "risks_sprites/house_fire/fire_8.png").convert_alpha()
                 self.building.path = "risks_sprites/house_fire/fire_8.png"
             if isinstance(self.building, Cell.House):
                 self.building.nb_occupants, self.building.unemployedCount = 0, 0
@@ -69,10 +69,10 @@ class RiskEvent():
             return
         if self.fireCounter >= 500:
             # self.building.screen.blit(pygame.transform.scale(pygame.image.load("game_screen/game_screen_sprites/dirt_0.png"), (self.building.width, self.building.height)), (self.building.left, self.building.top))
-            if self.building.sprite != pygame.image.load("risks_sprites/house_fire/fire_9.png"):
+            if self.building.sprite != pygame.image.load("risks_sprites/house_fire/fire_9.png").convert_alpha():
                 # self.building.screen.blit(pygame.transform.scale(self.fire_sprites[9], (self.building.width, self.building.height)), (self.building.left, self.building.top))
                 self.building.sprite = pygame.image.load(
-                    "risks_sprites/house_fire/fire_9.png")
+                    "risks_sprites/house_fire/fire_9.png").convert_alpha()
                 self.building.path = "risks_sprites/house_fire/fire_9.png"
                 self.building.update_sprite_size()
                 self.building.display()
@@ -140,6 +140,6 @@ class RiskEvent():
         return state
 
     def __setstate__(self, state):
-        state["fire_sprites"] = [{"sprite": pygame.image.load("risks_sprites/house_fire/fire_" + str(k) + ".png"),
+        state["fire_sprites"] = [{"sprite": pygame.image.load("risks_sprites/house_fire/fire_" + str(k) + ".png").convert_alpha(),
                                   "path": "risks_sprites/house_fire/fire_" + str(k) + ".png"} for k in range(0, 10)]
         self.__dict__.update(state)

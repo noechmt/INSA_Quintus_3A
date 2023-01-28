@@ -150,7 +150,7 @@ class Walker():
                 for i in self.walker_sprites:
                     for j in range(2):
                         self.walker_sprites[i][j] = pygame.image.load(
-                            "walker_sprites/prefect_sprites/prefect_" + i + "_" + str(j) + ".png")
+                            "walker_sprites/prefect_sprites/prefect_" + i + "_" + str(j) + ".png").convert_alpha()
 
             case "engineer":
                 state["walker_sprites"] = dict((k, [0, 0])
@@ -323,13 +323,13 @@ class Prefect(Walker):
         for i in self.walker_sprites:
             for j in range(2):
                 self.walker_sprites[i][j] = pygame.image.load(
-                    "walker_sprites/prefect_sprites/prefect_" + i + "_" + str(j) + ".png")
+                    "walker_sprites/prefect_sprites/prefect_" + i + "_" + str(j) + ".png").convert_alpha()
         self.prefect_working_sprites = dict((k, [0 for _ in range(6)]) for k in [
                                             "top", "bot", "left", "right"])
         for i in self.prefect_working_sprites:
             for j in range(6):
                 self.prefect_working_sprites[i][j] = pygame.image.load(
-                    "walker_sprites/prefect_water_sprites/" + i + "/prefect_" + str(j) + ".png")
+                    "walker_sprites/prefect_water_sprites/" + i + "/prefect_" + str(j) + ".png").convert_alpha()
 
     def __str__(self):
         return "Prefect"
@@ -412,7 +412,7 @@ class Prefect(Walker):
             self.isWandering = True
             self.ttl = 1
             self.current_building.map.buildings[0].sprite = pygame.image.load(
-                "risks_sprites/house_fire/fire_9.png")
+                "risks_sprites/house_fire/fire_9.png").convert_alpha()
             self.current_building.map.buildings[0].path = "risks_sprites/house_fire/fire_9.png"
             self.current_building.map.buildings[0].update_sprite_size()
             self.current_building.map.buildings[0].display()
@@ -435,7 +435,7 @@ class Prefect(Walker):
         for i in self.prefect_working_sprites:
             for j in range(6):
                 self.prefect_working_sprites[i][j] = pygame.image.load(
-                    "walker_sprites/prefect_water_sprites/" + i + "/prefect_" + str(j) + ".png")
+                    "walker_sprites/prefect_water_sprites/" + i + "/prefect_" + str(j) + ".png").convert_alpha()
         self.__dict__.update(state)
 
 
