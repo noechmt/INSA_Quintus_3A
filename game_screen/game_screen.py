@@ -8,6 +8,7 @@ from Class.Button import Button
 from Class.Map import *
 from Class.Panel import Panel
 import time
+from datetime import datetime
 
 # draw a rectangle with an opacity option
 
@@ -42,10 +43,15 @@ def game_screen():
     SIZE = 40
 
     # Load new map or existing one with pickle
-    """map = Map(SIZE, height_land, width_land)"""
-    with open('not_empty_map', 'rb') as f1:
-        map = pickle.load(f1)
-    map.display_map()
+    file = open("Saves/.temp.txt", "r")
+    name_path = file.read()
+    if "Saves/" in name_path:
+        with open(name_path, 'rb') as f1:
+            map = pickle.load(f1)
+        map.display_map()
+    else:
+        map = Map(SIZE, height_land, width_land)
+        map.set_name_user(name_path)
 
     panel = Panel(SCREEN)
 
@@ -91,7 +97,7 @@ def game_screen():
 
     walker_update_count = 0
     fire_upadte_count = 0
-
+    current_time = ""
     ##############################
     while run:
 
@@ -228,7 +234,12 @@ def game_screen():
                                         (speed_left, speed_top))
 
                     if (panel.get_save_button().is_hovered(pos)):
-                        print("Save en cours")
+                        path_save = "Saves/" + \
+                            str(map.get_name_user()) + ".q5"
+                        with open(path_save, 'wb') as f1:
+                            pickle.dump(map, f1)
+                        current_time = datetime.now().strftime("%H:%M:%S")
+
                 if zoom_update > 0:
                     if event.button == 4:
                         if zoom < 1.7:

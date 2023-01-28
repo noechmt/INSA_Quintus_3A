@@ -48,6 +48,7 @@ class Map:  # Un ensemble de cellule
         self.button_activated = {"house": False, "shovel": False, "road": False,
                                  "prefecture": False, "engineerpost": False, "well": False}
         self.zoom = 1
+        self.name_user = ""
 
     def init_map(self):  # Permet d'initialiser le chemin de terre sur la map.
         for i in range(self.size):
@@ -222,3 +223,9 @@ class Map:  # Un ensemble de cellule
 
     def get_width_land(self):
         return self.width_land
+
+    def get_name_user(self):
+        return self.name_user
+
+    def set_name_user(self, name_user):
+        self.name_user = name_user
