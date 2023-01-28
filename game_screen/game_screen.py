@@ -40,7 +40,8 @@ def game_screen():
     width_land = WIDTH_SCREEN*sqrt(2)/80
     SIZE = 40
 
-    map = Map(SIZE, height_land, width_land, SCREEN)
+    Walker.screen, Map.screen, Cell.screen = SCREEN, SCREEN, SCREEN
+    map = Map(SIZE, height_land, width_land)
 
     panel = Panel(SCREEN)
 
@@ -90,6 +91,7 @@ def game_screen():
     
     ##############################
     while run:
+        
         pos = pygame.mouse.get_pos()
         if pos[1] <= 60:
             map.offset_top += 5*(3 - pos[1] / 20)*zoom

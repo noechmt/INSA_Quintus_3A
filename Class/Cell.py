@@ -25,6 +25,9 @@ def draw_polygon_alpha(surface, color, points):
 
 
 class Cell:  # Une case de la map
+
+    screen = None
+    
     def __init__(self, x, y, height, width, screen, map):
         self.x = x
         self.y = y
@@ -34,8 +37,8 @@ class Cell:  # Une case de la map
         self.type = ""
         self.water = 0
         self.sprite = ""
+        self.path = ""
         self.aleatoire = 0
-        self.screen = screen
         self.hovered = 0
         self.type_empty = None
         self.house_mode = False
@@ -667,6 +670,7 @@ class House(Building):  # la maison fils de building (?)
         self.max_occupants = 5
         self.unemployedCount = 0
         self.migrant = Migrant(self)
+        #test_pickle(self.migrant)
         self.risk = RiskEvent("fire", self)
         # Temporary
         self.sprite = pygame.image.load(
@@ -821,3 +825,87 @@ class EngineerPost(Building):
 
     def patrol(self):
         self.engineer.leave_building()
+
+def test_pickle(xThing,lTested = []):
+    import pickle
+    if id(xThing) in lTested:
+        return lTested
+    sType = type(xThing).__name__
+    print('Testing {0}...'.format(sType))
+
+    if sType in ['type','int','str']:
+        print('...too easy')
+        return lTested
+    if sType == 'dict':
+        print('...testing members')
+        for k in xThing:
+            lTested = test_pickle(xThing[k],lTested)
+        print('...tested members')
+        return lTested
+    if sType == 'list':
+        print('...testing members')
+        for x in xThing:
+            lTested = test_pickle(x)
+        print('...tested members')
+        return lTested
+
+    lTested.append(id(xThing))
+    oClass = type(xThing)
+
+    for s in dir(xThing):
+        if s.startswith('_'):
+            print('...skipping *private* thingy')
+            continue
+        #if it is an attribute: Skip it
+        try:
+            xClassAttribute = oClass.__getattribute__(oClass,s)
+        except AttributeError:
+            pass
+        else:
+            if type(xClassAttribute).__name__ == 'property':
+                print('...skipping property')
+                continue
+
+        xAttribute = xThing.__getattribute__(s)
+        print('Testing {0}.{1} of type {2}'.format(sType,s,type(xAttribute).__name__))
+        #if it is a function make sure it is stuck to the class...
+        if type(xAttribute).__name__ == 'function':
+            raise Exception('ERROR: found a function')
+        if type(xAttribute).__name__ == 'method':
+            print('...skipping method')
+            continue
+        if type(xAttribute).__name__ == 'HtmlElement':
+            continue
+        if type(xAttribute) == dict:
+            print('...testing dict values for {0}.{1}'.format(sType,s))
+            for k in xAttribute:
+                lTested = test_pickle(xAttribute[k])
+                continue
+            print('...finished testing dict values for {0}.{1}'.format(sType,s))
+
+        try:
+            oIter = xAttribute.__iter__()
+        except AttributeError:
+            pass
+        except AssertionError:
+            pass #lxml elements do this
+        else:
+            print('...testing iter values for {0}.{1} of type {2}'.format(sType,s,type(xAttribute).__name__))
+            for x in xAttribute:   
+                lTested = test_pickle(x,lTested)
+            print('...finished testing iter values for {0}.{1}'.format(sType,s))
+
+        try:
+            xAttribute.__dict__
+        except AttributeError:
+            pass
+        else:
+            #this attribute should be explored seperately...
+            lTested = test_pickle(xAttribute,lTested)
+            continue
+        pickle.dumps(xAttribute)
+
+
+    print('Testing {0} as complete object'.format(sType))
+    pickle.dumps(xThing)
+    return lTested   

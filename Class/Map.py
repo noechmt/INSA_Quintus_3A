@@ -10,13 +10,15 @@ from Class.Cell import *
 
 
 class Map:  # Un ensemble de cellule
-    def __init__(self, size, height, width, screen):
+
+    screen = None
+
+    def __init__(self, size, height, width):
         self.size = size  # La taille de la map est size*size : int
         self.height_land = height
         self.width_land = width
         self.offset_top = 0
         self.offset_left = 0
-        self.screen = screen
         self.overlay = ""
         self.array = [[Empty(j, i, self.height_land, self.width_land, self.screen, self) for i in range(
             size)] for j in range(size)]  # tableau de cellule (voir classe cellule) : list

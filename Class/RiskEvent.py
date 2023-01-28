@@ -12,7 +12,8 @@ class RiskEvent():
         self.type = eType
         self.tmpbool = True
         self.fireCounter = 0
-        self.fire_sprites = dict((k, pygame.image.load("risks_sprites/house_fire/fire_" + str(k) + ".png")) for k in range(0,10))
+        self.fire_sprites = [{"sprite": pygame.image.load("risks_sprites/house_fire/fire_" + str(k) + ".png"), 
+                                "path": "risks_sprites/house_fire/fire_" + str(k) + ".png"} for k in range(0,10)]
         self.building = building
         
 
@@ -28,7 +29,9 @@ class RiskEvent():
         if self.riskCounter >= self.riskTreshold :
             self.happened = True
             self.building.type = "ruin"
-            if self.type == "fire" or self.type == "collapse" : self.building.sprite = pygame.image.load("risks_sprites/house_fire/fire_8.png") # Au cas où il faut changer de sprite pour le collapse
+            if self.type == "fire" or self.type == "collapse" : 
+                self.building.sprite = pygame.image.load("risks_sprites/house_fire/fire_8.png") # Au cas où il faut changer de sprite pour le collapse
+                self.building.path = "risks_sprites/house_fire/fire_8.png"
             if isinstance(self.building, Cell.House) : self.building.nb_occupants, self.building.unemployedCount = 0, 0
             elif isinstance(self.building, Cell.Prefecture) : 
                 if self.building.labor_advisor in self.building.map.walkers :
@@ -54,6 +57,7 @@ class RiskEvent():
             if self.building.sprite != pygame.image.load("risks_sprites/house_fire/fire_9.png") : 
                 # self.building.screen.blit(pygame.transform.scale(self.fire_sprites[9], (self.building.width, self.building.height)), (self.building.left, self.building.top))
                 self.building.sprite = pygame.image.load("risks_sprites/house_fire/fire_9.png")
+                self.building.path = "risks_sprites/house_fire/fire_9.png"
                 self.building.update_sprite_size()
                 self.building.display()
             self.fireCounter = 0
@@ -65,7 +69,8 @@ class RiskEvent():
         
             
         else : 
-            self.building.sprite = self.fire_sprites[self.fireCounter%8]
+            self.building.sprite = self.fire_sprites[self.fireCounter%8]["sprite"]
+            self.building.path = self.fire_sprites[self.fireCounter%8]["path"]
             self.building.update_sprite_size()
             self.building.display()
             # self.building.screen.blit(pygame.transform.scale(self.fire_sprites[self.fireCounter%8], (self.building.width, self.building.height)), (self.building.left, self.building.top))
@@ -89,7 +94,8 @@ class RiskEvent():
             return
         self.building.destroyed = True
         # self.building.sprite = pygame.image.load("game_screen/game_screen_sprites/dirt_0.png"), (self.building.width, self.building.height)), (self.building.left, self.building.top))
-        self.building.sprite = self.fire_sprites[8]
+        self.building.sprite = self.fire_sprites[8]["sprite"]
+        self.building.path = self.fire_sprites[8]["path"]
         self.building.update_sprite_size()
         self.building.display()
         
@@ -111,3 +117,12 @@ class RiskEvent():
                     if not isinstance(j, Cell.Building) : #and not (j in [i.map.array[i.x-1][i.y], i.map.array[i.x - 1][i.y - 1]]) and (isinstance(i, Cell.Prefecture) or isinstance(i, Cell.EngineerPost)): 
                         j.display()
      
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        state.pop("fire_sprites")
+        return state
+
+    def __setstate__(self, state):
+        state["fire_sprites"] = [{"sprite": pygame.image.load("risks_sprites/house_fire/fire_" + str(k) + ".png"), 
+                            "path": "risks_sprites/house_fire/fire_" + str(k) + ".png"} for k in range(0,10)]
+        self.__dict__.update(state)
