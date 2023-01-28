@@ -453,7 +453,7 @@ class Path(Cell):
 
                 return
             if self.check_surrondings([0, 1, 2, 0]):
-                self.path_sprite = path_hori
+                self.path_sprite = path_verti
                 self.set_sprite(sprite_verti)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x, self.y + 1), Path):
