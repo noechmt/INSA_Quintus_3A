@@ -19,7 +19,8 @@ class Panel():
         pass
 
     def init_sprites(self):
-        self.figure_1 = pygame.image.load("game_screen/game_screen_sprites/figure_2.png")
+        self.figure_1 = pygame.image.load(
+            "game_screen/game_screen_sprites/figure_2.png")
         self.background = pygame.image.load(
             "game_screen/game_screen_sprites/panel_background.png")
         self.overlays = pygame.image.load(
@@ -62,6 +63,8 @@ class Panel():
             "game_screen/game_screen_sprites/paneling_played.png")
         self.button_paused_sprite = pygame.image.load(
             "game_screen/game_screen_sprites/paneling_paused.png")
+        self.button_save_sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/paneling_save.png")
 
     def init_buttons(self):
         self.grid_button = Button(177*self.width_screen/192, 0.345*self.height_screen,
@@ -84,6 +87,8 @@ class Panel():
             177*self.width_screen/192 + 1.2*self.width_screen/48, 0.25*self.height_screen+12*self.height_screen/80, self.width_screen/48, self.height_screen/40, self.button_down_sprite)
         self.pause_button = Button(177*self.width_screen/192 + 0.55*self.width_screen/48, 0.25*self.height_screen +
                                    15*self.height_screen/80, self.width_screen/48, self.height_screen/40, self.button_played_sprite)
+        self.save_button = Button(177*self.width_screen/192 + 0.55*self.width_screen/48, 0.25*self.height_screen +
+                                  35*self.height_screen/80, 2*self.width_screen/48, 2*self.height_screen/40, self.button_save_sprite)
 
     def display(self):
         for i in range(2):
@@ -92,11 +97,11 @@ class Panel():
                                                                           self.height_screen/10)), ((((i+22)/24)*self.width_screen), (j/10)*self.height_screen))
         draw_rect_alpha(self.screen, (50, 50, 50, 60), (self.width_screen *
                                                         (11/12), 0, self.width_screen/12, self.height_screen*9/10))
-        #self.screen.blit(pygame.transform.scale(self.overlays, (self.width_screen/18,
-         #                                                       self.height_screen/36)), (11*self.width_screen/12+5, self.height_screen/32+2))
+        # self.screen.blit(pygame.transform.scale(self.overlays, (self.width_screen/18,
+        #                                                       self.height_screen/36)), (11*self.width_screen/12+5, self.height_screen/32+2))
 
-        
-        self.screen.blit(pygame.transform.scale(self.figure_1, (81, 91)), (180*self.width_screen/192, self.height_screen/15))
+        self.screen.blit(pygame.transform.scale(
+            self.figure_1, (81, 91)), (180*self.width_screen/192, self.height_screen/15))
 
         draw_rect_alpha(self.screen, (255, 255, 255, 127), (177*self.width_screen/192-2,
                         0.25*self.height_screen-2, (self.width_screen)/48+4, (self.height_screen)/40+4))
@@ -110,12 +115,14 @@ class Panel():
                                                             0.25*self.height_screen+3*self.height_screen/80-2, (self.width_screen)/48+4, (self.height_screen)/40+4))
         draw_rect_alpha(self.screen, (255, 255, 255, 127), (187*self.width_screen/192-1,
                                                             0.25*self.height_screen+3*self.height_screen/80-2, (self.width_screen)/48+4, (self.height_screen)/40+4))
-        draw_rect_alpha(self.screen, (255, 255, 255, 127), (177*self.width_screen/192-1.5, 0.25*self.height_screen+12*self.height_screen/80-1.5, self.width_screen/48+3, self.height_screen/40+3))
-        draw_rect_alpha(self.screen, (255, 255, 255, 127), (177*self.width_screen/192-1.5 + 1.2*self.width_screen/48, 0.25*self.height_screen+12*self.height_screen/80-1.5, self.width_screen/48+3, self.height_screen/40+3))
+        draw_rect_alpha(self.screen, (255, 255, 255, 127), (177*self.width_screen/192-1.5, 0.25 *
+                        self.height_screen+12*self.height_screen/80-1.5, self.width_screen/48+3, self.height_screen/40+3))
+        draw_rect_alpha(self.screen, (255, 255, 255, 127), (177*self.width_screen/192-1.5 + 1.2*self.width_screen/48,
+                        0.25*self.height_screen+12*self.height_screen/80-1.5, self.width_screen/48+3, self.height_screen/40+3))
         draw_rect_alpha(self.screen, (255, 255, 255, 127), (177*self.width_screen/192 + 0.55*self.width_screen/48-1.5, 0.25*self.height_screen +
-                                   15*self.height_screen/80-1.5, self.width_screen/48+3, self.height_screen/40+3))
+                                                            15*self.height_screen/80-1.5, self.width_screen/48+3, self.height_screen/40+3))
         draw_rect_alpha(self.screen, (255, 255, 255, 127), (177*self.width_screen/192-1.5, 0.345*self.height_screen-1.5,
-                                  self.width_screen/48+4, self.height_screen/40+3))
+                                                            self.width_screen/48+4, self.height_screen/40+3))
 
         self.screen.blit(pygame.transform.scale(self.window_current, (self.width_screen /
                                                                       12-10, self.height_screen/17)), (11*self.width_screen/12+5, 0.18*self.height_screen))
@@ -143,6 +150,7 @@ class Panel():
         self.up_button.draw(self.screen)
         self.down_button.draw(self.screen)
         self.pause_button.draw(self.screen)
+        self.save_button.draw(self.screen)
 
     def set_window(self, choice):
         if choice == "road":
@@ -197,3 +205,6 @@ class Panel():
 
     def get_pause_button(self):
         return self.pause_button
+
+    def get_save_button(self):
+        return self.save_button
