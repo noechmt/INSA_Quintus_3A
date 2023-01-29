@@ -49,7 +49,7 @@ def game_screen():
     width_wo_panel = WIDTH_SCREEN - (WIDTH_SCREEN/7)
 
 # taskbar
-    color_brown = (70, 46, 1)
+    """color_brown = (70, 46, 1)
     bar = pygame.image.load(
         "game_screen/game_screen_sprites/taskbar_background.png")
     SCREEN.blit(pygame.transform.scale(
@@ -62,7 +62,7 @@ def game_screen():
     SCREEN.blit(file_text, (WIDTH_SCREEN/60, HEIGH_SCREEN/256))
     SCREEN.blit(options_text, (WIDTH_SCREEN/16, HEIGH_SCREEN/256))
     SCREEN.blit(help_text, (WIDTH_SCREEN/7.5, HEIGH_SCREEN/256))
-    SCREEN.blit(advisors_text, (WIDTH_SCREEN/5.5, HEIGH_SCREEN/256))
+    SCREEN.blit(advisors_text, (WIDTH_SCREEN/5.5, HEIGH_SCREEN/256))"""
 
     fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
     run = 1
@@ -87,7 +87,6 @@ def game_screen():
     walker_update_count = 0
     fire_upadte_count = 0
 
-    
     ##############################
     while run:
         pos = pygame.mouse.get_pos()
@@ -343,8 +342,9 @@ def game_screen():
                 # shovel_button.handle_hover_button(pos, SCREEN)
                 # road_button.handle_hover_button(pos, SCREEN)
 
-        if map.get_overlay() in ("fire", "collapse"): map.display_overlay()
-        
+        if map.get_overlay() in ("fire", "collapse"):
+            map.display_overlay()
+
         walker_update_count += 1
         # print(walker_update_count)
         update_speed = 10 / (speed)
