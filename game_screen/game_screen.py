@@ -8,6 +8,7 @@ from Class.Button import Button
 from Class.Map import *
 from Class.Panel import Panel
 import time
+from datetime import datetime
 
 # draw a rectangle with an opacity option
 
@@ -23,6 +24,7 @@ def game_screen():
     pygame.init()
 
     SCREEN = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    set_SCREEN(SCREEN)
     FPS = 60
 
     # Re-initialize the window
@@ -40,7 +42,16 @@ def game_screen():
     width_land = WIDTH_SCREEN*sqrt(2)/80
     SIZE = 40
 
-    map = Map(SIZE, height_land, width_land, SCREEN)
+    # Load new map or existing one with pickle
+    file = open("Saves/.temp.txt", "r")
+    name_path = file.read()
+    if "Saves/" in name_path:
+        with open(name_path, 'rb') as f1:
+            map = pickle.load(f1)
+        map.display_map()
+    else:
+        map = Map(SIZE, height_land, width_land)
+        map.set_name_user(name_path)
 
     panel = Panel(SCREEN)
 
@@ -49,7 +60,7 @@ def game_screen():
     width_wo_panel = WIDTH_SCREEN - (WIDTH_SCREEN/7)
 
 # taskbar
-    color_brown = (70, 46, 1)
+    """color_brown = (70, 46, 1)
     bar = pygame.image.load(
         "game_screen/game_screen_sprites/taskbar_background.png")
     SCREEN.blit(pygame.transform.scale(
@@ -62,7 +73,7 @@ def game_screen():
     SCREEN.blit(file_text, (WIDTH_SCREEN/60, HEIGH_SCREEN/256))
     SCREEN.blit(options_text, (WIDTH_SCREEN/16, HEIGH_SCREEN/256))
     SCREEN.blit(help_text, (WIDTH_SCREEN/7.5, HEIGH_SCREEN/256))
-    SCREEN.blit(advisors_text, (WIDTH_SCREEN/5.5, HEIGH_SCREEN/256))
+    SCREEN.blit(advisors_text, (WIDTH_SCREEN/5.5, HEIGH_SCREEN/256))"""
 
     fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
     run = 1
@@ -86,10 +97,10 @@ def game_screen():
 
     walker_update_count = 0
     fire_upadte_count = 0
-
-    
+    current_time = ""
     ##############################
     while run:
+
         pos = pygame.mouse.get_pos()
         if pos[1] <= 60:
             map.offset_top += 5*(3 - pos[1] / 20)*zoom
@@ -123,6 +134,8 @@ def game_screen():
                 SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         zoom_update += 1
         for event in pygame.event.get():
+            if map.get_overlay() in ("fire", "collapse"):
+                map.display_overlay()
             pos = pygame.mouse.get_pos()
 
             # Set and print logical coordinates
@@ -136,6 +149,8 @@ def game_screen():
             text_wallet = fps_font.render(f"{map.wallet}", 1, (255, 255, 255))
             SCREEN.blit(text_wallet, (0, 40))
             if event.type == pygame.QUIT:
+                """with open('not_empty_map', 'wb') as f1:
+                    pickle.dump(map, f1)"""
                 run = 0
             # Move up
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -160,22 +175,26 @@ def game_screen():
                     if (panel.house_button.is_hovered(pos)):
                         panel.set_window("house")
                         map.handle_button("house")
-                        # map.display_map()
+                        map.set_overlay("")
                     if (panel.shovel_button.is_hovered(pos)):
                         panel.set_window("shovel")
                         map.handle_button("shovel")
+                        map.set_overlay("")
                         # map.display_map()
                     if (panel.get_road_button().is_hovered(pos)):
                         panel.set_window("road")
                         map.handle_button("road")
+                        map.set_overlay("")
                         # map.display_map()
                     if (panel.prefecture_button.is_hovered(pos)):
                         panel.set_window("prefecture")
                         map.handle_button("prefecture")
+                        map.set_overlay("")
                         # map.display_map()
                     if (panel.engineerpost_button.is_hovered(pos)):
                         panel.set_window("engineer post")
                         map.handle_button("engineerpost")
+                        map.set_overlay("")
                         # map.display_map()
                     if (panel.well_button.is_hovered(pos)):
                         panel.set_window("well")
@@ -221,6 +240,14 @@ def game_screen():
                                 f"{speed * 100:.0f}%", 1, (255, 255, 255))
                             SCREEN.blit(speed_counter_text,
                                         (speed_left, speed_top))
+
+                    if (panel.get_save_button().is_hovered(pos)):
+                        path_save = "Saves/" + \
+                            str(map.get_name_user()) + ".q5"
+                        with open(path_save, 'wb') as f1:
+                            pickle.dump(map, f1)
+                        current_time = datetime.now().strftime("%H:%M:%S")
+
                 if zoom_update > 0:
                     if event.button == 4:
                         if zoom < 1.7:
@@ -311,6 +338,7 @@ def game_screen():
                 panel.get_up_button().handle_hover_button(pos, SCREEN)
                 panel.get_down_button().handle_hover_button(pos, SCREEN)
                 panel.get_pause_button().handle_hover_button(pos, SCREEN)
+                panel.get_save_button().handle_hover_button(pos, SCREEN)
 
             if event.type == pygame.KEYDOWN:
                 if pygame.key.get_pressed()[pygame.K_ESCAPE]:
@@ -343,8 +371,9 @@ def game_screen():
                 # shovel_button.handle_hover_button(pos, SCREEN)
                 # road_button.handle_hover_button(pos, SCREEN)
 
-        if map.get_overlay() in ("fire", "collapse"): map.display_overlay()
-        
+        if map.get_overlay() in ("fire", "collapse"):
+            map.display_overlay()
+
         walker_update_count += 1
         # print(walker_update_count)
         update_speed = 10 / (speed)
