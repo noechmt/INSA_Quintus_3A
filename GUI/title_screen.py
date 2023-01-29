@@ -1,7 +1,44 @@
 import pygame
-
+from os import walk
 from Class.Button import Button
 from GUI.choose_name import choose_name
+
+
+def choosing_save_window(screen):
+    # Background for the choice
+    (width_menu, height_menu) = (
+        screen.get_size()[0] - 2*screen.get_size()[0]/10, screen.get_size()[1] - 2*screen.get_size()[1]/10)
+    (left_menu, top_menu) = (screen.get_size()
+                             [0] / 10, screen.get_size()[1] / 10)
+    menu_background = pygame.image.load(
+        "GUI/Images/Title screen/Menu_background.jpg")
+    screen.blit(pygame.transform.scale(
+        menu_background, (width_menu, height_menu)), (left_menu, top_menu))
+
+    start_game_button = Button(screen.get_size()[0]/10, screen.get_size()[1]/10, width_menu,
+                               height_menu / 15, text="Charger une partie")
+    start_game_button.draw(screen)
+
+    listeFichiers = []
+    left_first_save = screen.get_size()[0] / 10
+    top_first_save = 3*screen.get_size()[1] / 15
+    height_first_save = screen.get_size()[1] / 15
+    width_first_save = screen.get_size()[0] / 6
+    i = 0
+    u = 0
+    blanc = pygame.image.load("GUI/Images/blanc.png")
+    for (repertoire, sousRepertoires, fichiers) in walk("Saves/"):
+        for fichier in fichiers:
+            if fichier[0] != '.':
+                if (i == 9):
+                    i = 0
+                    u += 1
+                listeFichiers.append(Button(left_first_save, top_first_save + i*height_first_save,
+                                            width_first_save + u*2*width_first_save, height_first_save, image=blanc, text=str(fichier)))
+                i += 1
+    for fichier in listeFichiers:
+        fichier.draw(screen)
+    return listeFichiers
 
 
 def title_screen():
@@ -55,9 +92,9 @@ def title_screen():
 
     top_load_button = top_start_button + height_buttons + HEIGHT_SCREEN / 100
     load_game_button = Button(left_buttons, top_load_button, width_buttons,
-                               height_buttons, image=logo_background, text="Charger une partie")
+                              height_buttons, image=logo_background, text="Charger une partie")
     load_game_button.draw(SCREEN)
-    
+
     top_leave_button = top_load_button + height_buttons + HEIGHT_SCREEN / 100
     leave_game_button = Button(left_buttons, top_leave_button, width_buttons,
                                height_buttons, image=logo_background, text="Quittez le jeu")
@@ -70,6 +107,7 @@ def title_screen():
     # Loop that check if the user wants to close the window
     running = True
     window_name = False
+    choosing_save = False
     # Used to manage how fast the screen updates
     clock = pygame.time.Clock()
     while running:
@@ -81,14 +119,38 @@ def title_screen():
                 running = False
                 return False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if leave_game_button.is_hovered(pos):
-                    running = False
-                if start_game_button.is_hovered(pos):
-                    window_name = True
-                    running = False
+                if not choosing_save:
+                    if leave_game_button.is_hovered(pos):
+                        running = False
+                        return False
+                    if start_game_button.is_hovered(pos):
+                        window_name = True
+                        running = False
+                    if load_game_button.is_hovered(pos):
+                        choosing_save = True
+                        listeFichiers = choosing_save_window(SCREEN)
+
+                        file = open("Saves/.temp.txt", "w")
+                else:
+                    for fichier in listeFichiers:
+                        if fichier.is_hovered(pos):
+                            file.write("Saves/" + str(fichier.get_text()))
+                            return True
+
             if event.type == pygame.MOUSEMOTION:
-                start_game_button.handle_hover_button(pos, SCREEN)
-                leave_game_button.handle_hover_button(pos, SCREEN)
+                if not choosing_save:
+                    start_game_button.handle_hover_button(pos, SCREEN)
+                    load_game_button.handle_hover_button(pos, SCREEN)
+                    leave_game_button.handle_hover_button(pos, SCREEN)
+                else:
+                    for fichier in listeFichiers:
+                        fichier.handle_hover_button(pos, SCREEN)
+
+            if choosing_save:
+                if event.type == pygame.KEYDOWN:
+                    if pygame.key.get_pressed()[pygame.K_ESCAPE]:
+                        title_screen()
+                        return True
 
         # Set the FPS at 60
         clock.tick(60)
@@ -100,6 +162,5 @@ def title_screen():
         # We display again this window if the back button is pressed from choose_name
         if (not choose_name()):
             title_screen()
-        
-        return True
 
+        return True

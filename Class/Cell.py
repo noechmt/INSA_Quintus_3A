@@ -7,12 +7,25 @@ from math import sqrt, floor
 import random
 import time
 
+SCREEN = None
+
+
+def set_SCREEN_cell(screen):
+    global SCREEN
+    SCREEN = screen
+
+
 overlay_risk = [
-    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_0.png"), "width": 58, "height": 30},
-    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_1.png"), "width": 48, "height": 63},
-    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_2.png"), "width": 48, "height": 73},
-    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_3.png"), "width": 48, "height": 83},
-    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_4.png"), "width": 48, "height": 93}]
+    {"sprite": pygame.image.load(
+        "risks_sprites/overlay/overlay_0.png").convert_alpha(), "width": 58, "height": 30},
+    {"sprite": pygame.image.load(
+        "risks_sprites/overlay/overlay_1.png").convert_alpha(), "width": 48, "height": 63},
+    {"sprite": pygame.image.load(
+        "risks_sprites/overlay/overlay_2.png").convert_alpha(), "width": 48, "height": 73},
+    {"sprite": pygame.image.load(
+        "risks_sprites/overlay/overlay_3.png").convert_alpha(), "width": 48, "height": 83},
+    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_4.png").convert_alpha(), "width": 48, "height": 93}]
+
 
 def draw_polygon_alpha(surface, color, points):
     lx, ly = zip(*points)
@@ -24,7 +37,12 @@ def draw_polygon_alpha(surface, color, points):
     surface.blit(shape_surf, target_rect)
 
 
+house_0 = pygame.image.load(
+    "game_screen/game_screen_sprites/house_0.png").convert_alpha()
+
+
 class Cell:  # Une case de la map
+
     def __init__(self, x, y, height, width, screen, map):
         self.x = x
         self.y = y
@@ -34,13 +52,14 @@ class Cell:  # Une case de la map
         self.type = ""
         self.water = 0
         self.sprite = ""
+        self.path = ""
         self.aleatoire = 0
-        self.screen = screen
         self.hovered = 0
         self.type_empty = None
         self.house_mode = False
-        self.WIDTH_SCREEN, self.HEIGHT_SCREEN = self.screen.get_size()
+        self.WIDTH_SCREEN, self.HEIGHT_SCREEN = SCREEN.get_size()
         self.init_screen_coordonates()
+        self.path_sprite = ""
 
     def update_sprite_size(self):
         pass
@@ -56,37 +75,8 @@ class Cell:  # Une case de la map
             self.height/2 + self.y * self.height/2 + self.map.offset_top
 
     def display(self):
-        """if self.type_empty == "tree":
-            if self.aleatoire == 1:
-                self.screen.blit(pygame.transform.scale(
-                    self.sprite, (self.width, self.height*42/30)), (self.left, self.top - self.height*12/30))
-            elif self.aleatoire == 2:
-                self.screen.blit(pygame.transform.scale(
-                    self.sprite, (self.width, self.height*41/30)), (self.left, self.top - self.height*11/30))
-            elif self.aleatoire == 3:
-                self.screen.blit(pygame.transform.scale(
-                    self.sprite, (self.width, self.height*44/30)), (self.left, self.top - self.height*14/30))
-            elif self.aleatoire == 4:
-                self.screen.blit(pygame.transform.scale(
-                    self.sprite, (self.width, self.height*45/30)), (self.left, self.top - self.height*15/30))
-        elif self.type_empty == "rock":
-            self.screen.blit(pygame.transform.scale(
-                self.sprite, (self.width, self.height*35/30)), (self.left, self.top-self.height*5/30))
+        pass
 
-        if (self.type == "well"):
-            self.screen.blit(pygame.transform.scale(
-                self.sprite, (self.width, self.height*53/30)), (self.left, self.top - self.height*23/30))
-        elif (self.type == "engineer post"):
-            self.screen.blit(pygame.transform.scale(
-                self.sprite, (self.width, self.height*50/30)), (self.left, self.top - self.height*20/30))
-        elif (self.type == "prefecture"):
-            self.screen.blit(pygame.transform.scale(
-                self.sprite, (self.width, self.height*38/30)), (self.left, self.top - self.height*8/30))
-        else:
-            self.screen.blit(pygame.transform.scale(
-                self.sprite, (self.width+2*sqrt(2), self.height+2)), (self.left-sqrt(2), self.top-1))
-        """
-        
     def display_around(self):
         if (self.y+1 < 40 and (self.map.get_cell(self.x, self.y+1).type_empty != "dirt") and self.map.get_cell(self.x, self.y+1).type != "path"):
             if (self.map.get_cell(self.x, self.y+1).type_empty != "water"):
@@ -102,7 +92,7 @@ class Cell:  # Une case de la map
                 self.map.get_cell(self.x+1, self.y+1).display_around()
 
     def display_around_shovel(self):
-        if (self.x-1 > 0 and self.y-1 > 0) :
+        if (self.x-1 > 0 and self.y-1 > 0):
             self.map.get_cell(self.x-1, self.y-1).display()
         if (self.y-1 > 0):
             self.map.get_cell(self.x, self.y-1).display()
@@ -123,8 +113,6 @@ class Cell:  # Une case de la map
         if (self.x+1 < 40 and self.y+1 < 40 and self.map.get_cell(self.x+1, self.y+1).type_empty != "dirt" and self.map.get_cell(self.x+1, self.y+1).type != "path"):
             self.map.get_cell(self.x+1, self.y+1).display()
             self.map.get_cell(self.x+1, self.y+1).display_around()
-            
-        
 
     def handle_zoom(self, zoom_in):
         if zoom_in:
@@ -149,21 +137,19 @@ class Cell:  # Une case de la map
 
     def handle_hover_button(self):
         if (self.map.get_housed()):
-            house_sprite = pygame.image.load(
-                "game_screen/game_screen_sprites/house_0.png").convert_alpha()
-            self.screen.blit(pygame.transform.scale(
-                house_sprite, (self.width, self.height)), (self.left, self.top))
+            SCREEN.blit(pygame.transform.scale(
+                house_0, (self.width, self.height)), (self.left, self.top))
             if self.isBuildable():
-                draw_polygon_alpha(self.screen, (0, 0, 0, 85),
+                draw_polygon_alpha(SCREEN, (0, 0, 0, 85),
                                    self.get_points_polygone())
             else:
-                draw_polygon_alpha(self.screen, (255, 0, 0, 85),
+                draw_polygon_alpha(SCREEN, (255, 0, 0, 85),
                                    self.get_points_polygone())
         elif self.map.get_road_button_activated() and not self.isBuildable():
-            draw_polygon_alpha(self.screen, (255, 0, 0, 85),
+            draw_polygon_alpha(SCREEN, (255, 0, 0, 85),
                                self.get_points_polygone())
         else:
-            draw_polygon_alpha(self.screen, (0, 0, 0, 85),
+            draw_polygon_alpha(SCREEN, (0, 0, 0, 85),
                                self.get_points_polygone())
 
     def get_points_polygone(self):
@@ -208,25 +194,25 @@ class Cell:  # Une case de la map
             match type:
                 case "path":
                     self.map.set_cell_array(self.x, self.y, Path(
-                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                        self.x, self.y, self.height, self.width, SCREEN, self.map))
                     self.map.get_cell(self.x, self.y).handle_sprites()
                     self.map.get_cell(self.x, self.y).display()
                     self.map.wallet -= 4
                 case "house":
                     self.map.set_cell_array(self.x, self.y, House(
-                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                        self.x, self.y, self.height, self.width, SCREEN, self.map))
                     self.map.wallet -= 10
                 case "well":
                     self.map.set_cell_array(self.x, self.y, Well(
-                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                        self.x, self.y, self.height, self.width, SCREEN, self.map))
                     self.map.wallet -= 5
                 case "prefecture":
                     self.map.set_cell_array(self.x, self.y, Prefecture(
-                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                        self.x, self.y, self.height, self.width, SCREEN, self.map))
                     self.map.wallet -= 30
                 case "engineer post":
                     self.map.set_cell_array(self.x, self.y, EngineerPost(
-                        self.x, self.y, self.height, self.width, self.screen, self.map))
+                        self.x, self.y, self.height, self.width, SCREEN, self.map))
                     self.map.wallet -= 30
             for i in range(-2, 3):
                 for j in range(-2, 3):
@@ -237,20 +223,19 @@ class Cell:  # Une case de la map
         overlay = self.map.overlay
         match overlay:
             case "grid":
-                pygame.draw.polygon(self.screen, (25, 25, 25),
-                    self.get_points_polygone(), 2)
+                pygame.draw.polygon(SCREEN, (25, 25, 25),
+                                    self.get_points_polygone(), 2)
 
             case "fire" | "collapse":
-                if isinstance(self, Building) and self.risk.type == self.map.overlay:
-                    if self.risk.riskCounter < self.risk.riskTreshold:
-                        i= floor(self.risk.riskCounter*5/self.risk.riskTreshold)
-                        self.screen.blit(pygame.transform.scale(overlay_risk[i]["sprite"], (overlay_risk[i]["width"], overlay_risk[i]["height"])), (self.left, self.top+self.height-overlay_risk[i]["height"]))
-
+                if isinstance(self, Building) and self.risk.type == self.map.overlay and self.risk.riskCounter < self.risk.riskTreshold:
+                    i = floor(self.risk.riskCounter*5/self.risk.riskTreshold)
+                    SCREEN.blit(pygame.transform.scale(overlay_risk[i]["sprite"], (
+                        overlay_risk[i]["width"], overlay_risk[i]["height"])), (self.left, self.top+self.height-overlay_risk[i]["height"]))
 
             case "water":
                 if self.water and self.map.get_welled() and self.type != "well":
-                    draw_polygon_alpha(self.screen, (0, 0, 255, 85),
-                                    self.get_points_polygone())
+                    draw_polygon_alpha(SCREEN, (0, 0, 255, 85),
+                                       self.get_points_polygone())
 
     def clear(self):
         if not isinstance(self, Empty) and self.type_empty != "rock" and self.type_empty != "water":
@@ -272,7 +257,7 @@ class Cell:  # Une case de la map
                     i.currentCell.display()
             self.type_empty = "dirt"
             self.map.set_cell_array(self.x, self.y, Empty(
-               self.x, self.y, self.height, self.width, self.screen, self.map, "dirt", 1))
+                self.x, self.y, self.height, self.width, SCREEN, self.map, "dirt", 1))
             arr = self.check_cell_around(Cell)
             for i in arr:
                 if not isinstance(i, Building):
@@ -294,34 +279,45 @@ class Cell:  # Une case de la map
         return self.water
 
 
-sprite_hori = pygame.image.load(
-    "game_screen/game_screen_sprites/road_straight_hori.png").convert_alpha()
-sprite_verti = pygame.image.load(
-    "game_screen/game_screen_sprites/road_straight_verti.png").convert_alpha()
-sprite_all_turn = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_all.png").convert_alpha()
-sprite_turn_bot_left = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_bot_left.png").convert_alpha()
-sprite_turn_bot_right = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_bot_right.png").convert_alpha()
-sprite_turn_hori_bot = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_hori_bot.png").convert_alpha()
-sprite_turn_hori_top = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_hori_top.png").convert_alpha()
-sprite_turn_left_top = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_left_top.png").convert_alpha()
-sprite_turn_right_top = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_right_top.png").convert_alpha()
-sprite_turn_verti_left = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_verti_left.png").convert_alpha()
-sprite_turn_verti_right = pygame.image.load(
-    "game_screen/game_screen_sprites/road_turn_verti_right.png").convert_alpha()
+path_hori = "game_screen/game_screen_sprites/road_straight_hori.png"
+sprite_hori = pygame.image.load(path_hori).convert_alpha()
+
+path_verti = "game_screen/game_screen_sprites/road_straight_verti.png"
+sprite_verti = pygame.image.load(path_verti).convert_alpha()
+
+path_all_turn = "game_screen/game_screen_sprites/road_turn_all.png"
+sprite_all_turn = pygame.image.load(path_all_turn).convert_alpha()
+
+path_bot_left = "game_screen/game_screen_sprites/road_turn_bot_left.png"
+sprite_turn_bot_left = pygame.image.load(path_bot_left).convert_alpha()
+
+path_bot_right = "game_screen/game_screen_sprites/road_turn_bot_right.png"
+sprite_turn_bot_right = pygame.image.load(path_bot_right).convert_alpha()
+
+path_hori_bot = "game_screen/game_screen_sprites/road_turn_hori_bot.png"
+sprite_turn_hori_bot = pygame.image.load(path_hori_bot).convert_alpha()
+
+path_hori_top = "game_screen/game_screen_sprites/road_turn_hori_top.png"
+sprite_turn_hori_top = pygame.image.load(path_hori_top).convert_alpha()
+
+path_left_top = "game_screen/game_screen_sprites/road_turn_left_top.png"
+sprite_turn_left_top = pygame.image.load(path_left_top).convert_alpha()
+
+path_right_top = "game_screen/game_screen_sprites/road_turn_right_top.png"
+sprite_turn_right_top = pygame.image.load(path_right_top).convert_alpha()
+
+path_verti_left = "game_screen/game_screen_sprites/road_turn_verti_left.png"
+sprite_turn_verti_left = pygame.image.load(path_verti_left).convert_alpha()
+
+path_verti_right = "game_screen/game_screen_sprites/road_turn_verti_right.png"
+sprite_turn_verti_right = pygame.image.load(path_verti_right).convert_alpha()
 
 
 class Path(Cell):
 
     def __init__(self, x, y, height, width, screen, map, path_level=0):
         super().__init__(x, y, height, width, screen, map)
+        self.path_sprite = path_verti
         self.sprite = sprite_verti
         self.sprite_display = ""
         self.level = path_level
@@ -341,122 +337,129 @@ class Path(Cell):
             house_around_house = j.check_cell_around(House)
             for k in house_around_house:
                 self.map.path_graph.add_edge(self, k, weight=2000)
-            
 
     def update_sprite_size(self):
         self.sprite_display = pygame.transform.scale(
             self.sprite, (self.width+2*sqrt(2), self.height+2))
 
     def display(self):
-        self.screen.blit(self.sprite_display, (self.left-sqrt(2), self.top-1))
+        SCREEN.blit(self.sprite_display, (self.left-sqrt(2), self.top-1))
         self.display_overlay()
 
     def handle_sprites(self, r=0):
         if r < 2:
             # Check if the road is in all turns
             if self.check_surrondings([1, 1, 1, 1]):
+                self.path_sprite = path_all_turn
                 self.set_sprite(sprite_all_turn)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                
                 return
+
             # Check if the road is a turn bottom to left
             if self.check_surrondings([1, 0, 1, 0]):
+                self.path_sprite = path_bot_left
                 self.set_sprite(sprite_turn_bot_left)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                
                 return
+
             # Check if the road is a turn bottom to right
             if self.check_surrondings([0, 0, 1, 1]):
+                self.path_sprite = path_bot_right
                 self.set_sprite(sprite_turn_bot_right)
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                
+
                 return
             # Check if the road is a turn horizontal to bottom
             if self.check_surrondings([1, 0, 1, 1]):
+                self.path_sprite = path_hori_bot
                 self.set_sprite(sprite_turn_hori_bot)
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                
 
                 return
             # Check if the road is a turn horizontal to top
             if self.check_surrondings([1, 1, 0, 1]):
+                self.path_sprite = path_hori_top
                 self.set_sprite(sprite_turn_hori_top)
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
-                
 
                 return
             # Check if the road is a turn letf to top
             if self.check_surrondings([1, 1, 0, 0]):
+                self.path_sprite = path_left_top
                 self.set_sprite(sprite_turn_left_top)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
-                
+
                 return
             # Check if the road is a turn right to top
             if self.check_surrondings([0, 1, 0, 1]):
+                self.path_sprite = path_right_top
                 self.set_sprite(sprite_turn_right_top)
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
-                
 
                 return
             # Check if the road is a turn vertical to left
             if self.check_surrondings([1, 1, 1, 0]):
+                self.path_sprite = path_verti_left
                 self.set_sprite(sprite_turn_verti_left)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                
 
                 return
             # Check if the road is a turn vertical to right
             if self.check_surrondings([0, 1, 1, 1]):
+                self.path_sprite = path_verti_right
                 self.set_sprite(sprite_turn_verti_right)
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                
 
                 return
 
             # Check horizontal road
             if self.check_surrondings([2, 0, 0, 1]):
+                self.path_sprite = path_hori
                 self.set_sprite(sprite_hori)
                 self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x - 1, self.y), Path):
                     self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
-                
+
                 return
             if self.check_surrondings([1, 0, 0, 2]):
+                self.path_sprite = path_hori
                 self.set_sprite(sprite_hori)
                 self.map.get_cell(self.x - 1, self.y).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x + 1, self.y), Path):
                     self.map.get_cell(self.x + 1, self.y).handle_sprites(r + 1)
-                
+
                 return
             # Check vertical road
             if self.check_surrondings([0, 2, 1, 0]):
+                self.path_sprite = path_verti
                 self.set_sprite(sprite_verti)
                 self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x, self.y - 1), Path):
                     self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
-                
+
                 return
             if self.check_surrondings([0, 1, 2, 0]):
+                self.path_sprite = path_verti
                 self.set_sprite(sprite_verti)
                 self.map.get_cell(self.x, self.y - 1).handle_sprites(r + 1)
                 if isinstance(self.map.get_cell(self.x, self.y + 1), Path):
                     self.map.get_cell(self.x, self.y + 1).handle_sprites(r + 1)
-                
+
                 return
 
     def check_surrondings(self, check):
@@ -477,6 +480,21 @@ class Path(Cell):
     def __str__(self):
         return f"Chemin { self.level}"
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        sprite = state.pop("sprite")
+        spriye_display = state.pop("sprite_display")
+        state["path_sprite"] = self.path_sprite
+        return state
+
+    def __setstate__(self, state):
+        path_sprite = state.pop("path_sprite")
+        self.path_sprite = path_sprite
+        state["sprite"] = pygame.image.load(path_sprite).convert_alpha()
+        state["sprite_display"] = None
+        self.__dict__.update(state)
+        self.update_sprite_size()
+
 
 class Empty(Cell):
     def __init__(self, x, y, height, width, screen, map, type_empty="dirt", boolean_first_generation=0):
@@ -485,6 +503,7 @@ class Empty(Cell):
         self.type = "empty"
         self.tree_or_dirt_list = ["tree", "dirt", "dirt"]
         self.rock_or_dirt_list = ["rock", "dirt", "dirt", "dirt"]
+        self.path_sprite = ""
 
         if boolean_first_generation == 0:
             # place the trees
@@ -576,8 +595,9 @@ class Empty(Cell):
         else:
             aleatoire = randint(1, 2)
         super().set_aleatoire(aleatoire)
-        self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(aleatoire) + ".png").convert_alpha()
+        self.path_sprite = "game_screen/game_screen_sprites/" + \
+            self.type_sprite + "_" + str(aleatoire) + ".png"
+        self.sprite = pygame.image.load(self.path_sprite).convert_alpha()
         self.sprite_display = ""
         self.update_sprite_size()
         self.display()
@@ -609,31 +629,32 @@ class Empty(Cell):
     def display(self):
         if self.type_empty == "tree":
             if self.aleatoire == 1:
-                self.screen.blit(
+                SCREEN.blit(
                     self.sprite_display, (self.left, self.top - self.height*12/30))
             elif self.aleatoire == 2:
-                self.screen.blit(
+                SCREEN.blit(
                     self.sprite_display, (self.left, self.top - self.height*11/30))
             elif self.aleatoire == 3:
-                self.screen.blit(
+                SCREEN.blit(
                     self.sprite_display, (self.left, self.top - self.height*14/30))
             elif self.aleatoire == 4:
-                self.screen.blit(
+                SCREEN.blit(
                     self.sprite_display, (self.left, self.top - self.height*15/30))
         elif self.type_empty == "rock":
-            self.screen.blit(
+            SCREEN.blit(
                 self.sprite_display, (self.left, self.top-self.height*5/30))
         else:
-            self.screen.blit(self.sprite_display,
-                             (self.left-sqrt(2), self.top-1))
+            SCREEN.blit(self.sprite_display,
+                        (self.left-sqrt(2), self.top-1))
         self.display_overlay()
 
     def clear(self):
         if self.type_empty == "tree":
             self.type_empty = "dirt"
             self.type_sprite = "dirt"
-            self.sprite = pygame.image.load(
-                "game_screen/game_screen_sprites/" + self.type_sprite + "_" + str(self.aleatoire) + ".png")
+            self.path_sprite = "game_screen/game_screen_sprites/" + \
+                self.type_sprite + "_" + str(self.aleatoire) + ".png"
+            self.sprite = pygame.image.load(self.path_sprite).convert_alpha()
             self.map.wallet -= 2
         self.update_sprite_size()
         self.display()
@@ -641,6 +662,21 @@ class Empty(Cell):
 
     def canBuild(self):
         return self.type_empty == "dirt"
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        sprite = state.pop("sprite")
+        sprite_display = state.pop("sprite_display")
+        state["path_sprite"] = self.path_sprite
+        return state
+
+    def __setstate__(self, state):
+        path_sprite = state.pop("path_sprite")
+        self.path_sprite = path_sprite
+        state["sprite"] = pygame.image.load(path_sprite).convert_alpha()
+        state["sprite_display"] = None
+        self.__dict__.update(state)
+        self.update_sprite_size()
 
 
 class Building(Cell):  # un fils de cellule (pas encore sûr de l'utilité)
@@ -650,6 +686,7 @@ class Building(Cell):  # un fils de cellule (pas encore sûr de l'utilité)
         self.destroyed = False
         path_around = self.check_cell_around(Path)
         house_around = self.check_cell_around(House)
+        self.path_sprite = ""
         for j in path_around:
             self.map.path_graph.add_edge(j, self)
             if isinstance(self, House) and len(house_around) != 0:
@@ -669,14 +706,16 @@ class House(Building):  # la maison fils de building (?)
         self.max_occupants = 5
         self.unemployedCount = 0
         self.migrant = Migrant(self)
+        # test_pickle(self.migrant)
         self.risk = RiskEvent("fire", self)
         # Temporary
-        self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/house_" + str(self.level) + ".png").convert_alpha()
+        self.path_sprite = "game_screen/game_screen_sprites/house_" + \
+            str(self.level) + ".png"
+        self.sprite = pygame.image.load(self.path_sprite).convert_alpha()
         self.sprite_display = ""
         self.update_sprite_size()
         self.type = "house"
-        house_around= self.check_cell_around(House)
+        house_around = self.check_cell_around(House)
         for i in house_around:
             path_around = i.check_cell_around(Path)
             if len(path_around) != 0:
@@ -691,13 +730,14 @@ class House(Building):  # la maison fils de building (?)
             self.sprite, (self.width+2*sqrt(2), self.height+2))
 
     def display(self):
-        self.screen.blit(self.sprite_display, (self.left-sqrt(2), self.top-1))
+        SCREEN.blit(self.sprite_display, (self.left-sqrt(2), self.top-1))
         self.display_overlay()
 
     def nextLevel(self):
         self.level += 1
-        self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/house_" + str(self.level) + ".png").convert_alpha()
+        self.path_sprite = "game_screen/game_screen_sprites/house_" + \
+            str(self.level) + ".png"
+        self.sprite = pygame.image.load(self.path_sprite).convert_alpha()
         self.update_sprite_size()
         self.display()
         match self.level:
@@ -705,6 +745,21 @@ class House(Building):  # la maison fils de building (?)
                 self.max_occupants = 7
             case 3:
                 self.max_occupants = 9
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        sprite = state.pop("sprite")
+        sprite_display = state.pop("sprite_display")
+        state["path_sprite"] = self.path_sprite
+        return state
+
+    def __setstate__(self, state):
+        path_sprite = state.pop("path_sprite")
+        self.path_sprite = path_sprite
+        state["sprite"] = pygame.image.load(path_sprite).convert_alpha()
+        state["sprite_display"] = None
+        self.__dict__.update(state)
+        self.update_sprite_size()
 
 
 class Well(Building):
@@ -719,33 +774,46 @@ class Well(Building):
                     checkedCell = self.map.get_cell(self.x+i, self.y+j)
                     if isinstance(checkedCell, House) and checkedCell.level == 1 and checkedCell.max_occupants == checkedCell.nb_occupants:
                         checkedCell.nextLevel()
-
-        self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/well.png").convert_alpha()
+        self.path_sprite = "game_screen/game_screen_sprites/well.png"
+        self.sprite = pygame.image.load(self.path_sprite).convert_alpha()
         self.sprite_display = ""
         self.update_sprite_size()
         self.type = "well"
 
     def update_sprite_size(self):
-        if(self.type == "ruin"):
+        if (self.type == "ruin"):
             self.sprite_display = pygame.transform.scale(
                 self.sprite, (self.width, self.height*34/30))
         else:
             self.sprite_display = pygame.transform.scale(
                 self.sprite, (self.width, self.height*53/30))
-            
 
     def display(self):
-        if(self.type == "ruin"):
-            self.screen.blit(self.sprite_display,
-                         (self.left, self.top- self.height*4/30))
+        if (self.type == "ruin"):
+            SCREEN.blit(self.sprite_display,
+                        (self.left, self.top - self.height*4/30))
         else:
-            self.screen.blit(self.sprite_display,
-                            (self.left, self.top - self.height*23/30))
+            SCREEN.blit(self.sprite_display,
+                        (self.left, self.top - self.height*23/30))
         self.display_overlay()
 
     def __str__(self):
         return "Puit"
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        sprite = state.pop("sprite")
+        spriye_display = state.pop("sprite_display")
+        state["path_sprite"] = self.path_sprite
+        return state
+
+    def __setstate__(self, state):
+        path_sprite = state.pop("path_sprite")
+        self.path_sprite = path_sprite
+        state["sprite"] = pygame.image.load(path_sprite).convert_alpha()
+        state["sprite_display"] = None
+        self.__dict__.update(state)
+        self.update_sprite_size()
 
 
 class Prefecture(Building):
@@ -756,8 +824,8 @@ class Prefecture(Building):
         self.prefect = Prefect(self)
         self.requiredEmployees = 5
         self.risk = RiskEvent("collapse", self)
-        self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/prefecture.png").convert_alpha()
+        self.path_sprite = "game_screen/game_screen_sprites/prefecture.png"
+        self.sprite = pygame.image.load(self.path_sprite).convert_alpha()
         self.sprite_display = ""
         self.update_sprite_size()
         self.type = "prefecture"
@@ -772,11 +840,11 @@ class Prefecture(Building):
 
     def display(self):
         if self.type == "ruin":
-            self.screen.blit(
+            SCREEN.blit(
                 self.sprite_display, (self.left, self.top - self.height*4/30))
         else:
-            self.screen.blit(self.sprite_display,
-                         (self.left, self.top - self.height*8/30))
+            SCREEN.blit(self.sprite_display,
+                        (self.left, self.top - self.height*8/30))
         self.display_overlay()
 
     def __str__(self):
@@ -784,6 +852,21 @@ class Prefecture(Building):
 
     def patrol(self):
         self.prefect.leave_building()
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        sprite = state.pop("sprite")
+        spriye_display = state.pop("sprite_display")
+        state["path_sprite"] = self.path_sprite
+        return state
+
+    def __setstate__(self, state):
+        path_sprite = state.pop("path_sprite")
+        self.path_sprite = path_sprite
+        state["sprite"] = pygame.image.load(path_sprite).convert_alpha()
+        state["sprite_display"] = None
+        self.__dict__.update(state)
+        self.update_sprite_size()
 
 
 class EngineerPost(Building):
@@ -794,26 +877,26 @@ class EngineerPost(Building):
         self.engineer = Engineer(self)
         self.requiredEmployees = 5
         self.risk = RiskEvent("fire", self)
-        self.sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/engineerpost.png").convert_alpha()
+        self.path_sprite = "game_screen/game_screen_sprites/engineerpost.png"
+        self.sprite = pygame.image.load(self.path_sprite).convert_alpha()
         self.sprite_display = ""
         self.update_sprite_size()
         self.type = "engineer post"
 
     def display(self):
-        if self.type == "ruin" :
-            self.screen.blit(
+        if self.type == "ruin":
+            SCREEN.blit(
                 self.sprite_display, (self.left, self.top))
         else:
-            self.screen.blit(
+            SCREEN.blit(
                 self.sprite_display, (self.left, self.top - self.height*20/30))
         self.display_overlay()
 
     def update_sprite_size(self):
-        if(self.type == "ruin"):
+        if (self.type == "ruin"):
             self.sprite_display = pygame.transform.scale(
                 self.sprite, (self.width, self.height))
-        
+
         else:
             self.sprite_display = pygame.transform.scale(
                 self.sprite, (self.width, self.height*50/30))
@@ -823,3 +906,106 @@ class EngineerPost(Building):
 
     def patrol(self):
         self.engineer.leave_building()
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        sprite = state.pop("sprite")
+        spriye_display = state.pop("sprite_display")
+        state["path_sprite"] = self.path_sprite
+        return state
+
+    def __setstate__(self, state):
+        path_sprite = state.pop("path_sprite")
+        self.path_sprite = path_sprite
+        state["sprite"] = pygame.image.load(path_sprite).convert_alpha()
+        state["sprite_display"] = None
+        self.__dict__.update(state)
+        self.update_sprite_size()
+
+
+def test_pickle(xThing, lTested=[]):
+    import pickle
+    if id(xThing) in lTested:
+        return lTested
+    sType = type(xThing).__name__
+    print('Testing {0}...'.format(sType))
+
+    if sType in ['type', 'int', 'str']:
+        print('...too easy')
+        return lTested
+    if sType == 'dict':
+        print('...testing members')
+        for k in xThing:
+            lTested = test_pickle(xThing[k], lTested)
+        print('...tested members')
+        return lTested
+    if sType == 'list':
+        print('...testing members')
+        for x in xThing:
+            lTested = test_pickle(x)
+        print('...tested members')
+        return lTested
+
+    lTested.append(id(xThing))
+    oClass = type(xThing)
+
+    for s in dir(xThing):
+        if s.startswith('_'):
+            print('...skipping *private* thingy')
+            continue
+        # if it is an attribute: Skip it
+        try:
+            xClassAttribute = oClass.__getattribute__(oClass, s)
+        except AttributeError:
+            pass
+        else:
+            if type(xClassAttribute).__name__ == 'property':
+                print('...skipping property')
+                continue
+
+        xAttribute = xThing.__getattribute__(s)
+        print('Testing {0}.{1} of type {2}'.format(
+            sType, s, type(xAttribute).__name__))
+        # if it is a function make sure it is stuck to the class...
+        if type(xAttribute).__name__ == 'function':
+            raise Exception('ERROR: found a function')
+        if type(xAttribute).__name__ == 'method':
+            print('...skipping method')
+            continue
+        if type(xAttribute).__name__ == 'HtmlElement':
+            continue
+        if type(xAttribute) == dict:
+            print('...testing dict values for {0}.{1}'.format(sType, s))
+            for k in xAttribute:
+                lTested = test_pickle(xAttribute[k])
+                continue
+            print(
+                '...finished testing dict values for {0}.{1}'.format(sType, s))
+
+        try:
+            oIter = xAttribute.__iter__()
+        except AttributeError:
+            pass
+        except AssertionError:
+            pass  # lxml elements do this
+        else:
+            print('...testing iter values for {0}.{1} of type {2}'.format(
+                sType, s, type(xAttribute).__name__))
+            for x in xAttribute:
+                lTested = test_pickle(x, lTested)
+            print(
+                '...finished testing iter values for {0}.{1}'.format(sType, s))
+
+        try:
+            xAttribute.__dict__
+        except AttributeError:
+            pass
+        else:
+            # this attribute should be explored seperately...
+            lTested = test_pickle(xAttribute, lTested)
+            continue
+        pickle.dumps(xAttribute)
+
+    print('Testing {0} as complete object'.format(sType))
+    pickle.dumps(xThing)
+    return lTested
