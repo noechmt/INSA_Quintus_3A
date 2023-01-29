@@ -81,6 +81,7 @@ class Walker():
 
     # if (self.building.employees == self.building.required_employees) :
     def leave_building(self):
+        if self.building.type == "ruin" : return
         self.isWandering = True
         # print(self.isWandering)
         path = self.currentCell.check_cell_around(Cell.Path)
