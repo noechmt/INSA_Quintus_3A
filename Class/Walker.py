@@ -43,7 +43,7 @@ class Walker():
         self.currentSprite = 0
 
     def display(self):
-        if not self.inBuilding:
+        if not self.inBuilding and self.building.map.get_overlay() not in ("fire", "collapse"):
             if self.previousCell.x < self.currentCell.x:
                 SCREEN.blit(pygame.transform.scale(self.walker_sprites["right"][self.currentSprite % 2], (
                     self.currentCell.width, self.currentCell.height)), (self.currentCell.left, self.currentCell.top))

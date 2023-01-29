@@ -48,6 +48,7 @@ class Map:  # Un ensemble de cellule
         self.button_activated = {"house": False, "shovel": False, "road": False,
                                  "prefecture": False, "engineerpost": False, "well": False}
         self.zoom = 1
+        self.zoom_coef = 1
         self.name_user = ""
 
     def init_map(self):  # Permet d'initialiser le chemin de terre sur la map.
@@ -82,9 +83,11 @@ class Map:  # Un ensemble de cellule
         SCREEN.fill((0, 0, 0))
         #self.offset_left, self.offset_top = (0, 0)
         if zoom_in:
+            self.zoom_coef *= 1.05
             self.height_land *= 1.05
             self.width_land *= 1.05
         else:
+            self.zoom_coef /= 1.05
             self.height_land /= 1.05
             self.width_land /= 1.05
         for x in range(40):
@@ -130,7 +133,7 @@ class Map:  # Un ensemble de cellule
 
         for i in self.walkers:
             i.move()
-            if not isinstance(i, Prefect) or (isinstance(i, Prefect) and not i.isWorking):
+            if self.get_overlay() not in ("fire", "collapse") and not isinstance(i, Prefect) or (isinstance(i, Prefect) and not i.isWorking):
                 i.display()
             i.currentCell.display_around()
             if not isinstance(i, Migrant):
@@ -191,7 +194,9 @@ class Map:  # Un ensemble de cellule
                         self.array[x][y].display_overlay()
 
             case "fire" | "collapse":
-                for i in self.buildings:
+                self.display_map()
+                sorted_building = sorted(self.buildings, key=lambda i: (i.x, i.y))
+                for i in sorted_building:
                     i.display_overlay()
 
             case _:
