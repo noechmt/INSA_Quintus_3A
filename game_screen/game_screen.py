@@ -57,7 +57,7 @@ def game_screen():
 
     # Dims without left panel
     height_wo_panel = HEIGH_SCREEN
-    width_wo_panel = WIDTH_SCREEN - (WIDTH_SCREEN/7)
+    width_wo_panel = WIDTH_SCREEN - (WIDTH_SCREEN/9)
 
 # taskbar
     """color_brown = (70, 46, 1)
@@ -125,13 +125,15 @@ def game_screen():
             SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         if pos[0] >= WIDTH_SCREEN - 60:
             if not panel.get_road_button().is_hovered(pos) and not panel.get_well_button().is_hovered(pos):
-                map.offset_left += 5*(3 - (WIDTH_SCREEN - pos[0]) / 20)*zoom
-                map.handle_move(
-                    "right", (3 - (WIDTH_SCREEN - pos[0]) / 20) * zoom)
-                panel.display()
-                speed_counter_text = fps_font.render(
-                    f"{speed * 100:.0f}%", 1, (255, 255, 255))
-                SCREEN.blit(speed_counter_text, (speed_left, speed_top))
+                if not panel.get_collapse_button().is_hovered(pos):
+                    map.offset_left += 5 * \
+                        (3 - (WIDTH_SCREEN - pos[0]) / 20)*zoom
+                    map.handle_move(
+                        "right", (3 - (WIDTH_SCREEN - pos[0]) / 20) * zoom)
+                    panel.display()
+                    speed_counter_text = fps_font.render(
+                        f"{speed * 100:.0f}%", 1, (255, 255, 255))
+                    SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         zoom_update += 1
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
@@ -145,15 +147,21 @@ def game_screen():
             text_click = fps_font.render(f"{x} {y}", 1, (255, 255, 255))
             SCREEN.blit(text_click, (0, 20))
             text_wallet = fps_font.render(f"{map.wallet}", 1, (255, 255, 255))
+            rf = fps_font.render(f"rf", 1, (255, 255, 255))
+            pf = fps_font.render(f"pf", 1, (255, 255, 255))
+            rn = fps_font.render(f"rn", 1, (255, 255, 255))
+            pn = fps_font.render(f"pn", 1, (255, 255, 255))
             SCREEN.blit(text_wallet, (0, 40))
+            #if RiskEvent.riskTreshold == 1_000_000 : SCREEN.blit(rf, (0, 60))
+            if not Prefect.risk_reset : SCREEN.blit(pf, (20, 60))
+            #if RiskEvent.riskTreshold == 200 : SCREEN.blit(rn, (0, 60))
+            if Prefect.risk_reset : SCREEN.blit(pn, (20, 60))
             if event.type == pygame.QUIT:
-                """with open('not_empty_map', 'wb') as f1:
-                    pickle.dump(map, f1)"""
                 run = 0
-            # Move up
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    if map.inMap(x, y) and not selection["is_active"]:
+                    if map.inMap(x, y) and not selection["is_active"] and pos[0] < width_wo_panel:
                         selection["start"] = (x, y)
                         selection["cells"].append((x, y))
                         selection["is_active"] = 1
@@ -168,36 +176,44 @@ def game_screen():
                                     (speed_left, speed_top))
                     if panel.get_fire_button().is_hovered(pos):
                         map.set_overlay("fire")
+                        panel.display()
                     if panel.get_collapse_button().is_hovered(pos):
                         map.set_overlay("collapse")
+                        panel.display()
                     if (panel.house_button.is_hovered(pos)):
                         panel.set_window("house")
                         map.handle_button("house")
                         map.set_overlay("")
+                        panel.display()
                     if (panel.shovel_button.is_hovered(pos)):
                         panel.set_window("shovel")
                         map.handle_button("shovel")
                         map.set_overlay("")
+                        panel.display()
                         # map.display_map()
                     if (panel.get_road_button().is_hovered(pos)):
                         panel.set_window("road")
                         map.handle_button("road")
                         map.set_overlay("")
+                        panel.display()
                         # map.display_map()
                     if (panel.prefecture_button.is_hovered(pos)):
                         panel.set_window("prefecture")
                         map.handle_button("prefecture")
                         map.set_overlay("")
+                        panel.display()
                         # map.display_map()
                     if (panel.engineerpost_button.is_hovered(pos)):
                         panel.set_window("engineer post")
                         map.handle_button("engineerpost")
                         map.set_overlay("")
+                        panel.display()
                         # map.display_map()
                     if (panel.well_button.is_hovered(pos)):
                         panel.set_window("well")
                         map.handle_button("well")
                         map.set_overlay("water")
+                        panel.display()
                         # map.display_map()
                     if (panel.up_button.is_hovered(pos)):
                         if speed_index < 9:
@@ -308,7 +324,7 @@ def game_screen():
                     hovered_cell = map.get_cell(
                         hovered_coordinates[0], hovered_coordinates[1])
                     hovered_cell.handle_hover_button()
-                    #hovered_cell.display_around()
+                    # hovered_cell.display_around()
 
                 # Selection : fill the set with hovered cell
                 if map.inMap(x, y) and selection["is_active"]:
@@ -337,6 +353,8 @@ def game_screen():
                 panel.get_down_button().handle_hover_button(pos, SCREEN)
                 panel.get_pause_button().handle_hover_button(pos, SCREEN)
                 panel.get_save_button().handle_hover_button(pos, SCREEN)
+                panel.get_fire_button().handle_hover_button(pos, SCREEN)
+                panel.get_collapse_button().handle_hover_button(pos, SCREEN)
 
             if event.type == pygame.KEYDOWN:
                 if pygame.key.get_pressed()[pygame.K_ESCAPE]:
@@ -344,7 +362,7 @@ def game_screen():
                     map.handle_esc()
 
                 if pygame.key.get_pressed()[pygame.K_r]:
-                   Prefect.risk_reset = not Prefect.risk_reset
+                    Prefect.risk_reset = not Prefect.risk_reset
 
                 if pygame.key.get_pressed()[pygame.K_p]:
                     volume = pygame.mixer.music.get_volume()
