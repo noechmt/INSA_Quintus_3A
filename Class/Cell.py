@@ -17,14 +17,14 @@ def set_SCREEN_cell(screen):
 
 overlay_risk = [
     {"sprite": pygame.image.load(
-        "risks_sprites/overlay/overlay_0.png"), "width": 58, "height": 30},
+        "risks_sprites/overlay/overlay_0.png").convert_alpha(), "width": 58, "height": 30},
     {"sprite": pygame.image.load(
-        "risks_sprites/overlay/overlay_1.png"), "width": 48, "height": 63},
+        "risks_sprites/overlay/overlay_1.png").convert_alpha(), "width": 48, "height": 63},
     {"sprite": pygame.image.load(
-        "risks_sprites/overlay/overlay_2.png"), "width": 48, "height": 73},
+        "risks_sprites/overlay/overlay_2.png").convert_alpha(), "width": 48, "height": 73},
     {"sprite": pygame.image.load(
-        "risks_sprites/overlay/overlay_3.png"), "width": 48, "height": 83},
-    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_4.png"), "width": 48, "height": 93}]
+        "risks_sprites/overlay/overlay_3.png").convert_alpha(), "width": 48, "height": 83},
+    {"sprite": pygame.image.load("risks_sprites/overlay/overlay_4.png").convert_alpha(), "width": 48, "height": 93}]
 
 
 def draw_polygon_alpha(surface, color, points):
@@ -59,6 +59,7 @@ class Cell:  # Une case de la map
         self.house_mode = False
         self.WIDTH_SCREEN, self.HEIGHT_SCREEN = SCREEN.get_size()
         self.init_screen_coordonates()
+        self.path_sprite = ""
 
     def update_sprite_size(self):
         pass
@@ -488,7 +489,8 @@ class Path(Cell):
 
     def __setstate__(self, state):
         path_sprite = state.pop("path_sprite")
-        state["sprite"] = pygame.image.load(path_sprite)
+        self.path_sprite = path_sprite
+        state["sprite"] = pygame.image.load(path_sprite).convert_alpha()
         state["sprite_display"] = None
         self.__dict__.update(state)
         self.update_sprite_size()
@@ -501,6 +503,7 @@ class Empty(Cell):
         self.type = "empty"
         self.tree_or_dirt_list = ["tree", "dirt", "dirt"]
         self.rock_or_dirt_list = ["rock", "dirt", "dirt", "dirt"]
+        self.path_sprite = ""
 
         if boolean_first_generation == 0:
             # place the trees
@@ -651,7 +654,7 @@ class Empty(Cell):
             self.type_sprite = "dirt"
             self.path_sprite = "game_screen/game_screen_sprites/" + \
                 self.type_sprite + "_" + str(self.aleatoire) + ".png"
-            self.sprite = pygame.image.load(self.path_sprite)
+            self.sprite = pygame.image.load(self.path_sprite).convert_alpha()
             self.map.wallet -= 2
         self.update_sprite_size()
         self.display()
@@ -663,13 +666,14 @@ class Empty(Cell):
     def __getstate__(self):
         state = self.__dict__.copy()
         sprite = state.pop("sprite")
-        spriye_display = state.pop("sprite_display")
+        sprite_display = state.pop("sprite_display")
         state["path_sprite"] = self.path_sprite
         return state
 
     def __setstate__(self, state):
         path_sprite = state.pop("path_sprite")
-        state["sprite"] = pygame.image.load(path_sprite)
+        self.path_sprite = path_sprite
+        state["sprite"] = pygame.image.load(path_sprite).convert_alpha()
         state["sprite_display"] = None
         self.__dict__.update(state)
         self.update_sprite_size()
@@ -682,6 +686,7 @@ class Building(Cell):  # un fils de cellule (pas encore sûr de l'utilité)
         self.destroyed = False
         path_around = self.check_cell_around(Path)
         house_around = self.check_cell_around(House)
+        self.path_sprite = ""
         for j in path_around:
             self.map.path_graph.add_edge(j, self)
             if isinstance(self, House) and len(house_around) != 0:
@@ -750,7 +755,8 @@ class House(Building):  # la maison fils de building (?)
 
     def __setstate__(self, state):
         path_sprite = state.pop("path_sprite")
-        state["sprite"] = pygame.image.load(path_sprite)
+        self.path_sprite = path_sprite
+        state["sprite"] = pygame.image.load(path_sprite).convert_alpha()
         state["sprite_display"] = None
         self.__dict__.update(state)
         self.update_sprite_size()
@@ -803,7 +809,8 @@ class Well(Building):
 
     def __setstate__(self, state):
         path_sprite = state.pop("path_sprite")
-        state["sprite"] = pygame.image.load(path_sprite)
+        self.path_sprite = path_sprite
+        state["sprite"] = pygame.image.load(path_sprite).convert_alpha()
         state["sprite_display"] = None
         self.__dict__.update(state)
         self.update_sprite_size()
@@ -855,7 +862,8 @@ class Prefecture(Building):
 
     def __setstate__(self, state):
         path_sprite = state.pop("path_sprite")
-        state["sprite"] = pygame.image.load(path_sprite)
+        self.path_sprite = path_sprite
+        state["sprite"] = pygame.image.load(path_sprite).convert_alpha()
         state["sprite_display"] = None
         self.__dict__.update(state)
         self.update_sprite_size()
@@ -908,7 +916,8 @@ class EngineerPost(Building):
 
     def __setstate__(self, state):
         path_sprite = state.pop("path_sprite")
-        state["sprite"] = pygame.image.load(path_sprite)
+        self.path_sprite = path_sprite
+        state["sprite"] = pygame.image.load(path_sprite).convert_alpha()
         state["sprite_display"] = None
         self.__dict__.update(state)
         self.update_sprite_size()

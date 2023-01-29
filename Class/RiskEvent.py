@@ -41,7 +41,7 @@ class RiskEvent():
                 # Au cas où il faut changer de sprite pour le collapse
                 self.building.sprite = pygame.image.load(
                     "risks_sprites/house_fire/fire_8.png").convert_alpha()
-                self.building.path = "risks_sprites/house_fire/fire_8.png"
+                self.building.path_sprite = "risks_sprites/house_fire/fire_8.png"
             if isinstance(self.building, Cell.House):
                 self.building.nb_occupants, self.building.unemployedCount = 0, 0
             elif isinstance(self.building, Cell.Prefecture):
@@ -73,7 +73,7 @@ class RiskEvent():
                 # self.building.screen.blit(pygame.transform.scale(self.fire_sprites[9], (self.building.width, self.building.height)), (self.building.left, self.building.top))
                 self.building.sprite = pygame.image.load(
                     "risks_sprites/house_fire/fire_9.png").convert_alpha()
-                self.building.path = "risks_sprites/house_fire/fire_9.png"
+                self.building.path_sprite = "risks_sprites/house_fire/fire_9.png"
                 self.building.update_sprite_size()
                 self.building.display()
             self.fireCounter = 0
@@ -86,8 +86,8 @@ class RiskEvent():
         else:
             self.building.sprite = self.fire_sprites[self.fireCounter %
                                                      8]["sprite"]
-            self.building.path = self.fire_sprites[self.fireCounter %
-                                                   8]["path"]
+            self.building.path_sprite = self.fire_sprites[self.fireCounter %
+                                                          8]["path"]
             self.building.update_sprite_size()
             self.building.display()
             # self.building.screen.blit(pygame.transform.scale(self.fire_sprites[self.fireCounter%8], (self.building.width, self.building.height)), (self.building.left, self.building.top))
@@ -112,7 +112,7 @@ class RiskEvent():
         self.building.destroyed = True
         # self.building.sprite = pygame.image.load("game_screen/game_screen_sprites/dirt_0.png"), (self.building.width, self.building.height)), (self.building.left, self.building.top))
         self.building.sprite = self.fire_sprites[8]["sprite"]
-        self.building.path = self.fire_sprites[8]["path"]
+        self.building.path_sprite = self.fire_sprites[8]["path_sprite"]
         self.building.update_sprite_size()
         self.building.display()
 
