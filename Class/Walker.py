@@ -233,6 +233,7 @@ class LaborAdvisor(Walker):
 
 
 class Prefect(Walker):
+    risk_reset = True
     def __init__(self, current_prefecture):
         super().__init__("prefect", current_prefecture, True)
         self.current_building = current_prefecture
@@ -300,19 +301,24 @@ class Prefect(Walker):
                 if len(self.path) == 0:
                     self.path_finding(self.currentCell, self.building)
                 self.movePathFinding()
-                # self.reset_fire_risk()
+                if self.risk_reset : self.reset_fire_risk()
                 if self.currentCell == self.current_building:
                     self.ttl = 50
             else:
                 super().move()
                 self.ttl -= 1
-                # self.reset_fire_risk()
+                if self.risk_reset : self.reset_fire_risk()
 
     def reset_fire_risk(self):
         cell = self.currentCell.check_cell_around(Cell.Building)
         for i in cell:
             if not isinstance(i, Cell.Prefecture) and not isinstance(i, Cell.Well) and not i.risk.happened:
                 i.risk.resetEvent()
+            for j in i.check_cell_around(Cell.Building) :
+                if not isinstance(j, Cell.Prefecture) and not isinstance(j, Cell.Well) and not j.risk.happened:
+                    j.risk.resetEvent()
+            
+           
 
     def extinguishFire(self):
         if self.extinguishCounter < 36:
@@ -333,7 +339,7 @@ class Prefect(Walker):
             self.current_building.map.buildings[0].destroyed = True
             self.isWorking = False
             self.isWandering = True
-            self.ttl = 1
+            self.ttl = 3
             self.current_building.map.buildings[0].sprite = pygame.image.load("risks_sprites/house_fire/fire_9.png")
             self.current_building.map.buildings[0].update_sprite_size()
             self.current_building.map.buildings[0].display()

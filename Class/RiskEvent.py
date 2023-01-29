@@ -76,8 +76,7 @@ class RiskEvent():
             if self.tmpbool :
                 self.update_sprites_around()   
                 self.tmpbool = False
-            print("EN feu")
-
+                
         # if self.fireCounter >= 400 : 
         #     arr = self.building.check_cell_around(Cell.Building)
         #     for i in arr :

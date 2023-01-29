@@ -78,7 +78,7 @@ def game_screen():
     SCREEN.blit(speed_counter_text, (speed_left, speed_top))
     paused = 0
 
-    selection = {"is_active": 0, "start": tuple, "cells": set()}
+    selection = {"is_active": 0, "start": tuple, "cells": []}
     hovered_cell = None
     zoom = 1
     move = 1
@@ -142,7 +142,7 @@ def game_screen():
                 if event.button == 1:
                     if map.inMap(x, y) and not selection["is_active"]:
                         selection["start"] = (x, y)
-                        selection["cells"].add((x, y))
+                        selection["cells"].append((x, y))
                         selection["is_active"] = 1
 
                 # spawn the grid if is clicked
@@ -153,6 +153,10 @@ def game_screen():
                             f"{speed * 100:.0f}%", 1, (255, 255, 255))
                         SCREEN.blit(speed_counter_text,
                                     (speed_left, speed_top))
+                    if panel.get_fire_button().is_hovered(pos):
+                        map.set_overlay("fire")
+                    if panel.get_collapse_button().is_hovered(pos):
+                        map.set_overlay("collapse")
                     if (panel.house_button.is_hovered(pos)):
                         panel.set_window("house")
                         map.handle_button("house")
@@ -261,8 +265,9 @@ def game_screen():
                                         map.get_cell(i[0]+k, i[1]+j).display()
                         else:
                             selected_cell.display()
-                    map.buildings.sort(key=lambda i: (i.x, i.y))
-                    print([(i.x, i.y) for i in map.buildings])
+                            selected_cell.display_around()
+                    # map.buildings.sort(key=lambda i: (i.x, i.y))
+                    # print([(i.x, i.y) for i in map.buildings])
                     selection["cells"].clear()
                     selection["is_active"] = 0
 
@@ -278,10 +283,12 @@ def game_screen():
                     hovered_cell = map.get_cell(
                         hovered_coordinates[0], hovered_coordinates[1])
                     hovered_cell.handle_hover_button()
-                    # hovered_cell.display_around()
+                    #hovered_cell.display_around()
 
                 # Selection : fill the set with hovered cell
                 if map.inMap(x, y) and selection["is_active"]:
+                    selection["cells"].sort()
+                    # print([(i.x, i.y) for i in map.buildings])
                     for i in selection["cells"]:
                         map.get_cell(i[0], i[1]).display()
                     selection["cells"].clear()
@@ -291,7 +298,7 @@ def game_screen():
                         selection["start"][1], y+1, 1) if selection["start"][1] <= y else range(selection["start"][1], y-1, -1)
                     for i in range_x:
                         for j in range_y:
-                            selection["cells"].add((i, j))
+                            selection["cells"].append((i, j))
                             map.get_cell(i, j).handle_hover_button()
 
                 panel.get_grid_button().handle_hover_button(pos, SCREEN)
@@ -310,11 +317,8 @@ def game_screen():
                     panel.set_window("none")
                     map.handle_esc()
 
-                if pygame.key.get_pressed()[pygame.K_o]:
-                    # outfile = open("Saves/test.plk",'wb')
-                    # pickle.dump(map,outfile)
-                    # outfile.close()
-                    map.set_overlay("fire")
+                if pygame.key.get_pressed()[pygame.K_r]:
+                   Prefect.risk_reset = not Prefect.risk_reset
 
                 if pygame.key.get_pressed()[pygame.K_p]:
                     volume = pygame.mixer.music.get_volume()

@@ -40,6 +40,10 @@ class Panel():
             "game_screen/game_screen_sprites/panel_window_shovel.png")
         self.grid_button_sprite = pygame.image.load(
             "game_screen/game_screen_sprites/paneling_grid_button.png")
+        self.fire_button_sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/paneling_fire.png")
+        self.collapse_button_sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/paneling_collapse.png")
         self.home_button_sprite = pygame.image.load(
             "game_screen/game_screen_sprites/paneling_home_button.png")
         self.shovel_button_sprite = pygame.image.load(
@@ -66,6 +70,10 @@ class Panel():
     def init_buttons(self):
         self.grid_button = Button(177*self.width_screen/192, 0.345*self.height_screen,
                                   self.width_screen/48, self.height_screen / 40, self.grid_button_sprite)
+        self.fire_button = Button(182*self.width_screen/192, 0.345*self.height_screen,
+                                  self.width_screen/48, self.height_screen / 40, self.fire_button_sprite)
+        self.collapse_button = Button(187*self.width_screen/192, 0.345*self.height_screen,
+                                  self.width_screen/48, self.height_screen / 40, self.collapse_button_sprite)
         self.house_button = Button(177*self.width_screen/192, 0.25*self.height_screen,
                                    self.width_screen/48, self.height_screen/40, self.home_button_sprite)
         self.shovel_button = Button(182*self.width_screen/192, 0.25*self.height_screen,
@@ -116,11 +124,19 @@ class Panel():
                                    15*self.height_screen/80-1.5, self.width_screen/48+3, self.height_screen/40+3))
         draw_rect_alpha(self.screen, (255, 255, 255, 127), (177*self.width_screen/192-1.5, 0.345*self.height_screen-1.5,
                                   self.width_screen/48+4, self.height_screen/40+3))
+        draw_rect_alpha(self.screen, (255, 255, 255, 127), (182*self.width_screen/192-1.5, 0.345*self.height_screen-1.5,
+                                  self.width_screen/48+4, self.height_screen/40+3))
+        draw_rect_alpha(self.screen, (255, 255, 255, 127), (187*self.width_screen/192-1.5, 0.345*self.height_screen-1.5,
+                                  self.width_screen/48+4, self.height_screen/40+3))
 
         self.screen.blit(pygame.transform.scale(self.window_current, (self.width_screen /
                                                                       12-10, self.height_screen/17)), (11*self.width_screen/12+5, 0.18*self.height_screen))
 
         self.grid_button.draw(self.screen)
+
+        self.fire_button.draw(self.screen)
+
+        self.collapse_button.draw(self.screen)
 
         self.house_button.draw(self.screen)
 
@@ -170,6 +186,12 @@ class Panel():
 
     def get_grid_button(self):
         return self.grid_button
+
+    def get_fire_button(self):
+        return self.fire_button
+
+    def get_collapse_button(self):
+        return self.collapse_button
 
     def get_home_button(self):
         return self.house_button

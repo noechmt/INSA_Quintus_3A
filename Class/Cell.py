@@ -338,9 +338,10 @@ class Path(Cell):
         house_around = self.check_cell_around(House)
         for j in house_around:
             self.map.path_graph.add_edge(self, j)
+            self.map.path_graph.add_edge(j, self, weight=2000)
             house_around_house = j.check_cell_around(House)
             for k in house_around_house:
-                self.map.path_graph.add_edge(self, k, weight=2000)
+                self.map.path_graph.add_edge(j, k, weight=2000)
             
 
     def update_sprite_size(self):
@@ -652,9 +653,10 @@ class Building(Cell):  # un fils de cellule (pas encore sûr de l'utilité)
         house_around = self.check_cell_around(House)
         for j in path_around:
             self.map.path_graph.add_edge(j, self)
+            self.map.path_graph.add_edge(self, j, weight=2000)
             if isinstance(self, House) and len(house_around) != 0:
                 for k in house_around:
-                    self.map.path_graph.add_edge(j, k)
+                    self.map.path_graph.add_edge(j, k, weight=2000)
 
     def destroy(self):
         self.destroyed = 1
@@ -680,7 +682,7 @@ class House(Building):  # la maison fils de building (?)
         for i in house_around:
             path_around = i.check_cell_around(Path)
             if len(path_around) != 0:
-                self.map.path_graph.add_edge(path_around[0], self, weight=2000)
+                self.map.path_graph.add_edge(i, self, weight=2000)
         self.display()
 
     def __str__(self):

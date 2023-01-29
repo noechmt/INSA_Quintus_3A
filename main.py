@@ -1,6 +1,6 @@
 
 from GUI.title_screen import title_screen
-import pygame
+import pygame   
 import sys
 import os
 import ctypes
