@@ -170,6 +170,7 @@ def game_screen():
                     if (panel.prefecture_button.is_hovered(pos)):
                         panel.set_window("prefecture")
                         map.handle_button("prefecture")
+                        map.set_overlay("")
                         # map.display_map()
                     if (panel.engineerpost_button.is_hovered(pos)):
                         panel.set_window("engineer post")
