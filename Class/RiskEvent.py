@@ -111,7 +111,7 @@ class RiskEvent():
         self.building.destroyed = True
         # self.building.sprite = pygame.image.load("game_screen/game_screen_sprites/dirt_0.png"), (self.building.width, self.building.height)), (self.building.left, self.building.top))
         self.building.sprite = self.fire_sprites[8]["sprite"]
-        self.building.path_sprite = self.fire_sprites[8]["path_sprite"]
+        self.building.path_sprite = self.fire_sprites[8]["path"]
         self.building.update_sprite_size()
         self.building.display()
 

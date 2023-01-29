@@ -147,7 +147,15 @@ def game_screen():
             text_click = fps_font.render(f"{x} {y}", 1, (255, 255, 255))
             SCREEN.blit(text_click, (0, 20))
             text_wallet = fps_font.render(f"{map.wallet}", 1, (255, 255, 255))
+            rf = fps_font.render(f"rf", 1, (255, 255, 255))
+            pf = fps_font.render(f"pf", 1, (255, 255, 255))
+            rn = fps_font.render(f"rn", 1, (255, 255, 255))
+            pn = fps_font.render(f"pn", 1, (255, 255, 255))
             SCREEN.blit(text_wallet, (0, 40))
+            #if RiskEvent.riskTreshold == 1_000_000 : SCREEN.blit(rf, (0, 60))
+            if not Prefect.risk_reset : SCREEN.blit(pf, (20, 60))
+            #if RiskEvent.riskTreshold == 200 : SCREEN.blit(rn, (0, 60))
+            if Prefect.risk_reset : SCREEN.blit(pn, (20, 60))
             if event.type == pygame.QUIT:
                 """with open('not_empty_map', 'wb') as f1:
                     pickle.dump(map, f1)"""
