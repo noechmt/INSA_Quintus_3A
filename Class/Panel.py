@@ -20,55 +20,57 @@ class Panel():
 
     def init_sprites(self):
         self.figure_1 = pygame.image.load(
-            "game_screen/game_screen_sprites/figure_2.png")
+            "game_screen/game_screen_sprites/figure_2.png").convert_alpha()
         self.background = pygame.image.load(
-            "game_screen/game_screen_sprites/panel_background.png")
+            "game_screen/game_screen_sprites/panel_background.png").convert_alpha()
         self.overlays = pygame.image.load(
-            "game_screen/game_screen_sprites/paneling_overlays.png")
+            "game_screen/game_screen_sprites/paneling_overlays.png").convert_alpha()
         self.window_none = pygame.image.load(
-            "game_screen/game_screen_sprites/panel_window_none.png")
+            "game_screen/game_screen_sprites/panel_window_none.png").convert_alpha()
         self.window_house = pygame.image.load(
-            "game_screen/game_screen_sprites/panel_window_home.png")
+            "game_screen/game_screen_sprites/panel_window_home.png").convert_alpha()
         self.window_road = pygame.image.load(
-            "game_screen/game_screen_sprites/panel_window_road.png")
+            "game_screen/game_screen_sprites/panel_window_road.png").convert_alpha()
         self.window_prefecture = pygame.image.load(
-            "game_screen/game_screen_sprites/panel_window_prefecture.png")
+            "game_screen/game_screen_sprites/panel_window_prefecture.png").convert_alpha()
         self.window_engineerpost = pygame.image.load(
-            "game_screen/game_screen_sprites/panel_window_engineerpost.png")
+            "game_screen/game_screen_sprites/panel_window_engineerpost.png").convert_alpha()
         self.window_well = pygame.image.load(
-            "game_screen/game_screen_sprites/panel_window_well.png")
+            "game_screen/game_screen_sprites/panel_window_well.png").convert_alpha()
         self.window_shovel = pygame.image.load(
-            "game_screen/game_screen_sprites/panel_window_shovel.png")
+            "game_screen/game_screen_sprites/panel_window_shovel.png").convert_alpha()
         self.grid_button_sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/paneling_grid_button.png")
+            "game_screen/game_screen_sprites/paneling_grid_button.png").convert_alpha()
         self.fire_button_sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/paneling_fire.png")
+            "game_screen/game_screen_sprites/paneling_fire.png").convert_alpha()
         self.collapse_button_sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/paneling_collapse.png")
+            "game_screen/game_screen_sprites/paneling_collapse.png").convert_alpha()
         self.home_button_sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/paneling_home_button.png")
+            "game_screen/game_screen_sprites/paneling_home_button.png").convert_alpha()
         self.shovel_button_sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/paneling_shovel_button.png")
+            "game_screen/game_screen_sprites/paneling_shovel_button.png").convert_alpha()
         self.road_button_sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/paneling_road_button.png")
+            "game_screen/game_screen_sprites/paneling_road_button.png").convert_alpha()
         self.bottom = pygame.image.load(
-            "game_screen/game_screen_sprites/paneling_bot.png")
+            "game_screen/game_screen_sprites/paneling_bot.png").convert_alpha()
         self.prefecture_button_sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/paneling_prefecture_button.png")
+            "game_screen/game_screen_sprites/paneling_prefecture_button.png").convert_alpha()
         self.engineerpost_button_sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/paneling_engineerpost_button.png")
+            "game_screen/game_screen_sprites/paneling_engineerpost_button.png").convert_alpha()
         self.well_button_sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/paneling_well_button.png")
+            "game_screen/game_screen_sprites/paneling_well_button.png").convert_alpha()
         self.button_up_sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/paneling_up.png")
+            "game_screen/game_screen_sprites/paneling_up.png").convert_alpha()
         self.button_down_sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/paneling_down.png")
+            "game_screen/game_screen_sprites/paneling_down.png").convert_alpha()
         self.button_played_sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/paneling_played.png")
+            "game_screen/game_screen_sprites/paneling_played.png").convert_alpha()
         self.button_paused_sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/paneling_paused.png")
+            "game_screen/game_screen_sprites/paneling_paused.png").convert_alpha()
         self.button_save_sprite = pygame.image.load(
-            "game_screen/game_screen_sprites/paneling_save.png")
+            "game_screen/game_screen_sprites/paneling_save.png").convert_alpha()
+        self.button_exit_sprite = pygame.image.load(
+            "game_screen/game_screen_sprites/paneling_exit.png").convert_alpha()
 
     def init_buttons(self):
         self.grid_button = Button(177*self.width_screen/192, 0.345*self.height_screen,
@@ -76,7 +78,7 @@ class Panel():
         self.fire_button = Button(182*self.width_screen/192, 0.345*self.height_screen,
                                   self.width_screen/48, self.height_screen / 40, self.fire_button_sprite)
         self.collapse_button = Button(187*self.width_screen/192, 0.345*self.height_screen,
-                                  self.width_screen/48, self.height_screen / 40, self.collapse_button_sprite)
+                                      self.width_screen/48, self.height_screen / 40, self.collapse_button_sprite)
         self.house_button = Button(177*self.width_screen/192, 0.25*self.height_screen,
                                    self.width_screen/48, self.height_screen/40, self.home_button_sprite)
         self.shovel_button = Button(182*self.width_screen/192, 0.25*self.height_screen,
@@ -95,8 +97,10 @@ class Panel():
             177*self.width_screen/192 + 1.2*self.width_screen/48, 0.25*self.height_screen+12*self.height_screen/80, self.width_screen/48, self.height_screen/40, self.button_down_sprite)
         self.pause_button = Button(177*self.width_screen/192 + 0.55*self.width_screen/48, 0.25*self.height_screen +
                                    15*self.height_screen/80, self.width_screen/48, self.height_screen/40, self.button_played_sprite)
-        self.save_button = Button(177*self.width_screen/192 + 0.55*self.width_screen/48, 0.25*self.height_screen +
-                                  35*self.height_screen/80, 2*self.width_screen/48, 2*self.height_screen/40, self.button_save_sprite)
+        self.save_button = Button(self.width_screen - self.width_screen / 13, 0.25*self.height_screen +
+                                  34.75*self.height_screen/80, 1.25*self.width_screen/48, 1.5*self.height_screen/40, self.button_save_sprite)
+        self.exit_button = Button(self.width_screen - self.width_screen / 13 + self.width_screen / 48, 0.25*self.height_screen +
+                                  41*self.height_screen/80, 1.5*self.width_screen/48, 1.75*self.height_screen/40, self.button_exit_sprite)
 
     def display(self):
         for i in range(2):
@@ -109,7 +113,7 @@ class Panel():
         #                                                       self.height_screen/36)), (11*self.width_screen/12+5, self.height_screen/32+2))
 
         self.screen.blit(pygame.transform.scale(
-            self.figure_1, (81, 91)), (180*self.width_screen/192, self.height_screen/15))
+            self.figure_1, (81, 91)), (180*self.width_screen/192, self.height_screen/16))
 
         draw_rect_alpha(self.screen, (255, 255, 255, 127), (177*self.width_screen/192-2,
                         0.25*self.height_screen-2, (self.width_screen)/48+4, (self.height_screen)/40+4))
@@ -130,11 +134,11 @@ class Panel():
         draw_rect_alpha(self.screen, (255, 255, 255, 127), (177*self.width_screen/192 + 0.55*self.width_screen/48-1.5, 0.25*self.height_screen +
                                                             15*self.height_screen/80-1.5, self.width_screen/48+3, self.height_screen/40+3))
         draw_rect_alpha(self.screen, (255, 255, 255, 127), (177*self.width_screen/192-1.5, 0.345*self.height_screen-1.5,
-                                  self.width_screen/48+4, self.height_screen/40+3))
+                                                            self.width_screen/48+4, self.height_screen/40+3))
         draw_rect_alpha(self.screen, (255, 255, 255, 127), (182*self.width_screen/192-1.5, 0.345*self.height_screen-1.5,
-                                  self.width_screen/48+4, self.height_screen/40+3))
+                                                            self.width_screen/48+4, self.height_screen/40+3))
         draw_rect_alpha(self.screen, (255, 255, 255, 127), (187*self.width_screen/192-1.5, 0.345*self.height_screen-1.5,
-                                  self.width_screen/48+4, self.height_screen/40+3))
+                                                            self.width_screen/48+4, self.height_screen/40+3))
 
         self.screen.blit(pygame.transform.scale(self.window_current, (self.width_screen /
                                                                       12-10, self.height_screen/17)), (11*self.width_screen/12+5, 0.18*self.height_screen))
@@ -167,6 +171,7 @@ class Panel():
         self.down_button.draw(self.screen)
         self.pause_button.draw(self.screen)
         self.save_button.draw(self.screen)
+        self.exit_button.draw(self.screen)
 
     def set_window(self, choice):
         if choice == "road":
@@ -230,3 +235,6 @@ class Panel():
 
     def get_save_button(self):
         return self.save_button
+
+    def get_exit_button(self):
+        return self.exit_button

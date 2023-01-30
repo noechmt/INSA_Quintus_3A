@@ -59,23 +59,7 @@ def game_screen():
     height_wo_panel = HEIGH_SCREEN
     width_wo_panel = WIDTH_SCREEN - (WIDTH_SCREEN/9)
 
-# taskbar
-    """color_brown = (70, 46, 1)
-    bar = pygame.image.load(
-        "game_screen/game_screen_sprites/taskbar_background.png")
-    SCREEN.blit(pygame.transform.scale(
-        bar, (WIDTH_SCREEN, HEIGH_SCREEN/32)), (0, 0))
-    taskbarfont = pygame.font.SysFont('courriernew', 25)  # police, size
-    file_text = taskbarfont.render('File', 0, color_brown)
-    options_text = taskbarfont.render('Options', 0, color_brown)
-    help_text = taskbarfont.render('Help', 0, color_brown)
-    advisors_text = taskbarfont.render('Advisors', 0, color_brown)
-    SCREEN.blit(file_text, (WIDTH_SCREEN/60, HEIGH_SCREEN/256))
-    SCREEN.blit(options_text, (WIDTH_SCREEN/16, HEIGH_SCREEN/256))
-    SCREEN.blit(help_text, (WIDTH_SCREEN/7.5, HEIGH_SCREEN/256))
-    SCREEN.blit(advisors_text, (WIDTH_SCREEN/5.5, HEIGH_SCREEN/256))"""
-
-    fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 16)
+    fps_font = pygame.font.Font("GUI/Fonts/Title Screen/Berry Rotunda.ttf", 14)
     run = 1
     clock = pygame.time.Clock()
 
@@ -95,61 +79,52 @@ def game_screen():
     move = 1
     zoom_update = 0
 
+    count_day = 0
+    count_month = map.month_index
+    day = 1
+    months = ["Jan", "Fev", "Mar", "Avr", "Mai", "Juin",
+              "Juil", "Aout", "Sept", "Oct", "Nov", "Dec"]
+    month = months[count_month]
+    year = map.year
+
     walker_update_count = 0
     fire_upadte_count = 0
     current_time = ""
+    text_last_save = fps_font.render("None", 1, (255, 255, 255))
     ##############################
     while run:
 
         pos = pygame.mouse.get_pos()
+        x = round(((pos[1]-map.offset_top-HEIGH_SCREEN/6)/map.height_land - (
+            WIDTH_SCREEN/2-WIDTH_SCREEN/12-pos[0]-map.offset_left)/map.width_land))-1
+        y = round(((WIDTH_SCREEN/2-WIDTH_SCREEN/12-pos[0]-map.offset_left)/map.width_land + (
+            pos[1]-map.offset_top-HEIGH_SCREEN/6)/map.height_land))
         if pos[1] <= 60:
             map.offset_top += 5*(3 - pos[1] / 20)*zoom
             map.handle_move("up", (3 - pos[1] / 20)*zoom)
             panel.display()
-            speed_counter_text = fps_font.render(
-                f"{speed * 100:.0f}%", 1, (255, 255, 255))
-            SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         if pos[1] >= HEIGH_SCREEN - 60:
             map.offset_top -= 5*(3 - (HEIGH_SCREEN - pos[1]) / 20)*zoom
             map.handle_move("down", (3 - (HEIGH_SCREEN - pos[1]) / 20) * zoom)
             panel.display()
-            speed_counter_text = fps_font.render(
-                f"{speed * 100:.0f}%", 1, (255, 255, 255))
-            SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         if pos[0] <= 60:
             map.offset_left -= 5*(3 - pos[0] / 20)*zoom
             map.handle_move("left", (3 - pos[0] / 20)*zoom)
             panel.display()
-            speed_counter_text = fps_font.render(
-                f"{speed * 100:.0f}%", 1, (255, 255, 255))
-            SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         if pos[0] >= WIDTH_SCREEN - 60:
             if not panel.get_road_button().is_hovered(pos) and not panel.get_well_button().is_hovered(pos):
-                if not panel.get_collapse_button().is_hovered(pos):
+                if not panel.get_collapse_button().is_hovered(pos) and not panel.get_exit_button().is_hovered(pos):
                     map.offset_left += 5 * \
                         (3 - (WIDTH_SCREEN - pos[0]) / 20)*zoom
                     map.handle_move(
                         "right", (3 - (WIDTH_SCREEN - pos[0]) / 20) * zoom)
                     panel.display()
-                    speed_counter_text = fps_font.render(
-                        f"{speed * 100:.0f}%", 1, (255, 255, 255))
-                    SCREEN.blit(speed_counter_text, (speed_left, speed_top))
         zoom_update += 1
         for event in pygame.event.get():
             if map.get_overlay() in ("fire", "collapse"):
                 map.display_overlay()
             pos = pygame.mouse.get_pos()
 
-            # Set and print logical coordinates
-            pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(0, 0, 200, 100))
-            x = round(((pos[1]-map.offset_top-HEIGH_SCREEN/6)/map.height_land - (
-                WIDTH_SCREEN/2-WIDTH_SCREEN/12-pos[0]-map.offset_left)/map.width_land))-1
-            y = round(((WIDTH_SCREEN/2-WIDTH_SCREEN/12-pos[0]-map.offset_left)/map.width_land + (
-                pos[1]-map.offset_top-HEIGH_SCREEN/6)/map.height_land))
-            text_click = fps_font.render(f"{x} {y}", 1, (255, 255, 255))
-            SCREEN.blit(text_click, (0, 20))
-            text_wallet = fps_font.render(f"{map.wallet}", 1, (255, 255, 255))
-            SCREEN.blit(text_wallet, (0, 40))
             if event.type == pygame.QUIT:
                 run = 0
 
@@ -164,10 +139,6 @@ def game_screen():
                     if (panel.get_grid_button().is_hovered(pos)):
                         map.set_overlay("grid")
                         panel.display()
-                        speed_counter_text = fps_font.render(
-                            f"{speed * 100:.0f}%", 1, (255, 255, 255))
-                        SCREEN.blit(speed_counter_text,
-                                    (speed_left, speed_top))
                     if panel.get_fire_button().is_hovered(pos):
                         map.set_overlay("fire")
                         panel.display()
@@ -215,46 +186,36 @@ def game_screen():
                             speed = speeds[speed_index]
                             panel.set_played_button()
                             panel.display()
-                            speed_counter_text = fps_font.render(
-                                f"{speed * 100:.0f}%", 1, (255, 255, 255))
-                            SCREEN.blit(speed_counter_text,
-                                        (speed_left, speed_top))
                     if (panel.down_button.is_hovered(pos)):
                         if (speed_index > 1):
                             speed_index -= 1
                             speed = speeds[speed_index]
                             panel.set_played_button()
                             panel.display()
-                            speed_counter_text = fps_font.render(
-                                f"{speed * 100:.0f}%", 1, (255, 255, 255))
-                            SCREEN.blit(speed_counter_text,
-                                        (speed_left, speed_top))
                     if (panel.get_pause_button().is_hovered(pos)):
                         if paused == 0:
                             paused = 1
                             speed = speeds[0]
                             panel.set_paused_button()
                             panel.display()
-                            speed_counter_text = fps_font.render(
-                                f"{speed * 100:.0f}%", 1, (255, 255, 255))
-                            SCREEN.blit(speed_counter_text,
-                                        (speed_left, speed_top))
                         else:
                             paused = 0
                             speed = speeds[speed_index]
                             panel.set_played_button()
                             panel.display()
-                            speed_counter_text = fps_font.render(
-                                f"{speed * 100:.0f}%", 1, (255, 255, 255))
-                            SCREEN.blit(speed_counter_text,
-                                        (speed_left, speed_top))
 
                     if (panel.get_save_button().is_hovered(pos)):
+                        map.month_index = count_month
+                        map.year = year
                         path_save = "Saves/" + \
                             str(map.get_name_user()) + ".q5"
                         with open(path_save, 'wb') as f1:
                             pickle.dump(map, f1)
-                        current_time = datetime.now().strftime("%H:%M:%S")
+                        current_time = datetime.now().strftime("%H:%M")
+                        text_last_save = fps_font.render(
+                            current_time, 1, (255, 255, 255))
+                    if panel.get_exit_button().is_hovered(pos):
+                        run = False
 
                 if zoom_update > 0:
                     if event.button == 4:
@@ -262,19 +223,11 @@ def game_screen():
                             zoom += 0.05
                             map.handle_zoom(1)
                             panel.display()
-                            speed_counter_text = fps_font.render(
-                                f"{speed * 100:.0f}%", 1, (255, 255, 255))
-                            SCREEN.blit(speed_counter_text,
-                                        (speed_left, speed_top))
                     if event.button == 5:
                         if zoom > 0.8:
                             zoom -= 0.05
                             map.handle_zoom(0)
                             panel.display()
-                            speed_counter_text = fps_font.render(
-                                f"{speed * 100:.0f}%", 1, (255, 255, 255))
-                            SCREEN.blit(speed_counter_text,
-                                        (speed_left, speed_top))
                     zoom_update = 0
 
             if event.type == pygame.MOUSEBUTTONUP:
@@ -349,6 +302,7 @@ def game_screen():
                 panel.get_save_button().handle_hover_button(pos, SCREEN)
                 panel.get_fire_button().handle_hover_button(pos, SCREEN)
                 panel.get_collapse_button().handle_hover_button(pos, SCREEN)
+                panel.get_exit_button().handle_hover_button(pos, SCREEN)
 
             if event.type == pygame.KEYDOWN:
                 if pygame.key.get_pressed()[pygame.K_ESCAPE]:
@@ -404,17 +358,64 @@ def game_screen():
             map.update_collapse()
             fire_upadte_count = 0
 
-        # if tmpbool :
-        #     map.array[13][29] = Prefecture(13, 29, map.height_land, map.width_land,map.screen, map)
-        #     SCREEN.blit(pygame.transform.scale(pygame.image.load("walker_sprites/test/Housng1a_00019.png"), (map.array[13][29].width, map.array[13][29].height)), (map.array[13][29].left, map.array[13][29].top))
-        #     map.array[31][19] = EngineerPost(31, 19, map.height_land, map.width_land, map.screen, map)
-        #     SCREEN.blit(pygame.transform.scale(pygame.image.load("walker_sprites/test/Housng1a_00019.png"), (map.array[31][19].width, map.array[31][19].height)), (map.array[31][19].left, map.array[31][19].top))
-        #     tmpbool = 0
         clock.tick(60)
+        panel.display()
+
+        # Speed display
+        speed_counter_text = fps_font.render(
+            f"{speed * 100:.0f}%", 1, (255, 255, 255))
+        SCREEN.blit(speed_counter_text,
+                    (speed_left, speed_top))
+        # Name display
         fps = (int)(clock.get_fps())
-        text_fps = fps_font.render(str(fps), 1, (255, 255, 255))
-        pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(
-            0, HEIGH_SCREEN - text_fps.get_size()[1], 60, 40))
-        SCREEN.blit(text_fps, (0, HEIGH_SCREEN - text_fps.get_size()[1]))
+        text_name = fps_font.render(
+            "Name : ", 1, (255, 255, 255))
+        SCREEN.blit(text_name, (WIDTH_SCREEN - WIDTH_SCREEN /
+                    13, HEIGH_SCREEN - HEIGH_SCREEN/1.93))
+        texte_governor = fps_font.render(
+            str(map.get_name_user()), 1, (255, 255, 255))
+        SCREEN.blit(texte_governor, (WIDTH_SCREEN - WIDTH_SCREEN /
+                    13 + WIDTH_SCREEN / 200, HEIGH_SCREEN - HEIGH_SCREEN/1.93 + 1.5*text_name.get_size()[1]))
+        # Money display
+        text_wallet = fps_font.render(
+            f"Money : {map.wallet}", 1, (255, 255, 255))
+        SCREEN.blit(text_wallet, (WIDTH_SCREEN - WIDTH_SCREEN /
+                    13, HEIGH_SCREEN - HEIGH_SCREEN/2.2))
+        # Population display
+        text_population = fps_font.render(
+            f"Citizens : {map.population}", 1, (255, 255, 255))
+        SCREEN.blit(text_population, (WIDTH_SCREEN - WIDTH_SCREEN /
+                    13, HEIGH_SCREEN - HEIGH_SCREEN/2.5))
+        # Date display
+        count_day += 1
+        if (count_day > (15 / speed)):
+            day += 1
+            if day > 30:
+                day = 1
+                count_month += 1
+                if (count_month > 11):
+                    count_month = 0
+                    year += 1
+                month = months[count_month]
+            count_day = 0
+        text_date = fps_font.render(
+            f"Date : {month} {year}", 1, (255, 255, 255))
+        SCREEN.blit(text_date, (WIDTH_SCREEN - WIDTH_SCREEN /
+                    13, HEIGH_SCREEN - HEIGH_SCREEN/2.8))
+        # Save text display
+        text_save = fps_font.render(f"Save :", 1, (255, 255, 255))
+        SCREEN.blit(text_save, (WIDTH_SCREEN - WIDTH_SCREEN /
+                    13 + WIDTH_SCREEN / 28, HEIGH_SCREEN - HEIGH_SCREEN/3.2))
+        SCREEN.blit(text_last_save, (WIDTH_SCREEN - WIDTH_SCREEN /
+                    13 + WIDTH_SCREEN / 28, HEIGH_SCREEN - HEIGH_SCREEN/3.4))
+        # Coordonates display
+        text_click = fps_font.render(f"x : {x}, y : {y}", 1, (255, 255, 255))
+        SCREEN.blit(text_click, (WIDTH_SCREEN - WIDTH_SCREEN /
+                    13, HEIGH_SCREEN - HEIGH_SCREEN/6.5))
+        # FPS display
+        fps = (int)(clock.get_fps())
+        text_fps = fps_font.render("fps : " + str(fps), 1, (255, 255, 255))
+        SCREEN.blit(text_fps, (WIDTH_SCREEN - WIDTH_SCREEN /
+                    13, HEIGH_SCREEN - HEIGH_SCREEN/7.5))
 
         pygame.display.flip()

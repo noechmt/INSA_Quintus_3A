@@ -49,6 +49,9 @@ class Map:  # Un ensemble de cellule
                                  "prefecture": False, "engineerpost": False, "well": False}
         self.zoom = 1
         self.name_user = ""
+        self.population = 0
+        self.month_index = 0
+        self.year = 150
 
     def init_map(self):  # Permet d'initialiser le chemin de terre sur la map.
         for i in range(self.size):
@@ -98,6 +101,7 @@ class Map:  # Un ensemble de cellule
                 self.get_cell(x, y).handle_move(move, m)
                 self.get_cell(x, y).display()
     # Check if these coordinates are in the map
+
     def inMap(self, x, y):
         return (0 <= x and x <= self.size-1 and 0 <= y and y <= self.size-1)
 
