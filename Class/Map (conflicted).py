@@ -109,14 +109,14 @@ class Map:  # Un ensemble de cellule
             for y in range(40):
                 self.get_cell(x, y).handle_move(move, m)
                 # Around the world : verti and hori
-                if self.get_cell(0, 20).left >= 1.25*SCREEN.get_size()[0]:
+                if self.get_cell(x, 20).left >= 1.25*SCREEN.get_size()[0]:
                     self.get_cell(x, y).left = -SCREEN.get_size()[0]
                 if self.get_cell(20, 20).left <= -1.25*SCREEN.get_size()[0]:
                     self.get_cell(x, y).left = SCREEN.get_size()[0]
-                if self.get_cell(0, 0).top >= 1.25*SCREEN.get_size()[1]:
-                    self.get_cell(x, y).top = -SCREEN.get_size()[1]
-                if self.get_cell(39, 39).top <= -1.25*SCREEN.get_size()[1]:
-                    self.get_cell(x, y).top = SCREEN.get_size()[1]
+                if self.get_cell(0, 0).top >= 1.25*self.SCREEN.get_size()[1]:
+                    self.get_cell(x, y).top = -self.SCREEN.get_size()[1]
+                if self.get_cell(39, 39).top <= -1.25*self.SCREEN.get_size()[1]:
+                    self.get_cell(x, y).top = self.SCREEN.get_size()[1]
 
                 self.get_cell(x, y).display()
     # Check if these coordinates are in the map

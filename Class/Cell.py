@@ -132,12 +132,8 @@ class Cell:  # Une case de la map
             self.top -= 5 * m
         if move == "right":
             self.left -= 5 * m
-            if self.left <= -2*self.WIDTH_SCREEN:
-                self.left = self.WIDTH_SCREEN
         if move == "left":
             self.left += 5 * m
-            if self.left >= 2*self.WIDTH_SCREEN:
-                self.left = -self.WIDTH_SCREEN
 
     def handle_hover_button(self):
         if (self.map.get_housed()):
