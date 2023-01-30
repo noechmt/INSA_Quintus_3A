@@ -385,6 +385,7 @@ def game_screen():
         SCREEN.blit(text_wallet, (WIDTH_SCREEN - WIDTH_SCREEN /
                     13, HEIGH_SCREEN - HEIGH_SCREEN/2.2))
         # Population display
+        map.count_population()
         text_population = fps_font.render(
             f"Citizens : {map.population}", 1, (255, 255, 255))
         SCREEN.blit(text_population, (WIDTH_SCREEN - WIDTH_SCREEN /

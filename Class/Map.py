@@ -75,6 +75,12 @@ class Map:  # Un ensemble de cellule
             s += "\n"
         return s
 
+    def count_population(self):
+        self.population = 0
+        for b in self.buildings:
+            if (isinstance(b, House)):
+                self.population += b.nb_occupants
+
     def handle_button(self, button):
         self.button_activated = dict.fromkeys(self.button_activated, False)
         self.button_activated[button] = True
@@ -199,7 +205,8 @@ class Map:  # Un ensemble de cellule
 
             case "fire" | "collapse":
                 self.display_map()
-                sorted_building = sorted(self.buildings, key=lambda i: (i.x, i.y))
+                sorted_building = sorted(
+                    self.buildings, key=lambda i: (i.x, i.y))
                 for i in sorted_building:
                     i.display_overlay()
 
