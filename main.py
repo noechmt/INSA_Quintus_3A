@@ -22,8 +22,4 @@ if __name__ == "__main__":
     pygame.quit()
 
 
-# TODO
-# risques avec l'overlay
-# sauvegarde
-# re-display walker quand on passe sur une case ou il est
-# Ne pas prendre en compte les clique quand la souris est sur le panel
+

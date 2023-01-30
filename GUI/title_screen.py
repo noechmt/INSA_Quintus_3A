@@ -149,8 +149,7 @@ def title_screen():
             if choosing_save:
                 if event.type == pygame.KEYDOWN:
                     if pygame.key.get_pressed()[pygame.K_ESCAPE]:
-                        title_screen()
-                        return True
+                        return title_screen()
 
         # Set the FPS at 60
         clock.tick(60)
