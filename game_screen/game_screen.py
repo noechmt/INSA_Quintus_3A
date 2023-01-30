@@ -221,12 +221,12 @@ def game_screen():
 
                 if zoom_update > 0:
                     if event.button == 4:
-                        if zoom < 1.7:
+                        if zoom < 2:
                             zoom += 0.05
                             map.handle_zoom(1)
                             panel.display()
                     if event.button == 5:
-                        if zoom > 0.8:
+                        if zoom > 0.9:
                             zoom -= 0.05
                             map.handle_zoom(0)
                             panel.display()
