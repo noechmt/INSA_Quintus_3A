@@ -132,8 +132,12 @@ class Cell:  # Une case de la map
             self.top -= 5 * m
         if move == "right":
             self.left -= 5 * m
+            if self.left <= -2*self.WIDTH_SCREEN:
+                self.left = self.WIDTH_SCREEN
         if move == "left":
             self.left += 5 * m
+            if self.left >= 2*self.WIDTH_SCREEN:
+                self.left = -self.WIDTH_SCREEN
 
     def handle_hover_button(self):
         if (self.map.get_housed()):
@@ -338,7 +342,6 @@ class Path(Cell):
             house_around_house = j.check_cell_around(House)
             for k in house_around_house:
                 self.map.path_graph.add_edge(j, k, weight=2000)
-            
 
     def update_sprite_size(self):
         self.sprite_display = pygame.transform.scale(

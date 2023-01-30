@@ -114,6 +114,11 @@ def game_screen():
         if pos[0] <= 60:
             map.offset_left -= 5*(3 - pos[0] / 20)*zoom
             map.handle_move("left", (3 - pos[0] / 20)*zoom)
+            if (map.offset_left <= -1.25*WIDTH_SCREEN):
+                map.offset_left = WIDTH_SCREEN
+                zoom += 0.05
+                map.handle_zoom(1)
+                panel.display()
             panel.display()
         if pos[0] >= WIDTH_SCREEN - 60:
             if not panel.get_road_button().is_hovered(pos) and not panel.get_well_button().is_hovered(pos):
@@ -122,6 +127,11 @@ def game_screen():
                         (3 - (WIDTH_SCREEN - pos[0]) / 20)*zoom
                     map.handle_move(
                         "right", (3 - (WIDTH_SCREEN - pos[0]) / 20) * zoom)
+                    if (map.offset_left >= 1.25*WIDTH_SCREEN):
+                        map.offset_left = -WIDTH_SCREEN
+                        zoom += 0.05
+                        map.handle_zoom(1)
+                        panel.display()
                     panel.display()
         zoom_update += 1
         for event in pygame.event.get():
