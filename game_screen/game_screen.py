@@ -106,10 +106,20 @@ def game_screen():
         if pos[1] <= 60:
             map.offset_top += 5*(3 - pos[1] / 20)*zoom
             map.handle_move("up", (3 - pos[1] / 20)*zoom)
+            if (map.offset_top >= 1.25*HEIGH_SCREEN):
+                map.offset_top = -HEIGH_SCREEN
+                zoom += 0.05
+                map.handle_zoom(1)
+                panel.display()
             panel.display()
         if pos[1] >= HEIGH_SCREEN - 60:
             map.offset_top -= 5*(3 - (HEIGH_SCREEN - pos[1]) / 20)*zoom
             map.handle_move("down", (3 - (HEIGH_SCREEN - pos[1]) / 20) * zoom)
+            if (map.offset_top <= -1.25*HEIGH_SCREEN):
+                map.offset_top = HEIGH_SCREEN
+                zoom += 0.05
+                map.handle_zoom(1)
+                panel.display()
             panel.display()
         if pos[0] <= 60:
             map.offset_left -= 5*(3 - pos[0] / 20)*zoom
